@@ -779,6 +779,52 @@ $('georgeAttachments').addEventListener('click',e=>{const b=e.target.closest('[d
 document.addEventListener('click',e=>{const c=e.target.closest('#georgeConfirmAction');if(c&&george.pendingAction){const a=george.pendingAction;george.pendingAction=null;if(a.type==='step'&&a.payload.target)setProcessStep(a.payload.target,true);else if(a.type==='feedback')showFeedbackSummary();addGeorge('assistant',`Confirmed: ${a.label}.`,a.context);renderPendingAction();updateGeorgeContext();return;}const x=e.target.closest('#georgeCancelAction');if(x){const a=george.pendingAction;george.pendingAction=null;if(a)addGeorge('assistant',`Cancelled: ${a.label}.`,a.context);renderPendingAction();}},true);
 const modalObserver=new MutationObserver(()=>updateGeorgeContext());if($('modal'))modalObserver.observe($('modal'),{attributes:true,childList:true,subtree:true,attributeFilter:['class']});
 document.addEventListener('click',e=>{if(e.target.closest('[data-view],[data-process-step],[data-action="newsearch"],[data-action="feedbackSummary"]'))setTimeout(updateGeorgeContext,0);},true);
+window.talentStudioGeorge={
+  getContext:()=>georgeContext(),
+  contextSnapshot:()=>{
+    const ctx=georgeContext();
+    const c=candidateContext();
+    const step=PROCESS_STEPS.find(x=>x.id===state.processStep);
+    const reviewState=c?reviewOf(c):null;
+    return {
+      context:ctx,
+      view:state.view,
+      processStep:state.processStep,
+      processTitle:step?.title||state.processStep,
+      searchId:state.liveSearchId||DATA?.meta?.searchId||null,
+      candidate:c?{
+        id:c.id,
+        name:displayName(c),
+        title:c.title||null,
+        company:c.company||c.firm||null,
+        location:c.location||null,
+        profileUrl:c.profileUrl||null,
+        fit:c.fit??null,
+        match:c.match??null,
+        evidence:c.evidence??null,
+        evidenceTier:c.tier||null,
+        expertise:c.areas||null,
+        summary:c.summary||c.researchNote||null,
+        why:c.raw?.Why||c.whyIncluded||null,
+        caveat:c.caveat||null,
+        quantitative:c.quantitative||null,
+        sources:(c.sources||[]).filter(Boolean).slice(0,12),
+        recruiterFeedback:reviewState?{
+          decision:reviewState.status||'pending',
+          note:reviewState.note||'',
+          feedbackGiven:!!reviewState.feedbackGiven,
+          feedbackProcessed:!!reviewState.feedbackProcessed
+        }:null
+      }:null,
+      lockedProfile:document.getElementById('lockedProfilePanel')?.innerText?.trim().slice(0,6000)||null,
+      visibleWorkspace:document.getElementById('candidateWorkbench')?.classList.contains('hidden')
+        ? document.querySelector('.view:not(.hidden)')?.innerText?.trim().slice(0,7000)||null
+        : document.getElementById('candidateWorkbenchContent')?.innerText?.trim().slice(0,7000)||null
+    };
+  },
+  addMessage:(who,text,ctx)=>addGeorge(who,text,ctx||georgeContext().title),
+  refreshContext:()=>updateGeorgeContext()
+};
 renderGeorge();renderAttachments();updateGeorgeContext();
 })();
 </script>
