@@ -232,3 +232,269 @@ supabase.auth.onAuthStateChange(async (_event, nextSession) => {
 window.addEventListener('beforeunload', () => {
   if (currentUser) saveWorkspaceState();
 });
+
+
+/* George realtime speech-to-speech voice chat.
+   The long-lived OpenAI API key stays server-side in the Supabase Edge Function.
+   The browser only receives a short-lived Realtime client secret. */
+class GeorgeRealtimeVoice {
+  constructor() {
+    this.pc = null;
+    this.dc = null;
+    this.stream = null;
+    this.audio = null;
+    this.active = false;
+    this.connecting = false;
+    this.inputItemsSeen = new Set();
+    this.outputItemsSeen = new Set();
+  }
+
+  button() {
+    return document.getElementById('georgeSpeak');
+  }
+
+  george() {
+    return window.talentStudioGeorge || null;
+  }
+
+  add(who, text) {
+    const clean = String(text || '').trim();
+    if (!clean) return;
+    const george = this.george();
+    if (george?.addMessage) {
+      george.addMessage(who, clean, george.getContext?.().title || 'George voice');
+    }
+  }
+
+  setButtonState(state, label) {
+    const button = this.button();
+    if (!button) return;
+    button.dataset.voiceState = state;
+    button.classList.toggle('listening', state === 'live' || state === 'connecting');
+    const span = button.querySelector('span');
+    if (span) span.textContent = label;
+    button.title = state === 'live' ? 'End conversation with George' : 'Speak with George';
+  }
+
+  contextSnapshot() {
+    const george = this.george();
+    if (!george?.contextSnapshot) {
+      return {
+        context: { title: 'AI Talent Studio' },
+        note: 'No structured application context was exposed.'
+      };
+    }
+    return george.contextSnapshot();
+  }
+
+  async getRealtimeToken() {
+    const { data: authData } = await supabase.auth.getSession();
+    if (!authData?.session) {
+      throw new Error('Please sign in before starting Speak with George.');
+    }
+
+    const { data, error } = await supabase.functions.invoke('realtime-token', {
+      body: { context: this.contextSnapshot() }
+    });
+
+    if (error) {
+      let message = error.message || 'Could not start George voice.';
+      try {
+        const details = await error.context?.json?.();
+        if (details?.error) message = details.error;
+        if (details?.details) message += ' ' + details.details;
+      } catch {}
+      throw new Error(message);
+    }
+
+    if (!data?.value) {
+      throw new Error(data?.error || 'No Realtime client secret was returned.');
+    }
+    return data.value;
+  }
+
+  handleServerEvent(event) {
+    if (!event || typeof event !== 'object') return;
+
+    if (event.type === 'conversation.item.input_audio_transcription.completed') {
+      const key = event.item_id || event.event_id;
+      if (key && this.inputItemsSeen.has(key)) return;
+      if (key) this.inputItemsSeen.add(key);
+      if (event.transcript) this.add('user', event.transcript);
+      return;
+    }
+
+    if (event.type === 'response.output_audio_transcript.done') {
+      const key = event.item_id || event.response_id || event.event_id;
+      if (key && this.outputItemsSeen.has(key)) return;
+      if (key) this.outputItemsSeen.add(key);
+      if (event.transcript) this.add('assistant', event.transcript);
+      return;
+    }
+
+    if (event.type === 'response.done') {
+      const response = event.response;
+      if (response?.status && response.status !== 'completed' && response.status !== 'cancelled') {
+        const reason = response?.status_details?.error?.message || response?.status_details?.reason;
+        if (reason) this.add('assistant', 'Voice session notice: ' + reason);
+      }
+      return;
+    }
+
+    if (event.type === 'error') {
+      const message = event.error?.message || 'Realtime voice returned an error.';
+      console.warn('George Realtime error:', event);
+      this.add('assistant', message);
+    }
+  }
+
+  async start() {
+    if (this.active || this.connecting) return;
+    this.connecting = true;
+    this.setButtonState('connecting', 'Connecting…');
+
+    try {
+      if (!window.RTCPeerConnection || !navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Realtime voice needs a modern browser with WebRTC and microphone access.');
+      }
+
+      const ephemeralKey = await this.getRealtimeToken();
+
+      const pc = new RTCPeerConnection();
+      this.pc = pc;
+
+      const audio = document.createElement('audio');
+      audio.autoplay = true;
+      audio.setAttribute('playsinline', '');
+      audio.style.display = 'none';
+      document.body.appendChild(audio);
+      this.audio = audio;
+
+      pc.ontrack = (event) => {
+        audio.srcObject = event.streams[0];
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+      this.stream = stream;
+      for (const track of stream.getAudioTracks()) pc.addTrack(track, stream);
+
+      const dc = pc.createDataChannel('oai-events');
+      this.dc = dc;
+
+      dc.addEventListener('message', (event) => {
+        try {
+          this.handleServerEvent(JSON.parse(event.data));
+        } catch (error) {
+          console.warn('Could not parse George Realtime event:', error);
+        }
+      });
+
+      dc.addEventListener('open', () => {
+        this.active = true;
+        this.connecting = false;
+        this.setButtonState('live', 'End George');
+        this.add('assistant', 'Voice conversation started. I am listening in the current context.');
+      });
+
+      dc.addEventListener('close', () => {
+        if (this.active || this.connecting) this.stop(false);
+      });
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      const response = await fetch('https://api.openai.com/v1/realtime/calls', {
+        method: 'POST',
+        body: offer.sdp,
+        headers: {
+          Authorization: 'Bearer ' + ephemeralKey,
+          'Content-Type': 'application/sdp'
+        }
+      });
+
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error('OpenAI Realtime connection failed (' + response.status + '): ' + detail.slice(0, 240));
+      }
+
+      await pc.setRemoteDescription({
+        type: 'answer',
+        sdp: await response.text()
+      });
+    } catch (error) {
+      console.error('Speak with George failed:', error);
+      this.add('assistant', error?.message || 'Speak with George could not be started.');
+      this.stop(false);
+    }
+  }
+
+  stop(addMessage = true) {
+    const wasActive = this.active || this.connecting;
+    this.active = false;
+    this.connecting = false;
+
+    try { this.dc?.close(); } catch {}
+    try { this.pc?.close(); } catch {}
+    try {
+      this.stream?.getTracks()?.forEach((track) => track.stop());
+    } catch {}
+    try {
+      if (this.audio) {
+        this.audio.pause();
+        this.audio.srcObject = null;
+        this.audio.remove();
+      }
+    } catch {}
+
+    this.dc = null;
+    this.pc = null;
+    this.stream = null;
+    this.audio = null;
+    this.inputItemsSeen.clear();
+    this.outputItemsSeen.clear();
+    this.setButtonState('idle', 'Speak with George');
+
+    if (addMessage && wasActive) {
+      this.add('assistant', 'Voice conversation ended.');
+    }
+  }
+
+  async toggle() {
+    if (this.active || this.connecting) {
+      this.stop(true);
+    } else {
+      await this.start();
+    }
+  }
+}
+
+const georgeRealtimeVoice = new GeorgeRealtimeVoice();
+window.georgeRealtimeVoice = georgeRealtimeVoice;
+
+function bindGeorgeRealtimeButton() {
+  const button = document.getElementById('georgeSpeak');
+  if (!button || button.dataset.realtimeBound === '1') return;
+  button.dataset.realtimeBound = '1';
+  button.addEventListener('click', async (event) => {
+    // Capture phase prevents the old browser speech-recognition demo handler
+    // from also firing on the same button.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    await georgeRealtimeVoice.toggle();
+  }, true);
+  georgeRealtimeVoice.setButtonState('idle', 'Speak with George');
+}
+
+bindGeorgeRealtimeButton();
+new MutationObserver(bindGeorgeRealtimeButton).observe(document.documentElement, {
+  childList: true,
+  subtree: true
+});
+
+window.addEventListener('beforeunload', () => georgeRealtimeVoice.stop(false));
