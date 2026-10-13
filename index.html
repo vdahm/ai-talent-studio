@@ -1434,7 +1434,16 @@ body.george-sidebar-has-text #georgeExecute{display:inline-flex!important;align-
 #georgeExecute{order:10!important;margin-left:auto!important;background:#1C2D4A!important;color:#fff!important;border:1px solid #1C2D4A!important;border-radius:999px!important;width:37px!important;height:37px!important;box-shadow:none!important}
 #georgeExecute .icon{color:#fff!important;stroke:#fff!important}
 </style>
-</head>
+<style id="talent-directory-safety-style-20261013">
+#view-talent:not(.hidden){display:block!important;position:relative!important;visibility:visible!important;opacity:1!important;height:auto!important;min-height:50vh!important;overflow:visible!important}
+#view-talent #candidateGrid{min-height:150px!important;visibility:visible!important;opacity:1!important}
+.talent-restored-card{padding:19px!important;border:1px solid #e3e7ed;border-radius:16px;background:#fff;display:flex!important;flex-direction:column;gap:12px}
+.talent-restored-top{display:flex;gap:12px;align-items:flex-start}
+.talent-restored-top h3{margin:0 0 4px;font-size:15px;color:#1c2d4a}
+.talent-restored-top p,.talent-restored-card>p{margin:0;color:#697785;font-size:11px;line-height:1.5}
+.talent-restored-initial{background:#e9edf2;color:#1c2d4a;border-radius:12px;padding:12px;font-weight:700}
+.talent-restored-card button{margin-top:auto;align-self:flex-start}
+</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2665,5 +2674,29 @@ update();
  connect('georgeInput','george-sidebar-has-text');
 })();
 </script>
-</body>
+<script id="talent-explorer-directory-safety-20261013">
+(function(){
+'use strict';
+const view=document.getElementById('view-talent'),grid=document.getElementById('candidateGrid');
+if(!view||!grid)return;
+function populate(){
+ if(view.classList.contains('hidden'))return;
+ const cards=grid.querySelectorAll('.candidate-card');
+ if(cards.length)return;
+ const dataset=document.getElementById('data-snapshot');
+ if(!dataset)return;
+ let people=[];try{const d=JSON.parse(dataset.textContent);people=Array.isArray(d.candidates)?d.candidates:[];}catch(e){return;}
+ if(!people.length)return;
+ grid.innerHTML=people.map(c=>{
+ const name=String(c.name||'Candidate'),title=String(c.title||'Professional profile'),firm=String(c.company||c.firm||''),loc=String(c.location||c.country||''),id=String(c.id||'');
+ const safe=x=>x.replace(/[&<>"']/g,t=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[t]));
+ return '<article class="candidate-card talent-restored-card"><div class="talent-restored-top"><span class="talent-restored-initial">'+safe(name.split(/\s+/).map(p=>p[0]||'').slice(0,2).join(''))+'</span><div><h3>'+safe(name)+'</h3><p>'+safe(title)+'</p></div></div><p>'+safe(firm)+(loc?' · '+safe(loc):'')+'</p><button type="button" class="btn" data-candidate="'+safe(id)+'">View candidate profile →</button></article>';
+ }).join('');
+ const n=document.getElementById('resultCount');if(n)n.innerHTML='<b>'+people.length+'</b> saved profiles';
+}
+new MutationObserver(()=>requestAnimationFrame(populate)).observe(view,{attributes:true,attributeFilter:['class']});
+document.addEventListener('click',e=>{if(e.target.closest('[data-view="talent"]'))setTimeout(populate,80);});
+setTimeout(populate,0);
+})();
+</script></body>
 </html>
