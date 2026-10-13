@@ -1358,6 +1358,43 @@ table{max-width:100%}
 .responsive-rail-toggle{position:fixed;right:14px;bottom:max(18px,env(safe-area-inset-bottom));z-index:145;border:1px solid #e2e5e9;border-radius:30px;padding:10px 13px;background:#fff;color:#1C2D4A;box-shadow:0 4px 20px #1c2d4a1d;align-items:center;gap:6px;font-size:12px;display:none}
 body.responsive-rail-open .responsive-rail-toggle{z-index:230}
 @media(min-width:1101px){.responsive-rail-toggle{display:none!important}}
+</style><style id="candidate-reflow-20261013">
+/* Candidate workspace participates in responsive layout, rather than covering the page. */
+body.candidate-profile-open{--ui-rail:clamp(410px,35vw,560px)}
+@media(min-width:1101px){
+ body.candidate-profile-open .app{margin-right:var(--ui-rail)!important;transition:margin-right .2s ease}
+ body.candidate-profile-open #view-george:not(.hidden){right:var(--ui-rail)!important;transition:right .2s ease}
+ body.candidate-profile-open #candidateWorkbench:not(.hidden){width:var(--ui-rail)!important;right:0!important;left:auto!important;z-index:115!important}
+ body.candidate-profile-open #candidateWorkbench .candidate-reply-dock{width:var(--ui-rail)!important}
+ body.candidate-profile-open #georgePanel,body.candidate-profile-open #talentExplorerRail{visibility:hidden!important;pointer-events:none!important}
+ body.candidate-profile-open .main{max-width:none!important;width:100%!important}
+ body.candidate-profile-open .hero,body.candidate-profile-open .split,body.candidate-profile-open .view-head{min-width:0!important}
+ body.candidate-profile-open .candidate-grid,body.candidate-profile-open .metrics{grid-template-columns:repeat(auto-fit,minmax(min(100%,235px),1fr))!important}
+ body.candidate-profile-open .george-page-composer{display:block!important}
+}
+@media(min-width:701px) and (max-width:1100px){
+ body.candidate-profile-open{--ui-rail:min(49vw,480px)}
+ body.candidate-profile-open .app{margin-right:var(--ui-rail)!important;margin-left:68px!important}
+ body.candidate-profile-open #view-george:not(.hidden){left:68px!important;right:var(--ui-rail)!important}
+ body.candidate-profile-open #candidateWorkbench:not(.hidden){width:var(--ui-rail)!important;right:0!important;z-index:115!important}
+ body.candidate-profile-open #candidateWorkbench .candidate-reply-dock{width:var(--ui-rail)!important}
+ body.candidate-profile-open #georgePanel,body.candidate-profile-open #talentExplorerRail{display:none!important}
+ body.candidate-profile-open .main{padding:12px!important}
+ body.candidate-profile-open .candidate-grid,body.candidate-profile-open .metrics,.split{grid-template-columns:1fr!important}
+ body.candidate-profile-open .topbar{padding:8px!important}
+}
+@media(max-width:700px){
+ body.candidate-profile-open{--ui-rail:0px}
+ body.candidate-profile-open .app{margin-right:0!important}
+ body.candidate-profile-open #candidateWorkbench:not(.hidden){inset:0!important;width:100vw!important;height:100dvh!important;max-width:100vw!important;z-index:250!important}
+ body.candidate-profile-open #candidateWorkbench .candidate-reply-dock{width:100vw!important}
+}
+/* Dense profile content adapts to the available detail-column width. */
+#candidateWorkbench .candidate-profile-shell,#candidateWorkbench .candidate-facts{min-width:0!important;max-width:100%!important}
+#candidateWorkbench .detail-scores,#candidateWorkbench .candidate-facts{grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))!important}
+#candidateWorkbench .candidate-profile-hero h1{font-size:clamp(20px,2vw,28px)!important;line-height:1.2!important}
+#candidateWorkbench table{display:block;max-width:100%;overflow-x:auto}
+#candidateWorkbench .candidate-reply-dock{background:#fff!important;box-shadow:0 -5px 18px rgba(28,45,74,.07)!important}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2562,6 +2599,16 @@ if(bar&&window.ResizeObserver)new ResizeObserver(update).observe(bar);
 window.addEventListener('resize',update,{passive:true});
 window.addEventListener('orientationchange',update,{passive:true});
 update();
+})();
+</script><script id="candidate-reflow-controller-20261013">
+(function(){
+ 'use strict';
+ const panel=document.getElementById('candidateWorkbench');if(!panel)return;
+ function sync(){const visible=!panel.classList.contains('hidden');document.body.classList.toggle('candidate-profile-open',visible);
+  if(visible){document.body.classList.remove('responsive-rail-open');}
+ }
+ new MutationObserver(sync).observe(panel,{attributes:true,attributeFilter:['class']});
+ window.addEventListener('resize',sync,{passive:true});sync();
 })();
 </script></body>
 </html>
