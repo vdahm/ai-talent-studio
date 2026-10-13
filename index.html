@@ -174,6 +174,321 @@ body.george-speaking .george-status{background:#B94D3A;box-shadow:0 0 0 5px #fff
 </style>
 
 <meta name="campaign-builder-version" content="custom-multichannel-v2">
+
+<style id="workspace-swap-styles">
+:root{
+  --george-left-width:430px;
+  --talent-right-width:390px;
+}
+button[data-view="talent"]{display:none!important}
+.george-panel{
+  left:var(--nav-width)!important;
+  right:auto!important;
+  width:var(--george-left-width)!important;
+  background:#f7f7f8!important;
+  border-left:0!important;
+  border-right:1px solid #e7e7e7!important;
+  box-shadow:none!important;
+}
+.george-head{
+  padding:18px 18px 12px!important;
+  background:#f7f7f8!important;
+  border-bottom:0!important;
+}
+.george-title h2{
+  font-size:19px!important;
+  letter-spacing:-.35px!important;
+  color:#202123!important;
+}
+.george-title p{
+  color:#6f6f78!important;
+  font-size:10px!important;
+}
+.george-context{
+  margin-top:12px!important;
+  background:#fff!important;
+  border:1px solid #e5e5e5!important;
+  border-radius:14px!important;
+  padding:10px 12px!important;
+}
+.george-context small{color:#8a8a92!important}
+.george-context b{color:#2f2f34!important}
+.george-context span{color:#7c7c84!important}
+.george-messages{
+  background:#f7f7f8!important;
+  padding:22px 18px 14px!important;
+}
+.george-empty{
+  background:transparent!important;
+  border:0!important;
+  padding:12px 6px!important;
+  color:#6f6f78!important;
+}
+.george-message{gap:3px!important;margin-bottom:18px!important}
+.george-message .ctx{color:#a2a2aa!important}
+.george-bubble{
+  max-width:94%!important;
+  font-size:12px!important;
+  line-height:1.65!important;
+}
+.george-message.assistant .george-bubble{
+  background:transparent!important;
+  color:#27272c!important;
+  border-radius:0!important;
+  padding:7px 3px!important;
+}
+.george-message.user .george-bubble{
+  background:#ececee!important;
+  color:#202123!important;
+  border-radius:20px!important;
+  border-bottom-right-radius:7px!important;
+  padding:11px 14px!important;
+}
+.george-attachments{background:#f7f7f8!important}
+.george-composer{
+  background:#f7f7f8!important;
+  border-top:0!important;
+  padding:14px 14px 20px!important;
+}
+.george-input-wrap{
+  border:1px solid #d8d8dc!important;
+  border-radius:26px!important;
+  background:#fff!important;
+  padding:12px 13px 10px!important;
+  box-shadow:0 2px 9px rgba(0,0,0,.05)!important;
+}
+.george-input-wrap:focus-within{
+  border-color:#bdbdc4!important;
+  box-shadow:0 0 0 2px rgba(0,0,0,.04)!important;
+}
+.george-input{
+  min-height:90px!important;
+  font-size:13px!important;
+  line-height:1.55!important;
+}
+.george-control{
+  background:#fff!important;
+  border-color:#e2e2e5!important;
+  color:#5f5f67!important;
+}
+.george-control.voice{
+  background:#fff!important;
+  color:#202123!important;
+  border-color:#d9d9dd!important;
+}
+.george-execute{
+  background:#202123!important;
+  box-shadow:none!important;
+}
+.george-live-note{color:#96969d!important}
+
+.app{
+  margin-left:calc(var(--nav-width) + var(--george-left-width))!important;
+  margin-right:var(--talent-right-width)!important;
+}
+.candidate-workbench{
+  left:calc(var(--nav-width) + var(--george-left-width))!important;
+  right:var(--talent-right-width)!important;
+}
+.backdrop{
+  left:calc(var(--nav-width) + var(--george-left-width))!important;
+  right:var(--talent-right-width)!important;
+}
+.modal{
+  left:calc(
+    var(--nav-width) + var(--george-left-width) +
+    (100vw - var(--nav-width) - var(--george-left-width) - var(--talent-right-width))/2
+  )!important;
+  max-width:calc(100vw - var(--nav-width) - var(--george-left-width) - var(--talent-right-width) - 30px)!important;
+}
+.modal.wide{
+  width:min(1030px,calc(100vw - var(--nav-width) - var(--george-left-width) - var(--talent-right-width) - 30px))!important;
+}
+#liveUserChip{
+  right:calc(var(--talent-right-width) + 18px)!important;
+}
+
+.talent-rail{
+  position:fixed;
+  right:0;
+  top:0;
+  width:var(--talent-right-width);
+  height:100dvh;
+  background:#fff;
+  border-left:1px solid #e8e8eb;
+  z-index:94;
+  display:flex;
+  flex-direction:column;
+  box-shadow:-10px 0 30px rgba(28,45,74,.035);
+}
+.talent-rail-head{
+  padding:20px 18px 14px;
+  border-bottom:1px solid #eeeeef;
+}
+.talent-rail-head small{
+  display:block;
+  font-size:8px;
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  color:#92929a;
+  font-weight:650;
+}
+.talent-rail-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:5px;
+}
+.talent-rail-title h2{
+  font-size:21px;
+  letter-spacing:-.55px;
+  color:#1C2D4A;
+  margin:0;
+}
+.talent-rail-title p{
+  font-size:9px;
+  line-height:1.55;
+  color:#83838b;
+  margin:4px 0 0;
+  max-width:250px;
+}
+.talent-rail-count{
+  min-width:34px;
+  height:26px;
+  padding:0 8px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:#f1f3f5;
+  color:#4e5962;
+  font-size:10px;
+  font-weight:650;
+}
+.talent-rail-search{
+  margin:12px 14px 8px;
+  border:1px solid #dedfe2;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  min-height:40px;
+  background:#fafafa;
+}
+.talent-rail-search .icon{
+  width:14px;
+  height:14px;
+  color:#8d9297;
+}
+.talent-rail-search input{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#30343a;
+  font-size:11px;
+}
+.talent-rail-actions{
+  display:flex;
+  gap:7px;
+  padding:0 14px 10px;
+}
+.talent-rail-actions button{
+  flex:1;
+  min-height:32px;
+  border-radius:10px;
+  font-size:9px;
+  padding:6px 8px;
+}
+.talent-rail-list{
+  flex:1;
+  overflow:auto;
+  padding:3px 10px 18px;
+}
+.talent-rail-row{
+  width:100%;
+  border:0;
+  background:transparent;
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  text-align:left;
+  padding:10px 8px;
+  border-radius:12px;
+  cursor:pointer;
+}
+.talent-rail-row:hover{background:#f6f7f8}
+.talent-rail-row.active{background:#eef2f5}
+.talent-rail-avatar{
+  width:36px;
+  height:36px;
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  background:#f0f2f4;
+  color:#46525c;
+  font-size:10px;
+  font-weight:700;
+}
+.talent-rail-person{min-width:0}
+.talent-rail-person b{
+  display:block;
+  font-size:11px;
+  color:#30363c;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.talent-rail-person span{
+  display:block;
+  margin-top:3px;
+  font-size:9px;
+  color:#8b9197;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.talent-rail-score{
+  text-align:right;
+  color:#1C2D4A;
+  font-size:12px;
+  font-weight:650;
+}
+.talent-rail-score small{
+  display:block;
+  font-size:7px;
+  color:#9aa0a5;
+  font-weight:500;
+  margin-top:2px;
+}
+.talent-rail-empty{
+  padding:24px 16px;
+  text-align:center;
+  color:#90959a;
+  font-size:10px;
+  line-height:1.6;
+}
+@media(max-width:1500px){
+  :root{--george-left-width:370px;--talent-right-width:340px}
+}
+@media(max-width:1240px){
+  :root{--george-left-width:330px;--talent-right-width:300px}
+  .talent-rail-title p{display:none}
+  .george-control span{display:none}
+}
+@media(max-width:980px){
+  :root{--george-left-width:48vw;--talent-right-width:42vw}
+  .sidebar{display:none!important}
+  .app{margin-left:var(--george-left-width)!important}
+  .george-panel{left:0!important}
+  .candidate-workbench{left:var(--george-left-width)!important}
+  .backdrop{left:var(--george-left-width)!important}
+  .mobile-menu{display:none!important}
+}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -261,6 +576,29 @@ body.george-speaking .george-status{background:#B94D3A;box-shadow:0 0 0 5px #fff
  <footer class="footer"><span><span data-brand-name>Volker Dahm</span> &nbsp;&middot;&nbsp; Private talent intelligence</span><span class="row"><svg class="icon"><use href="#i-clock"/></svg>Research dated 01 Oct 2026 &nbsp;&middot;&nbsp; Saved results, not a live search</span></footer>
  </main>
 </div>
+
+
+<aside id="talentExplorerRail" class="talent-rail" aria-label="Talent Explorer">
+  <div class="talent-rail-head">
+    <small>Workspace</small>
+    <div class="talent-rail-title">
+      <div>
+        <h2>Talent Explorer</h2>
+        <p>Browse the active candidate pool while George stays available on the left.</p>
+      </div>
+      <span id="talentRailCount" class="talent-rail-count">35</span>
+    </div>
+  </div>
+  <label class="talent-rail-search">
+    <svg class="icon"><use href="#i-search"/></svg>
+    <input id="talentRailSearch" type="search" placeholder="Search candidates..." autocomplete="off" aria-label="Search Talent Explorer">
+  </label>
+  <div class="talent-rail-actions">
+    <button id="talentRailOpenFull" class="btn" type="button">Open full explorer</button>
+    <button id="talentRailNewSearch" class="btn primary" type="button">New search</button>
+  </div>
+  <div id="talentRailList" class="talent-rail-list" aria-live="polite"></div>
+</aside>
 
 <section id="candidateWorkbench" class="candidate-workbench hidden" aria-label="Candidate profile workspace">
   <div class="candidate-workbench-inner">
@@ -826,6 +1164,84 @@ window.talentStudioGeorge={
   refreshContext:()=>updateGeorgeContext()
 };
 renderGeorge();renderAttachments();updateGeorgeContext();
+})();
+</script>
+
+
+<script id="talent-rail-script">
+(function(){
+  const $r=(id)=>document.getElementById(id);
+  const search=$r('talentRailSearch');
+  const list=$r('talentRailList');
+  const count=$r('talentRailCount');
+  if(!search||!list||!count)return;
+
+  let activeRailId=null;
+
+  const initialsFor=(c)=>{
+    const first=(c.firstName||c.name||'').trim().split(/\s+/)[0]||'';
+    const last=(c.lastName||c.name||'').trim().split(/\s+/).slice(-1)[0]||'';
+    return ((first[0]||'')+(last[0]||'')).toUpperCase()||'•';
+  };
+  const personName=(c)=>typeof displayName==='function'?displayName(c):(c.name||[c.firstName,c.lastName].filter(Boolean).join(' ')||'Candidate');
+  const decisionFor=(c)=>{
+    try{return typeof reviewOf==='function'?reviewOf(c)?.status||'pending':'pending';}
+    catch{return'pending';}
+  };
+  const pool=()=>{
+    const all=(typeof ALL_CANDIDATES!=='undefined'&&Array.isArray(ALL_CANDIDATES))?ALL_CANDIDATES:[];
+    return all.filter(c=>decisionFor(c)!=='excluded');
+  };
+  function render(){
+    const q=search.value.trim().toLowerCase();
+    const rows=pool()
+      .filter(c=>{
+        if(!q)return true;
+        const hay=[personName(c),c.title,c.company,c.firm,c.location,c.areas,c.cluster].filter(Boolean).join(' ').toLowerCase();
+        return hay.includes(q);
+      })
+      .sort((a,b)=>(Number(b.fit)||0)-(Number(a.fit)||0));
+    count.textContent=String(rows.length);
+    if(!rows.length){
+      list.innerHTML='<div class="talent-rail-empty">No candidates match this search.</div>';
+      return;
+    }
+    list.innerHTML=rows.map(c=>{
+      const nm=personName(c);
+      const sub=[c.title,c.company||c.firm,c.location].filter(Boolean).join(' · ');
+      const score=Number.isFinite(Number(c.fit))?Number(c.fit):'—';
+      return '<button class="talent-rail-row '+(activeRailId===c.id?'active':'')+'" type="button" data-rail-candidate="'+String(c.id).replace(/"/g,'&quot;')+'">'+
+        '<span class="talent-rail-avatar">'+initialsFor(c)+'</span>'+
+        '<span class="talent-rail-person"><b>'+esc(nm)+'</b><span>'+esc(sub)+'</span></span>'+
+        '<span class="talent-rail-score">'+esc(score)+'<small>FIT</small></span>'+
+      '</button>';
+    }).join('');
+  }
+
+  search.addEventListener('input',render);
+  list.addEventListener('click',(e)=>{
+    const row=e.target.closest('[data-rail-candidate]');
+    if(!row)return;
+    activeRailId=row.dataset.railCandidate;
+    if(typeof window.openCandidate==='function')window.openCandidate(activeRailId,true,false);
+    render();
+  });
+
+  $r('talentRailOpenFull')?.addEventListener('click',()=>{
+    if(typeof window.switchView==='function')window.switchView('talent');
+    else if(typeof switchView==='function')switchView('talent');
+  });
+  $r('talentRailNewSearch')?.addEventListener('click',()=>{
+    if(typeof showNewSearch==='function')showNewSearch();
+    else document.querySelector('[data-action="newsearch"]')?.click();
+  });
+
+  const observer=new MutationObserver(()=>render());
+  const candidateWorkspace=$r('candidateWorkbench');
+  if(candidateWorkspace)observer.observe(candidateWorkspace,{attributes:true,attributeFilter:['class']});
+
+  render();
+  window.refreshTalentRail=render;
 })();
 </script>
 
