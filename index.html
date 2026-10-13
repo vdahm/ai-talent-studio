@@ -1470,7 +1470,36 @@ body:has(#view-talent:not(.hidden)) #candidateWorkbench.hidden{display:none!impo
 #view-talent .talent-inline-profile-bar{scroll-margin-top:calc(var(--ui-top,166px) + 20px)}
 @media(max-width:700px){#view-talent #talentInlineProfile:not(.hidden){scroll-margin-top:calc(var(--ui-top,166px) + 12px)!important}}
 </style>
-</head>
+<style id="dynamic-step-rail-20261013">
+:root{--task-rail-width:390px}
+#taskRailControls{display:flex;align-items:center;gap:5px;padding:10px 12px;border-bottom:1px solid #e7eaf0;background:#fff;flex:0 0 auto}
+#taskRailControls button{border:1px solid #e4e8ef;background:#f8f9fb;border-radius:9px;padding:7px 10px;font-size:10px;color:#1c2d4a;cursor:pointer}
+#taskRailControls button.active{background:#1c2d4a;color:#fff}
+#taskRailControls .task-rail-collapse{margin-left:auto}
+#taskRailDescription{padding:10px 16px;color:#687482;font-size:11px;border-bottom:1px solid #edf0f3;background:#fafbfd}
+#taskRailDescription strong{display:block;color:#1c2d4a;font-size:12px;margin-bottom:4px}
+#talentRailList .task-candidate-status{display:block;font-size:10px;color:#667888;margin-top:3px}
+#talentRailList .task-feedback-buttons{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 12px;padding:0 12px}
+#talentRailList .task-feedback-buttons button{padding:6px 9px;background:#f2f5f8;color:#1c2d4a;border:1px solid #dce3ea;border-radius:8px;cursor:pointer;font-size:10px}
+#talentRailList .task-feedback-buttons button.selected{background:#1c2d4a;color:#fff}
+#workflowCandidateDetail.hidden{display:none!important}
+#workflowCandidateDetail:not(.hidden){display:block;background:#fff;border:1px solid #dfe5ec;border-radius:17px;padding:clamp(14px,2vw,26px);margin:0 0 22px;scroll-margin-top:calc(var(--ui-top,160px) + 18px);max-width:100%;min-width:0}
+#workflowCandidateDetail .task-detail-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #e5e9ee;padding-bottom:12px;margin-bottom:16px}
+#workflowCandidateDetail .task-detail-header h2{font-size:22px;color:#1c2d4a}
+#workflowCandidateDetail .candidate-profile-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+#workflowCandidateDetail table{display:block;overflow-x:auto;max-width:100%}
+body.task-rail-collapsed{--ui-rail:0px!important}
+body.task-rail-collapsed .app{margin-right:0!important}
+body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRail{display:none!important}
+#taskRailRestore{position:fixed;right:12px;top:18px;z-index:120;background:#1c2d4a;color:#fff;padding:9px 12px;border:0;border-radius:20px;cursor:pointer;display:none}
+body.task-rail-collapsed #taskRailRestore{display:block}
+body.task-rail-show-talent #talentExplorerRail{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.task-rail-show-talent #georgePanel{display:none!important}
+body.task-rail-show-george #georgePanel{display:flex!important;visibility:visible!important;pointer-events:auto!important}
+body.task-rail-show-george #talentExplorerRail{display:none!important}
+body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRail{display:none!important}
+@media(max-width:1100px){body:not(.responsive-rail-open) #georgePanel,body:not(.responsive-rail-open) #talentExplorerRail{display:none!important}body.task-rail-collapsed #taskRailRestore{top:auto;bottom:20px}}
+</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -1585,6 +1614,7 @@ body:has(#view-talent:not(.hidden)) #candidateWorkbench.hidden{display:none!impo
   <section class="panel"><table class="evidence-table"><thead><tr><th>#</th><th>Candidate</th><th>Strength</th><th>Alignment</th><th class="hide-mobile">Tier</th><th class="hide-mobile">External sources</th></tr></thead><tbody id="evidenceTable"></tbody></table></section>
  </section>
  <section class="view hidden" id="view-workflow">
+<section id="workflowCandidateDetail" class="workflow-candidate-detail hidden" aria-label="Candidate profile detail"></section>
   <div class="view-head"><div><div class="eyebrow">A PROCESS THAT LEARNS FROM YOU</div><h1>3D Sourcing</h1><p>Discover. Calibrate. Substantiate. Human judgment at every decision gate.</p></div><span class="pill green"><span class="dot"></span>Calibrated mandate</span></div>
 
   <section class="recruiter-playbook" id="recruiterPlaybook">
@@ -1746,7 +1776,7 @@ function applyFeedbackReset(){const ids=state.resetMode==='all'?getPool().map(c=
 function feedbackRuleChanges(changed){const step=state.processStep;if(['cal1','feedback1'].includes(step))return ['Retain the Principal-to-Partner core range.','Keep Expert Partner variants available where the consulting role remains relevant.','Exclude office-leadership titles above ordinary Partner level.','Exclude operating-company CEO transitions from the target pool.'];if(['cal2','feedback2'].includes(step))return ['Use the second-round approvals to lock the refined sourcing profile.','Maintain Singapore and Malaysia as the target geography.','Preserve individual exclusions instead of generalising them to an entire expert track.'];const excluded=changed.filter(c=>reviewOf(c).status==='excluded').length,approved=changed.filter(c=>reviewOf(c).status==='approved').length;return [`${approved} updated profile${approved===1?'':'s'} reinforce the positive anchor set.`,`${excluded} updated exclusion${excluded===1?'':'s'} will be retained as negative signal${excluded===1?'':'s'}.`,'Candidate-specific comments remain attached and are applied to the next controlled search step.'];}
 function showFeedbackSummary(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});if(!changed.length){toast('There is no new feedback to submit. Reopen or change at least one profile first.');return;}const counts={approved:0,hold:0,excluded:0,pending:0};changed.forEach(c=>counts[reviewOf(c).status in counts?reviewOf(c).status:'pending']++);const open=pool.filter(c=>!reviewOf(c).feedbackGiven).length,changes=feedbackRuleChanges(changed);$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Review feedback before the next step.')+`<p class="intro">This is the decision gate. Nothing changes the search until you confirm. You can continue even with open feedback; those profiles remain explicitly pending.</p><div class="summary-grid"><div class="summary-stat"><b>${counts.approved}</b><span>Approved</span></div><div class="summary-stat"><b>${counts.hold}</b><span>On hold</span></div><div class="summary-stat"><b>${counts.excluded}</b><span>Excluded</span></div><div class="summary-stat"><b>${open}</b><span>Still pending</span></div></div>${open?`<div class="stage-warning"><b>${open} profile${open===1?' is':'s are'} still open.</b> They will remain Feedback pending and will not be silently approved or excluded.</div>`:''}<div class="field"><label>Feedback captured in this submission</label><div class="check-list">${changed.map(c=>`<div class="check-row"><span>${esc(feedbackSummaryFor(c))}</span></div>`).join('')}</div></div><div class="field" style="margin-top:16px"><label>Search changes derived from this feedback</label><div class="notice" style="margin:0">${changes.map(x=>`&bull; ${esc(x)}`).join('<br>')}</div></div><div class="modal-foot"><button class="btn" data-action="close">Go back</button><button class="btn primary" data-action="confirmFeedback">Confirm &amp; continue ${icon('arrow')}</button></div>`;showLayer('modal');}
 function confirmFeedback(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});for(const c of changed)setReview(c,{feedbackProcessed:true});const step=currentProcess(),nextId=step.next||step.id;setProcessStep(nextId,true);closeLayers();toast('Feedback submitted. The next process step is now active.');}
-function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return;state.processStep=id;saveStore('vd.studio.processStep',id);state.query='';state.country='';state.firm='';state.tier='';state.cluster='';state.decisionFilter='active';state.feedbackFilter='';state.lifecycleFilter='';state.originFilter='';state.campaignFilter='';state.recruitStage='';state.shortlistOnly=false;state.compare=[];state.selected=[];renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate)switchView(step.targetView||'talent');toast(`Process snapshot: ${step.title}`);}
+function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return;state.processStep=id;saveStore('vd.studio.processStep',id);state.query='';state.country='';state.firm='';state.tier='';state.cluster='';state.decisionFilter='active';state.feedbackFilter='';state.lifecycleFilter='';state.originFilter='';state.campaignFilter='';state.recruitStage='';state.shortlistOnly=false;state.compare=[];state.selected=[];renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate&&state.view!=='workflow')switchView(step.targetView||'talent');window.dispatchEvent(new Event('studio-step-changed'));toast(`Process snapshot: ${step.title}`);}
 function showEnrichmentDownload(){if(!state.liveMode&&processIndex()<PROCESS_STEPS.findIndex(x=>x.id==='evidence')){toast('Download unlocks only after the Evidence Check.');return;}const selected=state.selected.map(getCandidate).filter(Boolean);if(!selected.length){toast('Select one or more profiles first.');return;}const already=selected.filter(c=>['enriched','downloaded'].includes(reviewOf(c).lifecycle)).length;$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Prepare selected profiles for download.')+`<p class="intro">Choose how much research should happen before the selected profiles leave the workspace. Expertise comes first; contact completion is a separate download-stage option.</p><div class="quota-card"><div><span>DEMO ENRICHMENT BALANCE</span><strong>${state.enrichmentQuota}</strong></div><div style="text-align:right"><span>${selected.length} PROFILE${selected.length===1?'':'S'} SELECTED</span><b style="font-size:11px;color:#6b5980">${already} already expertise-enriched</b></div></div><div class="field"><label>Expertise enrichment</label><div class="enrich-choice"><label class="enrich-tile"><input type="radio" name="expertisePlan" value="existing" ${already===selected.length?'checked':''}><strong>Use existing research</strong><p>Download the research already in the workspace. No new enrichment credit.</p></label><label class="enrich-tile"><input type="radio" name="expertisePlan" value="full" ${already!==selected.length?'checked':''}><strong>Full expertise check</strong><p>Activity areas, up to three attributable projects and external corroboration where available. 1 credit per profile.</p></label></div></div><div class="field" style="margin-top:14px"><label>Optional profile completion at download</label><label class="enrich-tile"><input type="checkbox" id="contactEnrich"><strong>Complete public business contact data</strong><p>Email, phone or other business contact fields where they can be lawfully and reliably found. +1 credit per profile. No value is invented when unavailable.</p></label></div><div id="creditCost" class="credit-line"></div><div class="security-note">This standalone mockup demonstrates the workflow and uses a demo credit balance. A connected research service is required to perform real enrichment.</div><div class="modal-foot"><button class="btn" data-action="close">Cancel</button><button class="btn primary" data-action="startDownloadPipeline">Start &amp; download ${icon('arrow')}</button></div>`;showLayer('modal');updateCreditCost();}
 function updateCreditCost(){const selected=state.selected.length,full=document.querySelector('input[name="expertisePlan"]:checked')?.value==='full',contact=!!$('contactEnrich')?.checked,cost=selected*((full?1:0)+(contact?1:0)),el=$('creditCost');if(el)el.innerHTML=`<span>Estimated enrichment cost</span><b>${cost} credit${cost===1?'':'s'} &middot; ${Math.max(0,state.enrichmentQuota-cost)} remaining</b>`;}
 function selectedCsv(){const list=state.selected.map(getCandidate).filter(Boolean);const headers=['Candidate ID','Name','Current title','Current company','Location','Profile URL','Decision','Feedback status','Feedback processed','Processing status','Main activity areas','Research note'];const rows=[headers.map(csvSafe).join(',')];for(const c of list){const r=reviewOf(c);rows.push([c.id,c.name,c.title,c.company,c.location,c.profileUrl,r.status,r.feedbackGiven?'Received':'Pending',r.feedbackProcessed?'Yes':'No',r.lifecycle,c.areas,c.researchNote].map(csvSafe).join(','));}return '\uFEFF'+rows.join('\r\n');}
@@ -2129,13 +2159,19 @@ async function acceptUploads(files){for(const file of files){const item={name:fi
 function recognition(mode){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){addGeorge('assistant','Browser speech recognition is not available here. You can still type, or use a browser that supports speech input.',georgeContext().title);return;}if(george.listening){try{george.listening.stop();}catch{}george.listening=null;return;}const r=new R();r.lang=(navigator.language||'en-US');r.interimResults=true;r.continuous=false;george.listening=r;const btn=mode==='speak'?$('georgeSpeak'):$('georgeDictate');btn.classList.add('listening');document.body.classList.toggle('george-speaking',mode==='speak');let final='';r.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)final+=t;else interim+=t;}$('georgeInput').value=(final||interim).trim();};r.onend=()=>{btn.classList.remove('listening');document.body.classList.remove('george-speaking');george.listening=null;if(mode==='speak'&&$('georgeInput').value.trim()){const before=george.conversation.length;executeGeorge();const msg=george.conversation.slice(before).reverse().find(x=>x.who==='assistant');if(msg&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(msg.text);u.lang=navigator.language||'en-US';speechSynthesis.speak(u);}}};r.onerror=()=>{btn.classList.remove('listening');document.body.classList.remove('george-speaking');george.listening=null;};r.start();}
 function candidatePanelHtml(c){const r=reviewOf(c),areas=(c.areas||'').split(';').map(x=>x.trim()).filter(Boolean).slice(0,12),projects=(c.projects||[]).filter(Boolean),evidenceReady=typeof processIndex==='function'?processIndex()>=PROCESS_STEPS.findIndex(x=>x.id==='evidence'):state.processStep==='evidence'||state.processStep==='production';const sources=(c.sources||[]).filter(Boolean);return `<div class="candidate-profile-shell"><div class="candidate-profile-main"><section class="candidate-profile-hero"><div class="eyebrow">PROFESSIONAL PROFILE · ${esc(c.id)}</div><h1>${esc(displayName(c))}</h1><div class="role">${esc(c.title||'Title not available')} · ${esc(c.company||'Company not available')}<br>${esc(c.location||'Location not available')}</div><div class="candidate-profile-url"><svg class="icon"><use href="#i-external"/></svg><a href="${safeUrl(c.profileUrl)}" target="_blank" rel="noopener">${esc(c.profileUrl||'LinkedIn URL not available')}</a></div></section><section class="candidate-section-card"><h3>About / professional summary</h3><p>${esc(c.summary||c.researchNote||'No additional professional summary is stored in this workspace.')}</p></section><section class="candidate-section-card"><h3>Expertise & skills</h3>${areas.length?`<div class="card-tags">${areas.map(x=>`<span class="pill outline">${esc(x)}</span>`).join('')}</div>`:'<p>No additional skill tags are stored.</p>'}</section>${projects.length?`<section class="candidate-section-card"><h3>Experience & project highlights</h3>${projects.map((x,i)=>`<div class="candidate-project"><small>Project highlight ${i+1}</small><p>${esc(x)}</p></div>`).join('')}</section>`:''}${evidenceReady?`<section class="candidate-section-card"><h3>Evidence & corroboration</h3><p>${esc(c.summary||'No evidence summary stored.')}</p>${c.quantitative?`<div class="notice"><b>Quantitative evidence</b><br>${esc(c.quantitative)}</div>`:''}${c.caveat?`<div class="notice"><b>Evidence caveat</b><br>${esc(c.caveat)}</div>`:''}${sources.length?sources.map(u=>`<a class="source-link" href="${safeUrl(u)}" target="_blank" rel="noopener"><span>${esc(u)}</span><svg class="icon"><use href="#i-external"/></svg></a>`).join(''):''}</section>`:''}</div><aside class="candidate-profile-side"><section class="candidate-section-card"><h3>Current search context</h3><div class="candidate-facts"><div class="candidate-fact"><small>Calibrated fit</small><b>${esc(c.fit??'—')}/100</b></div><div class="candidate-fact"><small>Evidence strength</small><b>${evidenceReady?esc(c.evidence??'—')+'/100':'Not yet available'}</b></div><div class="candidate-fact"><small>Decision</small><b>${esc(r.status||'pending')}</b></div><div class="candidate-fact"><small>Feedback</small><b>${r.feedbackGiven?'Received':'Pending'}</b></div></div></section><section class="candidate-section-card"><h3>Recruiter feedback</h3><p>${r.note?esc(r.note):'No written recruiter feedback stored yet.'}</p><div class="decision-btns">${['approved','hold','excluded'].map(x=>`<button class="btn ${r.status===x?'active':''}" data-decision="${x}" data-id="${c.id}">${x==='approved'?'Approve':x==='hold'?'Hold':'Exclude'}</button>`).join('')}</div></section><div class="candidate-george-note"><b>Use George on the right.</b><br>Ask why this candidate was included, challenge the score, request evidence details, compare against the sourcing criteria or dictate recruiter feedback.</div></aside></div>`;}
 function renderCandidateWorkbench(id){const c=getCandidate(id);if(!c)return;
+if(state.view==='workflow'){
+  george.candidateId=id;activeId=id;
+  const host=document.getElementById('workflowCandidateDetail');
+  if(host){host.innerHTML='<div class="task-detail-header"><div><small>CANDIDATE PROFILE</small><h2>'+esc(displayName(c))+'</h2></div><button type="button" class="btn" id="workflowCandidateClose">Close profile</button></div>'+candidatePanelHtml(c);host.classList.remove('hidden');$('candidateWorkbench').classList.add('hidden');host.scrollIntoView({behavior:'smooth',block:'nearest'});updateGeorgeContext();return;}
+}
+
 if(state.view==='talent'){
   george.candidateId=id;activeId=id;
   const inline=$('talentInlineProfile');
   if(inline){inline.innerHTML='<div class="talent-inline-profile-bar"><div><span class="eyebrow">CANDIDATE PROFILE</span><h2>'+esc(displayName(c))+'</h2></div><button type="button" class="btn" id="talentInlineClose">← All candidates</button></div><div class="talent-inline-profile-content">'+candidatePanelHtml(c)+'</div>';inline.classList.remove('hidden');$('candidateWorkbench').classList.add('hidden');requestAnimationFrame(()=>{const header=document.querySelector('.topbar');const offset=(header?header.getBoundingClientRect().height:0)+16;const y=inline.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top:Math.max(0,y),behavior:'smooth'});});updateGeorgeContext();return;}
 }
 george.candidateId=id;activeId=id;$('candidateWorkbenchContent').innerHTML=candidatePanelHtml(c);$('candidateWorkbenchContext').textContent=`${processTitle()} · ${c.id}`;$('candidateWorkbench').classList.remove('hidden');$('drawer')?.classList.add('hidden');$('backdrop')?.classList.add('hidden');updateGeorgeContext();}
-function closeCandidateWorkbench(){george.candidateId=null;$('candidateWorkbench').classList.add('hidden');$('talentInlineProfile')?.classList.add('hidden');updateGeorgeContext();}
+function closeCandidateWorkbench(){document.getElementById('workflowCandidateDetail')?.classList.add('hidden');george.candidateId=null;$('candidateWorkbench').classList.add('hidden');$('talentInlineProfile')?.classList.add('hidden');updateGeorgeContext();}
 window.openCandidate=function(id,focus=true,focusFeedback=false){renderCandidateWorkbench(id);if(focus!==false)$('candidateWorkbench').scrollTop=0;if(focusFeedback){addGeorge('assistant',`Feedback mode is active for ${displayName(getCandidate(id))}. Tell me what fits, what does not, and what should change in the next search.`,georgeContext().title);}};
 const originalSwitchView=window.switchView||switchView;window.switchView=function(view){closeCandidateWorkbench();const result=originalSwitchView(view);updateGeorgeContext();return result;};
 $('candidateWorkbenchBack').addEventListener('click',closeCandidateWorkbench);
@@ -2734,5 +2770,76 @@ setTimeout(populate,0);
 })();
 </script><script id="talent-inline-profile-controls-20261013">
 document.addEventListener('click',function(e){if(e.target.closest('#talentInlineClose')){const p=document.getElementById('talentInlineProfile');p?.classList.add('hidden');document.getElementById('candidateGrid')?.scrollIntoView({behavior:'smooth',block:'start'});if(typeof closeCandidateWorkbench==='function')closeCandidateWorkbench();}});
+</script><script id="dynamic-task-rail-controller-20261013">
+(function(){
+const talent=document.getElementById('talentExplorerRail'),george=document.getElementById('georgePanel'),list=document.getElementById('talentRailList');if(!talent||!george||!list)return;
+const bar=document.createElement('div');bar.id='taskRailControls';
+bar.innerHTML='<button type="button" data-task-tool="auto">Auto</button><button type="button" data-task-tool="talent">Candidates</button><button type="button" data-task-tool="george">George Chat</button><button type="button" class="task-rail-collapse" data-task-collapse="1" aria-label="Collapse sidebar">‹</button>';
+talent.prepend(bar);
+const geobar=bar.cloneNode(true);geobar.id='taskRailGeorgeControls';george.prepend(geobar);
+const desc=document.createElement('div');desc.id='taskRailDescription';talent.insertBefore(desc,talent.querySelector('.talent-rail-search'));
+const restore=document.createElement('button');restore.id='taskRailRestore';restore.textContent='Open sidebar ›';document.body.appendChild(restore);
+let override='auto',priorStep='',currentTool='';
+function step(){try{return state.processStep||'brief'}catch(e){return'brief'}}
+function view(){try{return state.view||'overview'}catch(e){return'overview'}}
+function taskFor(){
+ const st=step(),v=view();
+ if(v==='george')return'talent';
+ if(v==='talent')return'george';
+ if(['cal1','feedback1','cal2','feedback2','evidence','production'].includes(st))return'talent';
+ if(st==='market')return'talent';
+ return'george';
+}
+function relevant(){
+ const st=step();
+ if(st==='cal1'||st==='feedback1')return ALL_CANDIDATES.filter(c=>/^C(0[1-9]|1[0-9]|20)$/.test(c.id));
+ if(st==='cal2'||st==='feedback2')return ALL_CANDIDATES.filter(c=>!['C16','C17','C18','C19','C20'].includes(c.id));
+ if(st==='brief')return [];
+ return ALL_CANDIDATES.filter(c=>!['C16','C17','C18','C19','C20'].includes(c.id));
+}
+function name(c){return String(c.name||'Candidate')}
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function paintCandidates(){
+ if(currentTool!=='talent')return;
+ let entries=relevant();const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
+ entries=entries.filter(c=>[c.name,c.title,c.company,c.location].join(' ').toLowerCase().includes(term));
+ document.getElementById('talentRailCount').textContent=entries.length;
+ const isFeedback=/feedback/.test(step());
+ desc.innerHTML='<strong>'+({brief:'Search criteria',cal1:'Calibration round 1',feedback1:'Step 3 · Candidate feedback',cal2:'Calibration round 2',feedback2:'Candidate feedback · Round 2',locked:'Locked sourcing profile',market:'Candidate market map',evidence:'Evidence check',production:'Production & shortlist'}[step()]||'Candidate workspace')+'</strong>'+ (isFeedback?'Review each candidate, record a decision, and open the full profile without leaving this step.':'Candidates and research relevant to the current sourcing stage.');
+ list.innerHTML=entries.map(c=>{
+  let status='pending';try{status=reviewOf(c).status||'pending'}catch(e){}
+  return '<div class="task-rail-candidate"><button type="button" class="talent-rail-row" data-rail-candidate="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">Decision: '+escapeHTML(status)+'</span></span></button>'+(isFeedback?'<div class="task-feedback-buttons" data-feedback-id="'+escapeHTML(c.id)+'">'+['approved','hold','excluded'].map(d=>'<button type="button" data-task-decision="'+d+'" class="'+(status===d?'selected':'')+'">'+(d==='hold'?'Hold':d==='approved'?'Approve':'Exclude')+'</button>').join('')+'</div>':'')+'</div>';
+ }).join('') || '<p class="talent-rail-empty">No candidates for this step.</p>';
+}
+function update(force=false){
+ const st=step();if(priorStep!==st){priorStep=st;override='auto';document.body.classList.remove('task-rail-collapsed');}
+ const tool=override==='auto'?taskFor():override;
+ currentTool=tool;
+ document.body.classList.toggle('task-rail-show-talent',tool==='talent');
+ document.body.classList.toggle('task-rail-show-george',tool==='george');
+ document.querySelectorAll('[data-task-tool]').forEach(b=>b.classList.toggle('active',b.dataset.taskTool===override));
+ if(tool==='talent')paintCandidates();
+}
+document.addEventListener('click',e=>{
+ const choice=e.target.closest('[data-task-tool]');
+ if(choice){override=choice.dataset.taskTool;document.body.classList.remove('task-rail-collapsed');update(true);return;}
+ if(e.target.closest('[data-task-collapse]')){document.body.classList.add('task-rail-collapsed');return;}
+ if(e.target.closest('#taskRailRestore')){document.body.classList.remove('task-rail-collapsed');update(true);return;}
+ const decision=e.target.closest('[data-task-decision]');
+ if(decision){
+  const id=decision.closest('[data-feedback-id]')?.dataset.feedbackId,c=ALL_CANDIDATES.find(c=>c.id===id);
+  if(!c)return;
+  try{setReview(c,{status:decision.dataset.taskDecision,feedbackGiven:true,feedbackProcessed:false});renderTalent();renderWorkflow();update(true);}
+  catch(err){console.warn('Feedback update unavailable',err);}
+ }
+ if(e.target.closest('#workflowCandidateClose')){document.getElementById('workflowCandidateDetail')?.classList.add('hidden');}
+ if(e.target.closest('[data-rail-candidate]'))requestAnimationFrame(update);
+ if(e.target.closest('[data-view],[data-process-step]'))setTimeout(()=>update(true),0);
+});
+document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintCandidates());
+window.addEventListener('studio-step-changed',()=>update(true));
+window.setInterval(()=>{if(currentTool!== (override==='auto'?taskFor():override))update(true)},700);
+update(true);
+})();
 </script></body>
 </html>
