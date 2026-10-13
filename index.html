@@ -1118,6 +1118,18 @@ body,.app,.main{background:#f5f6f8}
 #georgePanel .george-input-wrap{background:#fff!important;border:1px solid #dfe3e7!important;border-radius:18px!important;box-shadow:0 5px 18px rgba(28,45,74,.05)!important}
 #georgePanel .george-context{display:none!important}
 </style>
+<style id="criteria-guide-inline-20261013">
+.criteria-guide-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.criteria-guide-heading h2{font-size:16px!important;color:#1C2D4A}
+.criteria-guide-heading p{font-size:10px;color:#747d85}
+.criteria-guide-back{border:1px solid #dedfe3;background:#fff;border-radius:9px;padding:7px 10px;font-size:10px;white-space:nowrap}
+.criteria-guide-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.criteria-guide-item{flex:1 1 140px;min-width:115px;background:#fafbfc;border:1px solid #e6e9ed;border-radius:9px;padding:9px 10px}
+.criteria-guide-item small{display:block;font-size:8px;color:#8b9197;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.criteria-guide-item b{display:block;font-size:11px;color:#1C2D4A;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+.recruiter-guide.reduced .criteria-guide-list{display:none}
+.recruiter-guide.reduced .criteria-guide-heading p{display:none}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2127,9 +2139,23 @@ function askGeorgeAboutCurrentStep(){
     if(input)input.value='Guide me through "'+step.title+'". What should I do now, what should I look for, and what must be true before I continue?';
   },0);
 }
+let guidePanelMode='workflow';
+function renderSearchCriteriaInGuide(host){
+  const b=state.liveBrief||{};
+  const items=[
+    ['Target roles',b.role||'Principal, Associate Partner, Partner'],
+    ['Target companies',b.companies||'McKinsey, BCG, Bain'],
+    ['Geography',b.locations||'Singapore, Malaysia'],
+    ['Candidate characteristics / focus',b.focus||'No additional focus specified'],
+    ['Requested candidates',b.requested||15]
+  ];
+  host.innerHTML='<div class="criteria-guide-heading"><div><div class="recruiter-guide-kicker">Sourcing Journey · Search criteria</div><h2>Candidate Search Criteria</h2><p>Characteristics of the candidates we are looking for</p></div><button type="button" class="criteria-guide-back" data-recruiter-guide-action="back">← Workflow step</button></div>'+
+  '<div class="criteria-guide-list">'+items.map(([label,value])=>'<div class="criteria-guide-item"><small>'+esc(label)+'</small><b>'+esc(value)+'</b></div>').join('')+'</div>';
+}
 function renderRecruiterGuide(){
   const host=document.getElementById('recruiterGuide');
   if(!host)return;
+  if(guidePanelMode==='criteria'){renderSearchCriteriaInGuide(host);return;}
   const i=guideIndex();
   const s=RECRUITER_GUIDE_STEPS[i];
   const pct=Math.round(((i+1)/RECRUITER_GUIDE_STEPS.length)*100);
@@ -2144,7 +2170,7 @@ function renderRecruiterGuide(){
       '<div class="recruiter-guide-step"><b>'+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</b><span>workflow step</span></div>'+
     '</div>'+
     '<div class="recruiter-journey-slider"><input id="recruiterJourneyRange" type="range" min="0" max="'+(RECRUITER_GUIDE_STEPS.length-1)+'" value="'+i+'" aria-label="Explore the sourcing workflow"><span id="recruiterJourneyStep">Step '+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</span></div>'+ 
-    '<div class="recruiter-journey-preview"><span id="recruiterJourneyTitle">'+esc(s.title)+'</span><button type="button" data-recruiter-guide-action="rolebrief">View role brief</button></div>'+
+    '<div class="recruiter-journey-preview"><span id="recruiterJourneyTitle">'+esc(s.title)+'</span><button type="button" data-recruiter-guide-action="rolebrief">View Search Criteria</button></div>'+
     '<div class="recruiter-guide-grid">'+
       '<div class="recruiter-guide-box"><small>Do now</small><b>'+esc(s.doNow)+'</b></div>'+
       '<div class="recruiter-guide-box"><small>Done when</small><b>'+esc(s.doneWhen)+'</b></div>'+
@@ -2182,7 +2208,8 @@ document.addEventListener('click',(e)=>{
   if(action==='open')openGuideAction(RECRUITER_GUIDE_STEPS[guideIndex()].action);
   if(action==='workflow')openGuideAction('workflow');
   if(action==='george')askGeorgeAboutCurrentStep();
-  if(action==='rolebrief')openGuideAction('brief');
+  if(action==='rolebrief'){guidePanelMode='criteria';refreshRecruiterGuide();}
+  if(action==='back'){guidePanelMode='workflow';refreshRecruiterGuide();}
 });
 
 const processStrip=document.getElementById('processStrip');
@@ -2294,7 +2321,7 @@ refreshRecruiterGuide();
    const title=byId('recruiterJourneyTitle'),count=byId('recruiterJourneyStep');
    if(title)title.textContent=v===0?'Define the role brief':(window.RECRUITER_GUIDE_STEPS?.[v]?.title||steps[v]||'Workflow stage '+(v+1));
    if(count)count.textContent='Step '+(v+1)+' / '+(Number(range.max)+1);
-   const b=roleAction();if(b)b.textContent=v===0?'Open role brief':'View role brief';
+   const b=roleAction();if(b)b.textContent='View Search Criteria';
  });
 })();
 </script>
