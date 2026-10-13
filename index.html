@@ -992,6 +992,23 @@ body.george-page-active .george-panel{display:none!important}
 .recruiter-guide.reduced .recruiter-journey-slider,.recruiter-guide.reduced .recruiter-journey-preview{display:none!important}
 @media(max-width:700px){:root{--talent-right-width:min(390px,100vw)}.app{margin-right:0!important}.george-panel,.talent-rail{width:100vw!important;position:relative!important;height:70dvh!important}.candidate-workbench{width:100vw!important}.george-page{height:auto;min-height:650px}.george-page-grid{min-height:600px}}
 </style>
+<style id="george-chat-clean-20261013">
+/* Single-conversation workspace; only messages scroll, composer remains visible. */
+#view-george{height:calc(100dvh - 92px);min-height:340px;overflow:hidden;display:flex;flex-direction:column}
+#view-george.hidden{display:none!important}
+#view-george .george-page{width:100%;max-width:none;margin:0;padding:0!important;height:100%!important;min-height:0!important;flex:1 1 0!important;overflow:hidden;display:flex;flex-direction:column}
+#view-george .george-page-hero{flex:0 0 auto;padding:0 0 10px!important;margin:0 0 12px!important}
+#view-george .george-page-hero h1{margin:4px 0 0;font-size:28px}
+#view-george .george-page-grid{display:flex!important;flex:1 1 0!important;min-height:0!important;grid-template-columns:none!important;gap:0!important}
+#view-george .george-page-chat{flex:1 1 0!important;min-height:0!important;height:100%!important;max-height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+#view-george .george-page-chat-head{flex:0 0 auto;padding:10px 17px}
+#view-george .george-page-messages{flex:1 1 0!important;min-height:0!important;height:auto!important;overflow-y:auto!important;overscroll-behavior:contain;padding:16px 22px}
+#view-george .george-page-composer{flex:0 0 auto!important;position:relative!important;bottom:0!important;z-index:3;background:#fff!important;padding:10px 16px 14px;box-shadow:0 -4px 18px rgba(0,0,0,.03)}
+#view-george .george-page-composer-box{padding:9px 12px 8px}
+#view-george .george-page-input{min-height:42px!important;max-height:115px!important}
+#view-george .george-page-side{display:none!important}
+@media(max-width:700px){#view-george{height:calc(100dvh - 75px);min-height:330px}#view-george .george-page-hero h1{font-size:23px}#view-george .george-page-messages{padding:12px}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1058,12 +1075,12 @@ body.george-page-active .george-panel{display:none!important}
    <div class="george-page-hero">
     <div class="eyebrow">CONTEXTUAL AI COPILOT</div>
     <h1>George <span>Your Copilot</span></h1>
-    <p>Use George as the conversational control layer for your search. Ask questions about the active candidate, dictate recruiter feedback, prepare a new search, challenge evidence, or move the sourcing process forward with confirmation.</p>
+    
    </div>
    <div class="george-page-grid">
     <section class="george-page-chat" aria-label="George conversation workspace">
      <div class="george-page-chat-head">
-      <div><h2>Conversation</h2><p>George opens here only when you choose the folder</p></div>
+      <div><h2>George Chat</h2></div>
       <span class="george-page-live" aria-hidden="true"></span>
      </div>
      <div id="georgePageMessages" class="george-page-messages"></div>
@@ -1080,34 +1097,7 @@ body.george-page-active .george-panel{display:none!important}
       </div>
      </div>
     </section>
-    <aside class="george-page-side">
-     <section class="george-page-card">
-      <small>Current context</small>
-      <h3>George follows your workspace</h3>
-      <p>The active view, sourcing stage and opened candidate are automatically used as context.</p>
-      <div class="george-page-context"><b id="georgePageContextTitle">Overview</b><span id="georgePageContextDetail">Current sourcing context</span></div>
-     </section>
-     <section class="george-page-card">
-      <small>Quick actions</small>
-      <h3>Try George</h3>
-      <div class="george-quick-list">
-       <button class="george-quick" type="button" data-george-page-prompt="What is the next step in this sourcing process?">What is the next step?</button>
-       <button class="george-quick" type="button" data-george-page-prompt="Summarize the current sourcing profile and the most important hard exclusions.">Summarize the sourcing profile</button>
-       <button class="george-quick" type="button" data-george-page-prompt="What should I review before moving into the next production batch?">Prepare the next production decision</button>
-       <button class="george-quick" type="button" data-george-page-prompt="Open a new search and help me build the role brief.">Start a new search</button>
-      </div>
-     </section>
-     <section class="george-page-card">
-      <small>What George can do</small>
-      <div class="george-capabilities">
-       <div class="george-capability"><b>Candidate Q&A</b><span>Explain inclusion, fit, evidence and uncertainty.</span></div>
-       <div class="george-capability"><b>Recruiter feedback</b><span>Capture voice or text feedback in candidate context.</span></div>
-       <div class="george-capability"><b>Search setup</b><span>Turn natural-language instructions into a role brief.</span></div>
-       <div class="george-capability"><b>Process control</b><span>Prepare process-changing actions and request confirmation.</span></div>
-      </div>
-     </section>
-    </aside>
-   </div>
+</div>
   </div>
  </section>
 
