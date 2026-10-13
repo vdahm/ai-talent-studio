@@ -1048,6 +1048,18 @@ body.george-page-active .george-panel{display:none!important}
 .george-panel .george-execute{margin-left:auto!important;flex:0 0 34px!important;order:99!important}
 @media(max-width:440px){.george-panel .george-control span{display:none!important}.george-panel .george-control{padding:8px!important}}
 </style>
+<style id="george-single-chat-20261013">
+/* One continuous ChatGPT-style chat, one heading and a fixed composer. */
+#view-george .george-page-hero{display:none!important}
+#view-george .george-page{padding:0!important}
+#view-george .george-page-grid{margin:0!important;gap:0!important}
+#view-george .george-page-chat{border-radius:16px!important;box-shadow:none!important}
+#view-george .george-page-chat-head{padding:15px 22px!important;justify-content:center!important;position:relative}
+#view-george .george-page-chat-head h2{font-size:17px!important;font-weight:650!important}
+#view-george .george-page-live{position:absolute;right:20px}
+#view-george .george-page-messages{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important}
+#view-george .george-page-composer{flex:0 0 auto!important;bottom:0!important}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1111,15 +1123,11 @@ body.george-page-active .george-panel{display:none!important}
 
  <section class="view hidden" id="view-george">
   <div class="george-page">
-   <div class="george-page-hero">
-    <div class="eyebrow">CONTEXTUAL AI COPILOT</div>
-    <h1>George <span>Your Copilot</span></h1>
-    
-   </div>
+
    <div class="george-page-grid">
     <section class="george-page-chat" aria-label="George conversation workspace">
      <div class="george-page-chat-head">
-      <div><h2>George Chat</h2></div>
+      <div><h2>George</h2></div>
       <span class="george-page-live" aria-hidden="true"></span>
      </div>
      <div id="georgePageMessages" class="george-page-messages"></div>
