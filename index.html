@@ -1130,6 +1130,35 @@ body,.app,.main{background:#f5f6f8}
 .recruiter-guide.reduced .criteria-guide-list{display:none}
 .recruiter-guide.reduced .criteria-guide-heading p{display:none}
 </style>
+<style id="topbar-sourcing-20261013">
+/* Functional actions live in sidebar; contextual journey replaces top-bar actions. */
+.topbar{gap:12px!important;padding:0 19px!important;min-height:74px;height:auto!important}
+.topbar .present-brand{flex:0 0 auto}
+.topbar .breadcrumb{flex:0 1 175px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar #recruiterGuide{flex:1 1 0!important;min-width:0!important;max-width:none!important;margin:0!important;border:0!important;border-left:1px solid #e2e6eb!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:8px 0 8px 17px!important;max-height:none!important;overflow:visible!important}
+.topbar #recruiterGuide .recruiter-guide-top{display:flex!important;align-items:center!important;gap:9px}
+.topbar #recruiterGuide .recruiter-guide-top>div:first-child{flex:1;min-width:0}
+.topbar #recruiterGuide .recruiter-guide-kicker{font-size:8px!important;letter-spacing:.65px}
+.topbar #recruiterGuide h2{font-size:13px!important;line-height:1.25!important;margin:2px 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar #recruiterGuide h2 span{font-size:10px!important}
+.topbar #recruiterGuide .recruiter-guide-step{display:block!important;min-width:62px!important;white-space:nowrap}
+.topbar #recruiterGuide .recruiter-guide-step b{font-size:13px!important}
+.topbar #recruiterGuide .recruiter-guide-summary,.topbar #recruiterGuide .recruiter-guide-grid,.topbar #recruiterGuide .recruiter-guide-progress,.topbar #recruiterGuide .recruiter-journey-slider,.topbar #recruiterGuide .recruiter-guide-actions,.topbar #recruiterGuide .recruiter-guide-toggle{display:none!important}
+.topbar #recruiterGuide .recruiter-journey-preview{margin-top:3px!important;justify-content:flex-end!important}
+.topbar #recruiterGuide .recruiter-journey-preview>span{display:none!important}
+.topbar #recruiterGuide .recruiter-journey-preview button,.topbar #recruiterGuide .criteria-guide-back{font-size:10px!important;padding:6px 10px!important;border-radius:8px!important}
+.topbar #recruiterGuide .criteria-guide-heading{gap:12px}
+.topbar #recruiterGuide .criteria-guide-heading>div{min-width:0}
+.topbar #recruiterGuide .criteria-guide-heading p{display:none}
+.topbar #recruiterGuide .criteria-guide-list{margin-top:5px!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:6px!important;padding-bottom:3px}
+.topbar #recruiterGuide .criteria-guide-item{flex:0 0 140px!important;padding:5px 7px!important;min-width:0!important}
+.topbar #recruiterGuide .criteria-guide-item small{font-size:7px!important;margin-bottom:2px!important}
+.topbar #recruiterGuide .criteria-guide-item b{font-size:9px!important;line-height:1.2!important}
+.sidebar nav [data-action].navbtn{color:#66727c}
+.sidebar nav [data-action].navbtn:hover{background:#eef1f5;color:#1C2D4A}
+@media(max-width:1150px){.topbar .breadcrumb{display:none!important}.topbar .present-brand{display:none!important}}
+@media(max-width:700px){.topbar{padding:7px 12px!important}.topbar #recruiterGuide{padding-left:9px!important}.topbar #recruiterGuide h2 span{display:none!important}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1167,6 +1196,9 @@ body,.app,.main{background:#f5f6f8}
   <button class="navbtn" data-view="market"><svg class="icon"><use href="#i-radar"/></svg><span>Market map</span></button>
   <button class="navbtn" data-view="evidence"><svg class="icon"><use href="#i-shield"/></svg><span>Evidence</span></button>
   <button class="navbtn" data-view="workflow"><svg class="icon"><use href="#i-flow"/></svg><span>3D Sourcing</span></button>
+  <button class="navbtn edit-only" data-action="newsearch"><svg class="icon"><use href="#i-plus"/></svg><span>New search</span></button>
+  <button class="navbtn" data-action="present"><svg class="icon"><use href="#i-screen"/></svg><span id="presentLabel">Present</span></button>
+  <button class="navbtn edit-only" data-action="brand"><svg class="icon"><use href="#i-settings"/></svg><span>Brand settings</span></button>
  </nav>
  <div class="side-spacer"></div>
  <div class="search-card"><div class="eyebrow" style="font-size:8px;letter-spacing:1.5px">ACTIVE MANDATE</div><h3>MBB &middot; Southeast Asia</h3><p>Singapore &amp; Malaysia<br>Principal to Partner</p><div class="track"><span></span></div><div class="row between"><span style="font-size:9px;color:#91859e">Calibration complete</span><svg class="icon" style="color:var(--accent);width:12px;height:12px"><use href="#i-check"/></svg></div></div>
@@ -1175,9 +1207,9 @@ body,.app,.main{background:#f5f6f8}
 </aside>
 
 <div class="app">
- <header class="topbar"><button class="btn ghost iconbtn mobile-menu" data-action="menu" aria-label="Open navigation"><svg class="icon"><use href="#i-menu"/></svg></button><div class="present-brand"><div class="brand-logo" data-logo>VD</div><span data-brand-name>Volker Dahm</span></div><div class="breadcrumb"><span>Executive search</span><span class="separator">/</span><b id="breadcrumb">MBB Southeast Asia</b></div><div class="spacer"></div><span class="snapshot"><span class="dot" style="color:#b0a5c0"></span>Research snapshot &middot; 01 Oct 2026</span><button class="btn ghost iconbtn edit-only" data-action="brand" aria-label="Brand settings"><svg class="icon"><use href="#i-settings"/></svg></button><button class="btn" data-action="present"><svg class="icon"><use href="#i-screen"/></svg><span id="presentLabel">Present</span></button><button class="btn dark edit-only" data-action="newsearch"><svg class="icon"><use href="#i-plus"/></svg>New search</button></header>
+ <header class="topbar"><button class="btn ghost iconbtn mobile-menu" data-action="menu" aria-label="Open navigation"><svg class="icon"><use href="#i-menu"/></svg></button><div class="present-brand"><div class="brand-logo" data-logo>VD</div><span data-brand-name>Volker Dahm</span></div><div class="breadcrumb"><span>Executive search</span><span class="separator">/</span><b id="breadcrumb">MBB Southeast Asia</b></div><section id="recruiterGuide" class="recruiter-guide" aria-label="Sourcing journey and search criteria"></section></header>
  <main class="main" id="main"><div class="print-brand" style="display:none" data-brand-name>Volker Dahm</div>
- <section id="recruiterGuide" class="recruiter-guide" aria-label="Recruiter sourcing guide"></section>
+
 
  <section class="view print-target" id="view-overview">
   <div class="hero"><div class="hero-copy"><div class="eyebrow">3D SOURCING &nbsp; / &nbsp; HUMAN-GOVERNED INTELLIGENCE</div><h1>Find the people.<br>Understand the <span>evidence.</span></h1><p>A structured view of the market, the people and the evidence behind each decision.<br>Built for a clear, human-governed executive search process.</p></div><div class="hero-meta"><span class="pill purple"><svg class="icon" style="width:12px;height:12px"><use href="#i-check"/></svg>Search profile calibrated</span><span class="run-tag">MBB-SG-MY-2026-10</span></div></div>
@@ -2228,48 +2260,7 @@ refreshRecruiterGuide();
 </script>
 
 
-<script id="recruiter-guide-top-collapse-script">
-(function(){
-  'use strict';
-  const KEY='vd.studio.recruiterGuideTopReduced';
-  const guide=document.getElementById('recruiterGuide');
-  if(!guide)return;
 
-  const btn=document.createElement('button');
-  btn.id='recruiterGuideTopToggle';
-  btn.className='recruiter-guide-toggle';
-  btn.type='button';
-  guide.appendChild(btn);
-
-  function read(){
-    try{return localStorage.getItem(KEY)==='1';}
-    catch{return false;}
-  }
-  function save(v){
-    try{localStorage.setItem(KEY,v?'1':'0');}catch{}
-  }
-  function apply(reduced){
-    guide.classList.toggle('reduced',reduced);
-    btn.textContent=reduced?'⌄':'⌃';
-    btn.setAttribute('aria-label',reduced?'Open Recruiter Guide':'Reduce Recruiter Guide');
-    btn.title=reduced?'Open Recruiter Guide':'Reduce Recruiter Guide';
-  }
-
-  apply(read());
-  btn.addEventListener('click',()=>{
-    const next=!guide.classList.contains('reduced');
-    apply(next);
-    save(next);
-  });
-
-  window.addEventListener('keydown',(e)=>{
-    if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.key.toLowerCase()==='g'){
-      e.preventDefault();
-      btn.click();
-    }
-  });
-})();
-</script>
 <script type="module" src="./live.js"></script>
 <script id="right-rail-workspace-20261013">
 (function(){
