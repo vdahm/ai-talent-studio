@@ -1403,7 +1403,23 @@ body.candidate-profile-open{--ui-rail:clamp(410px,35vw,560px)}
 #view-talent .filterbar{display:flex!important;flex-wrap:wrap!important;gap:8px!important;max-width:100%!important}
 #view-talent .filterbar>*{min-width:min(100%,135px)!important;flex:1 1 135px!important}
 @media(max-width:650px){#view-talent #candidateGrid{grid-template-columns:minmax(0,1fr)!important}}
-</style></head>
+</style><style id="george-voice-send-toggle-20261013">
+/* ChatGPT-like composer: voice when empty, send when text is present. */
+#georgePageVoice,#georgeSpeak{transition:opacity .15s ease}
+#georgePageSend,#georgeExecute{display:none!important}
+body.george-page-has-text #georgePageVoice{display:none!important}
+body.george-page-has-text #georgePageSend{display:inline-flex!important;align-items:center;justify-content:center}
+body.george-sidebar-has-text #georgeSpeak{display:none!important}
+body.george-sidebar-has-text #georgeExecute{display:inline-flex!important;align-items:center;justify-content:center;margin-left:auto!important}
+#georgePageVoice{margin-left:auto!important;background:#1C2D4A!important;color:#fff!important;border-radius:22px!important;padding:9px 14px!important;font-weight:600!important}
+#georgePageVoice .icon{stroke:currentColor!important}
+#georgeSpeak{margin-left:auto!important;background:#1C2D4A!important;color:#fff!important;border-radius:22px!important;padding:8px 11px!important;font-weight:600!important}
+#georgePageSend{margin-left:auto!important}
+#georgePanel .george-controls,#view-george .george-page-controls{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:6px!important}
+#view-george .george-page-tools{display:flex!important;flex:1 1 auto;flex-wrap:wrap;gap:6px}
+@media(max-width:600px){#georgePageVoice{font-size:11px!important;padding:8px 10px!important}#georgeSpeak span{font-size:10px!important}}
+</style>
+</head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2618,5 +2634,21 @@ update();
  new MutationObserver(sync).observe(panel,{attributes:true,attributeFilter:['class']});
  window.addEventListener('resize',sync,{passive:true});sync();
 })();
-</script></body>
+</script><script id="george-voice-send-controller-20261013">
+(function(){
+ function connect(inputId,flag){
+  const field=document.getElementById(inputId);if(!field)return;
+  const update=()=>document.body.classList.toggle(flag,field.value.trim().length>0);
+  field.addEventListener('input',update);
+  field.addEventListener('change',update);
+  const observer=new MutationObserver(update);
+  observer.observe(field,{attributes:true,attributeFilter:['value']});
+  document.addEventListener('click',e=>{if(e.target.closest('[data-view]'))requestAnimationFrame(update);});
+  update();
+ }
+ connect('georgePageInput','george-page-has-text');
+ connect('georgeInput','george-sidebar-has-text');
+})();
+</script>
+</body>
 </html>
