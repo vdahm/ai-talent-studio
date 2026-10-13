@@ -1443,7 +1443,12 @@ body.george-sidebar-has-text #georgeExecute{display:inline-flex!important;align-
 .talent-restored-top p,.talent-restored-card>p{margin:0;color:#697785;font-size:11px;line-height:1.5}
 .talent-restored-initial{background:#e9edf2;color:#1c2d4a;border-radius:12px;padding:12px;font-weight:700}
 .talent-restored-card button{margin-top:auto;align-self:flex-start}
-</style></head>
+</style><style id="george-main-no-duplicate-candidate-composer-20261013">
+/* The main George conversation owns messaging while candidate detail is open. */
+body:has(#view-george:not(.hidden)) #candidateWorkbench .candidate-reply-dock{display:none!important}
+body:has(#view-george:not(.hidden)) #candidateWorkbench .candidate-workbench-inner{padding-bottom:24px!important}
+</style>
+</head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
