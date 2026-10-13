@@ -1060,6 +1060,18 @@ body.george-page-active .george-panel{display:none!important}
 #view-george .george-page-messages{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important}
 #view-george .george-page-composer{flex:0 0 auto!important;bottom:0!important}
 </style>
+<style id="george-fullpage-flat-20261013">
+/* Full-page George workspace: no chat card or contrasting message background. */
+#view-george:not(.hidden){background:#fff!important;padding:0!important}
+#view-george .george-page,#view-george .george-page-grid,#view-george .george-page-chat{background:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;width:100%!important;max-width:none!important}
+#view-george .george-page-chat-head{background:#fff!important;border:0!important;justify-content:flex-start!important;text-align:left!important;padding:24px 30px 12px!important}
+#view-george .george-page-chat-head h2{font-size:34px!important;letter-spacing:-1.5px!important;font-weight:600!important;color:#202123!important;text-align:left!important}
+#view-george .george-page-chat-head h2 span{color:#B94D3A!important}
+#view-george .george-page-messages{background:#fff!important;padding:18px max(28px,7%)!important}
+#view-george .george-page-composer{background:#fff!important;border-top:0!important;box-shadow:none!important;padding:14px max(28px,7%) 22px!important}
+#view-george .george-page-composer-box{max-width:900px!important;margin:0 auto!important}
+@media(min-width:701px){#view-george:not(.hidden){top:74px!important}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1127,7 +1139,7 @@ body.george-page-active .george-panel{display:none!important}
    <div class="george-page-grid">
     <section class="george-page-chat" aria-label="George conversation workspace">
      <div class="george-page-chat-head">
-      <div><h2>George</h2></div>
+      <div><h2>George <span>Your Copilot</span></h2></div>
       <span class="george-page-live" aria-hidden="true"></span>
      </div>
      <div id="georgePageMessages" class="george-page-messages"></div>
