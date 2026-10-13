@@ -1227,7 +1227,138 @@ body.george-page-active #candidateWorkbench:not(.hidden){right:0!important;left:
 .topbar #recruiterGuide .criteria-guide-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 </style>
-</head>
+<style id="global-responsive-system-20261013">
+/* GLOBAL RESPONSIVE SYSTEM v1 — apply to every current and future view. */
+:root{--ui-sidebar:var(--nav-width,218px);--ui-rail:390px;--ui-top:166px;--ui-gap:clamp(12px,1.6vw,28px)}
+html{min-width:0;max-width:100%;overflow-x:clip}
+body{min-width:0;max-width:100%;overflow-x:clip}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video,canvas,iframe{max-width:100%}
+img,video,iframe{height:auto}
+input,select,textarea,button{min-width:0}
+p,h1,h2,h3,h4,small,span,b,strong{overflow-wrap:break-word}
+.app,.main,.view,.panel,.card,.george-page,.george-page-grid,.george-page-chat,.george-messages,.talent-rail,.candidate-workbench,.candidate-workbench-inner,.candidate-profile-shell{min-width:0}
+.main{width:100%;max-width:1450px;padding:clamp(12px,2vw,34px)!important}
+.app{margin-left:var(--ui-sidebar)!important;margin-right:var(--ui-rail)!important;min-width:0!important;width:auto!important}
+.sidebar{width:var(--ui-sidebar)!important;max-width:100vw}
+.sidebar nav{min-height:0}
+.sidebar-utility{margin-top:auto}
+.topbar{height:auto!important;min-height:150px!important;max-height:none!important;padding:12px clamp(10px,1.6vw,22px)!important}
+.topbar #recruiterGuide{height:auto!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+.topbar #recruiterGuide .criteria-guide-list{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr))!important;overflow:visible!important}
+.topbar #recruiterGuide .criteria-guide-item{min-width:0!important;max-width:100%!important}
+.topbar #recruiterGuide .recruiter-guide-top{flex-wrap:wrap}
+.topbar #recruiterGuide .recruiter-journey-preview{flex-wrap:wrap}
+.topbar #recruiterGuide .recruiter-journey-preview button{max-width:100%;white-space:normal!important}
+.view:not(.hidden){min-width:0}
+.view .hero,.view .view-head{flex-wrap:wrap}
+.view .view-head>.row{flex-wrap:wrap}
+.view .filterbar,.view .row,.drawer-actions{max-width:100%;flex-wrap:wrap}
+.view input,.view select,.view textarea{max-width:100%}
+.querybox{max-width:100%}
+.querybox input{flex:1;min-width:0}
+.candidate-grid,.metrics,.overview-grid,.split,.george-page-grid,.candidate-profile-shell,.form-grid{min-width:0}
+.panel,.metric,.candidate-card,.george-page-card,.candidate-section-card{min-width:0}
+.radar-svg{display:block;width:100%;max-width:100%;height:auto}
+.radar-panel{min-width:0}
+table{max-width:100%}
+.table-wrap,[class*="table-wrap"],[class*="table-scroll"]{max-width:100%;overflow-x:auto}
+.modal,.drawer{max-width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important;overflow:auto;overscroll-behavior:contain}
+#georgePanel{right:0!important;left:auto!important;width:var(--ui-rail)!important;height:100dvh!important;min-height:0!important;display:flex;flex-direction:column}
+#georgePanel .george-messages{flex:1 1 0!important;min-height:0!important;overflow:auto!important}
+#georgePanel .george-composer{flex:0 0 auto!important}
+#talentExplorerRail{right:0!important;left:auto!important;width:var(--ui-rail)!important;height:100dvh!important;min-height:0!important;flex-direction:column}
+#talentExplorerRail .talent-rail-list{min-height:0;overflow-y:auto}
+#view-george:not(.hidden){position:fixed!important;top:var(--ui-top)!important;bottom:0!important;left:var(--ui-sidebar)!important;right:var(--ui-rail)!important;width:auto!important;height:auto!important;min-height:0!important;overflow:hidden!important;padding:0!important}
+#view-george .george-page,#view-george .george-page-grid,#view-george .george-page-chat{height:100%!important;min-height:0!important;overflow:hidden!important}
+#view-george .george-page-messages{min-height:0!important;flex:1 1 0!important;overflow-y:auto!important}
+#view-george .george-page-composer{flex:0 0 auto!important;bottom:0!important;position:relative!important;padding-bottom:max(12px,env(safe-area-inset-bottom))!important}
+#candidateWorkbench:not(.hidden){right:0!important;left:auto!important;top:0!important;bottom:0!important;height:100dvh!important;max-width:100vw!important;width:min(520px,max(330px,var(--ui-rail)))!important;overflow-y:auto!important}
+#candidateWorkbench .candidate-reply-dock{right:0!important;width:min(520px,max(330px,var(--ui-rail)))!important;bottom:0!important;padding-bottom:max(12px,env(safe-area-inset-bottom))!important}
+#candidateWorkbench .candidate-workbench-inner{padding-bottom:140px!important}
+#candidateWorkbench .candidate-profile-shell{display:flex!important;flex-direction:column!important}
+#candidateWorkbench .candidate-profile-main,#candidateWorkbench .candidate-profile-side{width:100%!important;min-width:0!important}
+#candidateWorkbench .candidate-profile-url{overflow-wrap:anywhere;word-break:break-word}
+#candidateWorkbench .candidate-reply-dock textarea{display:block;min-width:0;max-width:100%}
+.george-control.voice .icon,.george-page-tool .icon{flex-shrink:0}
+/* Wide desktop and laptop */
+@media(min-width:1441px){:root{--ui-sidebar:218px;--ui-rail:390px}.main{padding:30px clamp(20px,2vw,34px)!important}}
+@media(min-width:1101px) and (max-width:1440px){:root{--ui-sidebar:190px;--ui-rail:340px}.main{padding:22px!important}.candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Compact laptop/tablet: collapsible rail and compact left navigation */
+@media(max-width:1100px){
+ :root{--ui-sidebar:68px;--ui-rail:0px}
+ .sidebar{width:68px!important;overflow-y:auto!important}
+ .sidebar .brand-text,.sidebar .workspace-label,.sidebar .search-card,.sidebar .user-info,.sidebar .user>.icon,.sidebar-utility-heading{display:none!important}
+ .sidebar .brand{padding:11px 6px!important;justify-content:center}
+ .sidebar .brand-logo{margin:0 auto}
+ .sidebar nav{margin-top:12px!important}
+ .sidebar .navbtn,.sidebar-utility .navbtn{width:48px!important;height:45px!important;min-height:45px!important;margin:0 auto 5px!important;padding:0!important;justify-content:center!important}
+ .sidebar .navbtn span,.sidebar-utility .navbtn span,.sidebar .navbtn .count{display:none!important}
+ .sidebar .user{justify-content:center!important}
+ .sidebar .user-avatar{margin:0 auto}
+ .sidebar #sidebarToggle{display:none!important}
+ .app{margin-left:68px!important;margin-right:0!important}
+ .topbar{min-height:138px!important}
+ #view-george:not(.hidden){left:68px!important;right:0!important}
+ #georgePanel,#talentExplorerRail{display:none!important}
+ body.responsive-rail-open #georgePanel:not([aria-hidden="true"]),body.responsive-rail-open #talentExplorerRail:not([aria-hidden="true"]){display:flex!important;position:fixed!important;right:0!important;top:0!important;width:min(390px,calc(100vw - 68px))!important;height:100dvh!important;z-index:150!important;box-shadow:-18px 0 48px #1c2d4a25!important}
+ #candidateWorkbench:not(.hidden){width:min(510px,calc(100vw - 68px))!important}
+ #candidateWorkbench .candidate-reply-dock{width:min(510px,calc(100vw - 68px))!important}
+ .responsive-rail-toggle{display:flex!important}
+ .george-page-grid{grid-template-columns:minmax(0,1fr)!important}
+ .modal{left:calc(68px + (100vw - 68px)/2)!important;width:calc(100vw - 90px)!important}
+}
+@media(max-width:800px){
+ .topbar{min-height:155px!important}
+ .topbar #recruiterGuide .recruiter-guide-top{align-items:flex-start!important}
+ .topbar #recruiterGuide .criteria-guide-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .candidate-grid,.metrics,.overview-grid,.split,.george-page-grid,.candidate-profile-shell{grid-template-columns:minmax(0,1fr)!important}
+ .hero{gap:15px!important}
+ .hero h1{font-size:clamp(27px,5vw,38px)!important}
+ .modal.wide{width:calc(100vw - 90px)!important}
+}
+/* Phone layout: content-first; navigation and side rail become drawers */
+@media(max-width:600px){
+ :root{--ui-sidebar:0px;--ui-rail:0px}
+ body{font-size:13px}
+ .app{margin:0!important;width:100%!important}
+ .main{padding:12px!important}
+ .sidebar{width:min(290px,86vw)!important;max-width:86vw!important;z-index:210!important}
+ .sidebar.open{transform:translateX(0)!important}
+ .sidebar .brand-text,.sidebar .workspace-label,.sidebar .user-info,.sidebar-utility-heading{display:block!important}
+ .sidebar .navbtn,.sidebar-utility .navbtn{width:100%!important;justify-content:flex-start!important;padding:10px 14px!important}
+ .sidebar .navbtn span,.sidebar-utility .navbtn span{display:inline!important}
+ .sidebar nav{margin-top:18px!important}
+ .sidebar #sidebarToggle{display:none!important}
+ .mobile-menu{display:flex!important}
+ .topbar{min-height:160px!important;padding:8px!important;gap:6px!important}
+ .topbar #recruiterGuide{padding:11px!important;border-radius:12px!important}
+ .topbar #recruiterGuide h2{font-size:14px!important}
+ .topbar #recruiterGuide h2 span{font-size:11px!important}
+ .topbar #recruiterGuide .recruiter-guide-step{min-width:48px!important}
+ .topbar #recruiterGuide .recruiter-guide-step b{font-size:13px!important}
+ .topbar #recruiterGuide .criteria-guide-list{grid-template-columns:minmax(0,1fr)!important}
+ .topbar #recruiterGuide .criteria-guide-heading{flex-wrap:wrap}
+ #view-george:not(.hidden){left:0!important;right:0!important;top:var(--ui-top)!important;bottom:0!important;width:100%!important;padding:0!important}
+ #view-george .george-page-chat-head{padding:12px!important}
+ #view-george .george-page-messages{padding:12px!important}
+ #view-george .george-page-composer{padding:8px 10px max(10px,env(safe-area-inset-bottom))!important}
+ #view-george .george-page-tools{flex-wrap:wrap}
+ #georgePanel,#talentExplorerRail{display:none!important}
+ body.responsive-rail-open #georgePanel:not([aria-hidden="true"]),body.responsive-rail-open #talentExplorerRail:not([aria-hidden="true"]){width:100vw!important}
+ #candidateWorkbench:not(.hidden){width:100vw!important;max-width:100vw!important;z-index:250!important}
+ #candidateWorkbench .candidate-reply-dock{width:100vw!important;z-index:255!important}
+ .view .filterbar>*,.view .view-head .row>button{max-width:100%}
+ .querybox{flex-wrap:wrap!important}
+ .querybox input{flex-basis:100%!important}
+ .modal,.modal.wide{left:10px!important;top:12px!important;transform:none!important;width:calc(100vw - 20px)!important;max-height:calc(100dvh - 24px)!important}
+ .drawer{width:100vw!important;max-width:100vw!important;padding:18px!important}
+ .candidate-grid,.metrics,.overview-grid,.split,.form-grid{grid-template-columns:minmax(0,1fr)!important}
+}
+.responsive-rail-toggle{position:fixed;right:14px;bottom:max(18px,env(safe-area-inset-bottom));z-index:145;border:1px solid #e2e5e9;border-radius:30px;padding:10px 13px;background:#fff;color:#1C2D4A;box-shadow:0 4px 20px #1c2d4a1d;align-items:center;gap:6px;font-size:12px;display:none}
+body.responsive-rail-open .responsive-rail-toggle{z-index:230}
+@media(min-width:1101px){.responsive-rail-toggle{display:none!important}}
+</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2400,5 +2531,37 @@ if(wb){
 }
 })();
 </script>
-</body>
+<script id="global-responsive-controller-20261013">
+(function(){
+'use strict';
+const root=document.documentElement,body=document.body;
+const toggle=document.createElement('button');
+toggle.type='button';toggle.className='responsive-rail-toggle';toggle.setAttribute('aria-expanded','false');
+toggle.innerHTML='<svg class="icon" aria-hidden="true"><use href="#i-message"/></svg><span>Open assistant / explorer</span>';
+body.appendChild(toggle);
+function context(){const v=document.getElementById('view-george');return !!v&&!v.classList.contains('hidden');}
+function update(){
+ const h=document.querySelector('.topbar');const top=h?Math.ceil(h.getBoundingClientRect().height):150;
+ root.style.setProperty('--ui-top',top+'px');
+ const compact=window.innerWidth<=1100;
+ if(!compact)body.classList.remove('responsive-rail-open');
+ const active=context()?'Talent Explorer':'George Chat';
+ toggle.querySelector('span').textContent=(body.classList.contains('responsive-rail-open')?'Close ':'Open ')+active;
+ toggle.setAttribute('aria-expanded',String(body.classList.contains('responsive-rail-open')));
+ const rail=document.getElementById('talentExplorerRail'),chat=document.getElementById('georgePanel');
+ if(rail)rail.setAttribute('aria-hidden',context()?'false':'true');
+ if(chat)chat.setAttribute('aria-hidden',context()?'true':'false');
+}
+toggle.addEventListener('click',()=>{body.classList.toggle('responsive-rail-open');update();});
+document.addEventListener('click',e=>{if(e.target.closest('[data-view]')){body.classList.remove('responsive-rail-open');requestAnimationFrame(update);}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&body.classList.contains('responsive-rail-open')){body.classList.remove('responsive-rail-open');update();}});
+const george=document.getElementById('view-george');
+if(george)new MutationObserver(update).observe(george,{attributes:true,attributeFilter:['class']});
+const bar=document.querySelector('.topbar');
+if(bar&&window.ResizeObserver)new ResizeObserver(update).observe(bar);
+window.addEventListener('resize',update,{passive:true});
+window.addEventListener('orientationchange',update,{passive:true});
+update();
+})();
+</script></body>
 </html>
