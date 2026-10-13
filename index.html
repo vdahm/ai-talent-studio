@@ -2817,6 +2817,8 @@ function update(force=false){
  currentTool=tool;
  document.body.classList.toggle('task-rail-show-talent',tool==='talent');
  document.body.classList.toggle('task-rail-show-george',tool==='george');
+ talent.setAttribute('aria-hidden',String(tool!=='talent'));
+ george.setAttribute('aria-hidden',String(tool!=='george'));
  document.querySelectorAll('[data-task-tool]').forEach(b=>b.classList.toggle('active',b.dataset.taskTool===override));
  if(tool==='talent')paintCandidates();
 }
