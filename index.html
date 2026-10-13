@@ -1159,6 +1159,19 @@ body,.app,.main{background:#f5f6f8}
 @media(max-width:1150px){.topbar .breadcrumb{display:none!important}.topbar .present-brand{display:none!important}}
 @media(max-width:700px){.topbar{padding:7px 12px!important}.topbar #recruiterGuide{padding-left:9px!important}.topbar #recruiterGuide h2 span{display:none!important}}
 </style>
+<style id="bottom-sidebar-tools-20261013">
+.sidebar-utility{border-top:1px solid #e7e9ed;padding:12px 0 7px;flex-shrink:0}
+.sidebar-utility-heading{padding:0 13px 9px;font-size:8px;letter-spacing:1.2px;color:#9ba2aa;font-weight:700}
+.sidebar-utility .navbtn{min-height:38px!important;padding:8px 13px!important;margin-bottom:2px!important;font-size:11px!important}
+.sidebar-utility .navbtn:hover{background:#eef0f4!important}
+.sidebar .user{margin-top:4px;border-top:1px solid #e7e9ed}
+.topbar{min-height:90px!important;height:90px!important}
+.topbar #recruiterGuide{padding-top:12px!important;padding-bottom:12px!important}
+.sidebar-collapsed .sidebar-utility-heading{display:none!important}
+.sidebar-collapsed .sidebar-utility .navbtn{width:44px!important;height:44px!important;justify-content:center!important;margin:0 auto 4px!important;padding:0!important}
+.sidebar-collapsed .sidebar-utility .navbtn span{display:none!important}
+@media(max-height:700px){.sidebar .search-card{display:none!important}.sidebar nav{margin-top:12px!important}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1196,18 +1209,18 @@ body,.app,.main{background:#f5f6f8}
   <button class="navbtn" data-view="market"><svg class="icon"><use href="#i-radar"/></svg><span>Market map</span></button>
   <button class="navbtn" data-view="evidence"><svg class="icon"><use href="#i-shield"/></svg><span>Evidence</span></button>
   <button class="navbtn" data-view="workflow"><svg class="icon"><use href="#i-flow"/></svg><span>3D Sourcing</span></button>
-  <button class="navbtn edit-only" data-action="newsearch"><svg class="icon"><use href="#i-plus"/></svg><span>New search</span></button>
-  <button class="navbtn" data-action="present"><svg class="icon"><use href="#i-screen"/></svg><span id="presentLabel">Present</span></button>
-  <button class="navbtn edit-only" data-action="brand"><svg class="icon"><use href="#i-settings"/></svg><span>Brand settings</span></button>
+
  </nav>
  <div class="side-spacer"></div>
  <div class="search-card"><div class="eyebrow" style="font-size:8px;letter-spacing:1.5px">ACTIVE MANDATE</div><h3>MBB &middot; Southeast Asia</h3><p>Singapore &amp; Malaysia<br>Principal to Partner</p><div class="track"><span></span></div><div class="row between"><span style="font-size:9px;color:#91859e">Calibration complete</span><svg class="icon" style="color:var(--accent);width:12px;height:12px"><use href="#i-check"/></svg></div></div>
- <button class="navbtn brand-setting edit-only" data-action="brand"><svg class="icon"><use href="#i-palette"/></svg><span class="side-brand-label">Brand studio</span></button>
+ <div class="sidebar-utility"><div class="sidebar-utility-heading">TOOLS & ACCOUNT</div>  <button class="navbtn edit-only" data-action="newsearch"><svg class="icon"><use href="#i-plus"/></svg><span>New search</span></button>
+  <button class="navbtn" data-action="present"><svg class="icon"><use href="#i-screen"/></svg><span id="presentLabel">Presentation</span></button>
+  <button class="navbtn edit-only" data-action="brand"><svg class="icon"><use href="#i-settings"/></svg><span>Brand settings</span></button><button class="navbtn brand-setting edit-only" data-action="brand" title="Brand Studio"><svg class="icon"><use href="#i-palette"/></svg><span class="side-brand-label">Brand Studio</span></button></div>
  <div class="user"><div class="user-avatar">VD</div><div class="user-info"><div class="user-name">Your workspace</div><div class="user-role">Private workspace</div></div><svg class="icon" style="width:13px;height:13px;color:#b3aabd;margin-left:auto"><use href="#i-lock"/></svg></div>
 </aside>
 
 <div class="app">
- <header class="topbar"><button class="btn ghost iconbtn mobile-menu" data-action="menu" aria-label="Open navigation"><svg class="icon"><use href="#i-menu"/></svg></button><div class="present-brand"><div class="brand-logo" data-logo>VD</div><span data-brand-name>Volker Dahm</span></div><div class="breadcrumb"><span>Executive search</span><span class="separator">/</span><b id="breadcrumb">MBB Southeast Asia</b></div><section id="recruiterGuide" class="recruiter-guide" aria-label="Sourcing journey and search criteria"></section></header>
+ <header class="topbar"><button class="btn ghost iconbtn mobile-menu" data-action="menu" aria-label="Open navigation"><svg class="icon"><use href="#i-menu"/></svg></button><div class="present-brand"><div class="brand-logo" data-logo>VD</div><span data-brand-name>Volker Dahm</span></div><section id="recruiterGuide" class="recruiter-guide" aria-label="Sourcing journey and search criteria"></section></header>
  <main class="main" id="main"><div class="print-brand" style="display:none" data-brand-name>Volker Dahm</div>
 
 
