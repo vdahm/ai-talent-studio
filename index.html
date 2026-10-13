@@ -689,6 +689,206 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
   .backdrop{left:var(--nav-width)!important}
 }
 </style>
+
+<style id="recruiter-guide-styles">
+.recruiter-guide{
+  margin:0 0 24px;
+  border:1px solid #e1e4e7;
+  background:linear-gradient(135deg,#ffffff 0%,#fbfbfc 100%);
+  border-radius:18px;
+  padding:17px 18px;
+  box-shadow:0 5px 20px rgba(28,45,74,.035);
+}
+.recruiter-guide-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+}
+.recruiter-guide-kicker{
+  font-size:8px;
+  letter-spacing:1.25px;
+  text-transform:uppercase;
+  color:#8b9197;
+  font-weight:700;
+}
+.recruiter-guide h2{
+  margin:5px 0 5px;
+  font-size:19px;
+  line-height:1.25;
+  letter-spacing:-.45px;
+  color:#1C2D4A;
+}
+.recruiter-guide h2 span{color:#B94D3A}
+.recruiter-guide-summary{
+  max-width:690px;
+  font-size:10px;
+  line-height:1.65;
+  color:#747d85;
+}
+.recruiter-guide-step{
+  flex:none;
+  min-width:102px;
+  text-align:right;
+}
+.recruiter-guide-step b{
+  display:block;
+  font-size:21px;
+  color:#1C2D4A;
+  letter-spacing:-.7px;
+}
+.recruiter-guide-step span{
+  display:block;
+  font-size:8px;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color:#9aa0a6;
+  margin-top:2px;
+}
+.recruiter-guide-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.recruiter-guide-box{
+  border:1px solid #e8eaec;
+  border-radius:13px;
+  padding:11px 12px;
+  background:#fff;
+}
+.recruiter-guide-box small{
+  display:block;
+  font-size:7.5px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#a0a5aa;
+  font-weight:700;
+  margin-bottom:5px;
+}
+.recruiter-guide-box b{
+  display:block;
+  font-size:10px;
+  line-height:1.45;
+  color:#3c454d;
+}
+.recruiter-guide-box p{
+  margin:4px 0 0;
+  font-size:9px;
+  line-height:1.55;
+  color:#7d858c;
+}
+.recruiter-guide-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+.recruiter-guide-actions .btn{min-height:34px;font-size:10px;padding:7px 11px}
+.recruiter-guide-progress{
+  height:4px;
+  background:#edf0f2;
+  border-radius:999px;
+  margin-top:14px;
+  overflow:hidden;
+}
+.recruiter-guide-progress span{
+  display:block;
+  height:100%;
+  background:#1C2D4A;
+  border-radius:999px;
+  transition:width .25s ease;
+}
+.recruiter-playbook{
+  margin:0 0 22px;
+  border:1px solid #e3e6e8;
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+}
+.recruiter-playbook-head{
+  padding:18px 18px 14px;
+  border-bottom:1px solid #edf0f2;
+}
+.recruiter-playbook-head h2{
+  font-size:17px;
+  color:#1C2D4A;
+  letter-spacing:-.35px;
+}
+.recruiter-playbook-head p{
+  font-size:10px;
+  line-height:1.65;
+  color:#818991;
+  margin-top:4px;
+}
+.recruiter-playbook-list{display:grid}
+.recruiter-playbook-row{
+  display:grid;
+  grid-template-columns:42px minmax(150px,.85fr) minmax(0,1.25fr) minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+  padding:14px 16px;
+  border-bottom:1px solid #f0f1f2;
+  background:#fff;
+}
+.recruiter-playbook-row:last-child{border-bottom:0}
+.recruiter-playbook-row.current{background:#fbf7f5}
+.recruiter-playbook-row.done{background:#fbfcfc}
+.recruiter-playbook-number{
+  width:28px;
+  height:28px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  background:#f0f2f4;
+  color:#66717b;
+  font-size:9px;
+  font-weight:700;
+}
+.recruiter-playbook-row.current .recruiter-playbook-number{
+  background:#B94D3A;
+  color:#fff;
+}
+.recruiter-playbook-row.done .recruiter-playbook-number{
+  background:#eaf5ef;
+  color:#447962;
+}
+.recruiter-playbook-title b{
+  display:block;
+  font-size:11px;
+  color:#303940;
+  line-height:1.4;
+}
+.recruiter-playbook-title span{
+  display:block;
+  margin-top:4px;
+  font-size:8px;
+  color:#989fa5;
+  text-transform:uppercase;
+  letter-spacing:.75px;
+}
+.recruiter-playbook-copy small{
+  display:block;
+  font-size:7.5px;
+  text-transform:uppercase;
+  letter-spacing:.9px;
+  color:#a0a6ab;
+  font-weight:700;
+  margin-bottom:4px;
+}
+.recruiter-playbook-copy p{
+  margin:0;
+  font-size:9px;
+  line-height:1.55;
+  color:#6f7880;
+}
+@media(max-width:1050px){
+  .recruiter-guide-grid{grid-template-columns:1fr}
+  .recruiter-playbook-row{grid-template-columns:34px 1fr}
+  .recruiter-playbook-copy{grid-column:2}
+}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -735,6 +935,8 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
 <div class="app">
  <header class="topbar"><button class="btn ghost iconbtn mobile-menu" data-action="menu" aria-label="Open navigation"><svg class="icon"><use href="#i-menu"/></svg></button><div class="present-brand"><div class="brand-logo" data-logo>VD</div><span data-brand-name>Volker Dahm</span></div><div class="breadcrumb"><span>Executive search</span><span class="separator">/</span><b id="breadcrumb">MBB Southeast Asia</b></div><div class="spacer"></div><span class="snapshot"><span class="dot" style="color:#b0a5c0"></span>Research snapshot &middot; 01 Oct 2026</span><button class="btn ghost iconbtn edit-only" data-action="brand" aria-label="Brand settings"><svg class="icon"><use href="#i-settings"/></svg></button><button class="btn" data-action="present"><svg class="icon"><use href="#i-screen"/></svg><span id="presentLabel">Present</span></button><button class="btn dark edit-only" data-action="newsearch"><svg class="icon"><use href="#i-plus"/></svg>New search</button></header>
  <main class="main" id="main"><div class="print-brand" style="display:none" data-brand-name>Volker Dahm</div>
+ <section id="recruiterGuide" class="recruiter-guide" aria-label="Recruiter sourcing guide"></section>
+
  <section class="view print-target" id="view-overview">
   <div class="hero"><div class="hero-copy"><div class="eyebrow">3D SOURCING &nbsp; / &nbsp; HUMAN-GOVERNED INTELLIGENCE</div><h1>Find the people.<br>Understand the <span>evidence.</span></h1><p>A structured view of the market, the people and the evidence behind each decision.<br>Built for a clear, human-governed executive search process.</p></div><div class="hero-meta"><span class="pill purple"><svg class="icon" style="width:12px;height:12px"><use href="#i-check"/></svg>Search profile calibrated</span><span class="run-tag">MBB-SG-MY-2026-10</span></div></div>
   <form class="querybox" id="heroSearch"><svg class="icon"><use href="#i-search"/></svg><input id="heroQuery" autocomplete="off" aria-label="Search saved candidates" placeholder="Search this pool by name, expertise, company or project..."><span class="kbd">/</span><button class="btn primary" type="submit">Explore <svg class="icon"><use href="#i-arrow"/></svg></button></form>
@@ -828,6 +1030,15 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
  </section>
  <section class="view hidden" id="view-workflow">
   <div class="view-head"><div><div class="eyebrow">A PROCESS THAT LEARNS FROM YOU</div><h1>3D Sourcing</h1><p>Discover. Calibrate. Substantiate. Human judgment at every decision gate.</p></div><span class="pill green"><span class="dot"></span>Calibrated mandate</span></div>
+
+  <section class="recruiter-playbook" id="recruiterPlaybook">
+   <div class="recruiter-playbook-head">
+    <div class="eyebrow">RECRUITER PLAYBOOK</div>
+    <h2>What the recruiter does, step by step</h2>
+    <p>The sourcing engine can research and rank. The recruiter owns the brief, calibration decisions, evidence judgment and every move to the next gate.</p>
+   </div>
+   <div class="recruiter-playbook-list" id="recruiterPlaybookList"></div>
+  </section>
   <div class="workflow-layout"><section class="panel"><div class="panel-head"><div><h2>Search journey</h2><p>Historical progress for this mandate</p></div></div><div class="workflow-steps" id="workflowSteps"></div></section><section class="panel"><div class="panel-head"><div><h2>Locked sourcing profile</h2><p>Latest approved criteria, with individual exclusions retained</p></div><svg class="icon" style="color:#b0a0c0"><use href="#i-lock"/></svg></div><dl class="criteria"><dt>Target firms</dt><dd>McKinsey &amp; Company, Boston Consulting Group, Bain &amp; Company; current or former.</dd><dt>Search coverage</dt><dd>External candidate discovery and the ATS database are searched in parallel. ATS matches are deduplicated and shown in the same review flow with a visible ATS-source marker.</dd><dt>Geography</dt><dd>Singapore and Malaysia, including Kuala Lumpur and Selangor.</dd><dt>Seniority</dt><dd>Principal, Associate Partner and Partner. Expert Associate Partner and Expert Partner variants are allowed.</dd><dt>Career path</dt><dd>Former MBB professionals must remain in consulting or advisory. Operating-company exits are excluded.</dd><dt>Ceiling</dt><dd>No Managing Director, Managing Partner, Co-Managing Partner, Senior Managing Director, Senior Partner, Chairman or Vice Chair.</dd><dt>Individual exclusions</dt><dd>Colin Teo, Timothy Yap, Anshu Raj, Kenneth Koh and Zarif Munir.</dd><dt>Next production gate</dt><dd>Up to 30 net-new profiles per batch. Review before continuing; historical deduplication never resets.</dd></dl><div class="workflow-note">A candidate-specific exclusion does not prohibit the entire expert-partner track. All 35 existing profiles remain visible until you make an explicit new decision.</div></section></div>
   <div class="notice"><b>Next step:</b> start a new live search wave after connecting the research service, or review and export this pool first. Live results are held for approval; they are not automatically treated as approved candidates.</div>
   <div class="row edit-only"><button class="btn primary" data-action="newsearch">Plan next search <svg class="icon"><use href="#i-arrow"/></svg></button><button class="btn" data-action="export">Export reviewed pool</button></div>
@@ -843,7 +1054,7 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
     <div class="talent-rail-title">
       <div>
         <h2>Talent Explorer</h2>
-        <p>Browse the active candidate pool while George stays available on the left.</p>
+        <p>Browse the active candidate pool while the sourcing guide keeps the next recruiter action clear.</p>
       </div>
       <span id="talentRailCount" class="talent-rail-count">35</span>
     </div>
@@ -1594,6 +1805,200 @@ renderGeorge();renderAttachments();updateGeorgeContext();
       toggle.click();
     }
   });
+})();
+</script>
+
+<script id="recruiter-guide-script">
+(function(){
+'use strict';
+
+const RECRUITER_GUIDE_STEPS=[
+  {
+    id:'brief',
+    title:'Define the role brief',
+    verb:'Clarify what you are actually searching for.',
+    doNow:'Confirm role, target firms, geography, seniority, must-haves and hard exclusions.',
+    doneWhen:'You could explain in one minute who belongs in the search and who does not.',
+    output:'A clear search brief that can be used consistently by the sourcing engine.',
+    cta:'Open role brief',
+    action:'brief'
+  },
+  {
+    id:'cal1',
+    title:'Review Calibration Round 1',
+    verb:'Judge the first 20 profiles for direction, not perfection.',
+    doNow:'Review each profile and focus on pattern recognition: level, background, geography and role relevance.',
+    doneWhen:'You can point to strong examples, weak examples and explain why.',
+    output:'20 reviewed calibration profiles and a first view of what good looks like.',
+    cta:'Review Round 1',
+    action:'talent'
+  },
+  {
+    id:'feedback1',
+    title:'Give structured feedback',
+    verb:'Teach the search what should change.',
+    doNow:'Approve, hold or exclude every profile you can judge. Add the reason when a profile changes the search direction.',
+    doneWhen:'The next search can learn from concrete positive and negative examples.',
+    output:'Recruiter decisions plus explicit search-learning signals.',
+    cta:'Open feedback',
+    action:'talent'
+  },
+  {
+    id:'cal2',
+    title:'Review Calibration Round 2',
+    verb:'Test whether the search learned from you.',
+    doNow:'Compare the 20 new profiles with the retained Round 1 profiles. Look for better precision, not just more names.',
+    doneWhen:'The new profiles consistently reflect the feedback from Round 1.',
+    output:'A calibrated pool large enough to lock the sourcing profile.',
+    cta:'Review Round 2',
+    action:'talent'
+  },
+  {
+    id:'feedback2',
+    title:'Finalize calibration feedback',
+    verb:'Resolve the remaining ambiguity before locking.',
+    doNow:'Confirm the patterns you want repeated and the profiles or career paths you want excluded.',
+    doneWhen:'There are no important unresolved questions about target firms, level, geography or exclusions.',
+    output:'The final recruiter learning that becomes the locked sourcing profile.',
+    cta:'Finalize feedback',
+    action:'talent'
+  },
+  {
+    id:'locked',
+    title:'Lock the sourcing profile',
+    verb:'Turn recruiter judgment into the search rulebook.',
+    doNow:'Check target firms, geography, seniority, career-path rules and hard exclusions one last time.',
+    doneWhen:'You are comfortable using the same criteria for every production batch.',
+    output:'A versioned sourcing profile that does not drift during production.',
+    cta:'Review locked profile',
+    action:'talent'
+  },
+  {
+    id:'market',
+    title:'Read the Candidate Market Map',
+    verb:'Understand market depth before scaling volume.',
+    doNow:'Review the estimated reachable pool, concentration by market and likely saturation risk.',
+    doneWhen:'You know whether the mandate supports the desired target volume and where quality may fall off.',
+    output:'A realistic sourcing target and an informed production strategy.',
+    cta:'Open market map',
+    action:'market'
+  },
+  {
+    id:'evidence',
+    title:'Run the Evidence Check',
+    verb:'Separate plausible claims from substantiated evidence.',
+    doNow:'Check role history, projects, expertise, external corroboration and evidence gaps for the approved profiles.',
+    doneWhen:'You can explain why each shortlisted profile is credible and where uncertainty remains.',
+    output:'Evidence-backed candidate records ready for controlled production and outreach decisions.',
+    cta:'Open evidence',
+    action:'evidence'
+  },
+  {
+    id:'production',
+    title:'Run controlled Production Batches',
+    verb:'Scale without losing calibration quality.',
+    doNow:'Start one batch of up to 30 net-new candidates, review quality and deduplication, then decide whether to run another.',
+    doneWhen:'The batch is reviewed and you explicitly choose continue, pause or change the sourcing profile.',
+    output:'A growing, deduplicated production pool governed by recruiter review after every batch.',
+    cta:'Open production pool',
+    action:'talent'
+  }
+];
+
+function guideIndex(){
+  const id=state?.processStep||'brief';
+  const i=RECRUITER_GUIDE_STEPS.findIndex(x=>x.id===id);
+  return i<0?0:i;
+}
+function openGuideAction(action){
+  if(action==='brief'){
+    if(typeof showNewSearch==='function')showNewSearch();
+    else document.querySelector('[data-action="newsearch"]')?.click();
+    return;
+  }
+  if(typeof window.switchView==='function')window.switchView(action);
+  else if(typeof switchView==='function')switchView(action);
+}
+function askGeorgeAboutCurrentStep(){
+  const step=RECRUITER_GUIDE_STEPS[guideIndex()];
+  if(typeof window.switchView==='function')window.switchView('george');
+  else if(typeof switchView==='function')switchView('george');
+  setTimeout(()=>{
+    const input=document.getElementById('georgePageInput');
+    if(input)input.value='Guide me through "'+step.title+'". What should I do now, what should I look for, and what must be true before I continue?';
+  },0);
+}
+function renderRecruiterGuide(){
+  const host=document.getElementById('recruiterGuide');
+  if(!host)return;
+  const i=guideIndex();
+  const s=RECRUITER_GUIDE_STEPS[i];
+  const pct=Math.round(((i+1)/RECRUITER_GUIDE_STEPS.length)*100);
+  const next=RECRUITER_GUIDE_STEPS[Math.min(i+1,RECRUITER_GUIDE_STEPS.length-1)];
+  host.innerHTML=
+    '<div class="recruiter-guide-top">'+
+      '<div>'+
+        '<div class="recruiter-guide-kicker">Recruiter guide · You are here</div>'+
+        '<h2>'+esc(s.title)+' <span>→ '+esc(s.verb)+'</span></h2>'+
+        '<div class="recruiter-guide-summary">The system can do the research work, but this is the recruiter decision that keeps the search calibrated and auditable.</div>'+
+      '</div>'+
+      '<div class="recruiter-guide-step"><b>'+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</b><span>workflow step</span></div>'+
+    '</div>'+
+    '<div class="recruiter-guide-grid">'+
+      '<div class="recruiter-guide-box"><small>Do now</small><b>'+esc(s.doNow)+'</b></div>'+
+      '<div class="recruiter-guide-box"><small>Done when</small><b>'+esc(s.doneWhen)+'</b></div>'+
+      '<div class="recruiter-guide-box"><small>What this creates</small><b>'+esc(s.output)+'</b>'+(i<RECRUITER_GUIDE_STEPS.length-1?'<p>Next: '+esc(next.title)+'</p>':'<p>Continue only after reviewing each production batch.</p>')+'</div>'+
+    '</div>'+
+    '<div class="recruiter-guide-progress"><span style="width:'+pct+'%"></span></div>'+
+    '<div class="recruiter-guide-actions">'+
+      '<button class="btn primary" type="button" data-recruiter-guide-action="open">'+esc(s.cta)+' '+icon('arrow')+'</button>'+
+      '<button class="btn" type="button" data-recruiter-guide-action="workflow">See full workflow</button>'+
+      '<button class="btn" type="button" data-recruiter-guide-action="george">'+icon('message')+' Ask George to guide me</button>'+
+    '</div>';
+}
+function renderRecruiterPlaybook(){
+  const host=document.getElementById('recruiterPlaybookList');
+  if(!host)return;
+  const active=guideIndex();
+  host.innerHTML=RECRUITER_GUIDE_STEPS.map((s,i)=>{
+    const stateClass=i<active?'done':i===active?'current':'';
+    const marker=i<active?'✓':String(i+1);
+    const status=i<active?'Completed':i===active?'Current recruiter task':'Upcoming';
+    return '<div class="recruiter-playbook-row '+stateClass+'">'+
+      '<div class="recruiter-playbook-number">'+marker+'</div>'+
+      '<div class="recruiter-playbook-title"><b>'+esc(s.title)+'</b><span>'+status+'</span></div>'+
+      '<div class="recruiter-playbook-copy"><small>Recruiter does</small><p>'+esc(s.doNow)+'</p></div>'+
+      '<div class="recruiter-playbook-copy"><small>Gate to continue</small><p>'+esc(s.doneWhen)+'</p></div>'+
+    '</div>';
+  }).join('');
+}
+function refreshRecruiterGuide(){
+  renderRecruiterGuide();
+  renderRecruiterPlaybook();
+}
+window.refreshRecruiterGuide=refreshRecruiterGuide;
+
+document.addEventListener('click',(e)=>{
+  const b=e.target.closest('[data-recruiter-guide-action]');
+  if(!b)return;
+  const action=b.dataset.recruiterGuideAction;
+  if(action==='open')openGuideAction(RECRUITER_GUIDE_STEPS[guideIndex()].action);
+  if(action==='workflow')openGuideAction('workflow');
+  if(action==='george')askGeorgeAboutCurrentStep();
+});
+
+const processStrip=document.getElementById('processStrip');
+if(processStrip)new MutationObserver(()=>refreshRecruiterGuide()).observe(processStrip,{childList:true,subtree:true});
+const candidateGrid=document.getElementById('candidateGrid');
+if(candidateGrid)new MutationObserver(()=>refreshRecruiterGuide()).observe(candidateGrid,{childList:true,subtree:true});
+
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('[data-process-step],[data-action="confirmFeedback"],[data-decision],[data-action="newsearch"]')){
+    setTimeout(refreshRecruiterGuide,0);
+  }
+},true);
+
+refreshRecruiterGuide();
 })();
 </script>
 <script type="module" src="./live.js"></script>
