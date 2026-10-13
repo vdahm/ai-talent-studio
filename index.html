@@ -533,6 +533,125 @@ button[data-view="talent"]{display:none!important}
 @media(max-width:1180px){.george-page-grid{grid-template-columns:1fr}.george-page-side{display:grid;grid-template-columns:1fr 1fr}.george-page-chat{min-height:520px}}
 @media(max-width:760px){.george-page-hero h1{font-size:34px}.george-page-side{grid-template-columns:1fr}.george-capabilities{grid-template-columns:1fr}}
 </style>
+
+<style id="collapsible-sidebar-styles">
+:root{--nav-expanded-width:236px;--nav-collapsed-width:72px}
+.sidebar{
+  width:var(--nav-width)!important;
+  transition:width .22s ease,padding .22s ease;
+  overflow:hidden;
+}
+.sidebar .brand{
+  position:relative;
+  padding-right:38px;
+}
+.sidebar-toggle{
+  position:absolute;
+  right:2px;
+  top:2px;
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#777781;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.sidebar-toggle:hover{background:#f1f1f3;color:#2f3035}
+.sidebar-toggle .icon{width:17px;height:17px}
+.sidebar-toggle .collapse-glyph{font-size:20px;line-height:1;transform:translateY(-1px)}
+body.sidebar-collapsed{--nav-width:var(--nav-collapsed-width)}
+body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
+
+.sidebar-collapsed .sidebar{
+  padding-left:12px!important;
+  padding-right:12px!important;
+}
+.sidebar-collapsed .sidebar .brand{
+  padding:0!important;
+  justify-content:center;
+  margin-bottom:26px;
+}
+.sidebar-collapsed .sidebar .brand-text,
+.sidebar-collapsed .sidebar .workspace-label,
+.sidebar-collapsed .sidebar .search-card,
+.sidebar-collapsed .sidebar .user-info,
+.sidebar-collapsed .sidebar .user>svg,
+.sidebar-collapsed .sidebar .side-brand-label,
+.sidebar-collapsed .sidebar .navbtn>span:not(.count){
+  display:none!important;
+}
+.sidebar-collapsed .sidebar .brand-logo{
+  width:38px!important;
+  height:38px!important;
+}
+.sidebar-collapsed .sidebar-toggle{
+  position:fixed;
+  left:20px;
+  top:78px;
+  right:auto;
+  width:32px;
+  height:32px;
+  background:#fff;
+  border:1px solid #e4e4e7;
+  box-shadow:0 3px 10px rgba(0,0,0,.04);
+  z-index:120;
+}
+.sidebar-collapsed .sidebar nav{
+  margin-top:42px;
+}
+.sidebar-collapsed .sidebar .navbtn{
+  width:44px!important;
+  height:44px;
+  min-height:44px!important;
+  margin:0 auto 8px!important;
+  padding:0!important;
+  justify-content:center!important;
+  border-radius:12px!important;
+  position:relative;
+}
+.sidebar-collapsed .sidebar .navbtn .icon{
+  width:19px!important;
+  height:19px!important;
+}
+.sidebar-collapsed .sidebar .navbtn .count{
+  position:absolute;
+  top:-4px;
+  right:-6px;
+  margin:0!important;
+  min-width:16px;
+  height:16px;
+  padding:0 4px!important;
+  display:grid;
+  place-items:center;
+  font-size:7px!important;
+  border:1px solid #e4e4e7;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+.sidebar-collapsed .sidebar .brand-setting{
+  display:flex!important;
+}
+.sidebar-collapsed .sidebar .user{
+  justify-content:center;
+  padding:14px 0 0!important;
+}
+.sidebar-collapsed .sidebar .user-avatar{
+  width:34px!important;
+  height:34px!important;
+}
+.app,
+.george-panel,
+.candidate-workbench,
+.backdrop{
+  transition:margin-left .22s ease,left .22s ease;
+}
+@media(max-width:980px){
+  body.sidebar-collapsed{--nav-width:0px}
+  .sidebar-toggle{display:none!important}
+}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -562,7 +681,7 @@ button[data-view="talent"]{display:none!important}
 <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M8 21h8"/></symbol><symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol><symbol id="i-type" viewBox="0 0 24 24"><path d="M4 6V4h16v2M12 4v16M8 20h8"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M18 10a7 7 0 00-12-3l-2 3M6 14a7 7 0 0012 3l2-3"/></symbol></defs></svg>
 <div class="nav-overlay" id="navOverlay"></div>
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
- <div class="brand"><div class="brand-logo" data-logo>VD</div><div class="brand-text"><div class="brand-name" data-brand-name>Volker Dahm</div><div class="brand-sub" data-tagline>AI Talent Partner</div></div></div>
+ <div class="brand"><div class="brand-logo" data-logo>VD</div><div class="brand-text"><div class="brand-name" data-brand-name>Volker Dahm</div><div class="brand-sub" data-tagline>AI Talent Partner</div></div><button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar"><span class="collapse-glyph" aria-hidden="true">‹</span></button></div>
  <div class="workspace-label">WORKSPACE</div>
  <nav>
   <button class="navbtn active" data-view="overview"><svg class="icon"><use href="#i-grid"/></svg><span>Overview</span></button>
@@ -1400,6 +1519,46 @@ renderGeorge();renderAttachments();updateGeorgeContext();
 })();
 </script>
 
+
+<script id="collapsible-sidebar-script">
+(function(){
+  'use strict';
+  const KEY='vd.studio.sidebarCollapsed';
+  const body=document.body;
+  const toggle=document.getElementById('sidebarToggle');
+  if(!toggle)return;
+
+  function readCollapsed(){
+    try{return localStorage.getItem(KEY)==='1';}
+    catch{return false;}
+  }
+  function saveCollapsed(value){
+    try{localStorage.setItem(KEY,value?'1':'0');}catch{}
+  }
+  function apply(collapsed){
+    body.classList.toggle('sidebar-collapsed',collapsed);
+    const glyph=toggle.querySelector('.collapse-glyph');
+    if(glyph)glyph.textContent=collapsed?'›':'‹';
+    toggle.setAttribute('aria-label',collapsed?'Expand sidebar':'Collapse sidebar');
+    toggle.title=collapsed?'Expand sidebar':'Collapse sidebar';
+  }
+
+  apply(readCollapsed());
+
+  toggle.addEventListener('click',()=>{
+    const next=!body.classList.contains('sidebar-collapsed');
+    apply(next);
+    saveCollapsed(next);
+  });
+
+  window.addEventListener('keydown',(e)=>{
+    if((e.metaKey||e.ctrlKey)&&e.shiftKey&&e.key.toLowerCase()==='s'){
+      e.preventDefault();
+      toggle.click();
+    }
+  });
+})();
+</script>
 <script type="module" src="./live.js"></script>
 </body>
 </html>
