@@ -946,6 +946,52 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
   margin:0;
 }
 </style>
+<style id="right-rail-george-20261013">
+/* Permanent right-hand context panel; George page uniquely shows Talent Explorer. */
+:root{--talent-right-width:390px;--george-width:390px}
+.george-panel{display:flex!important;left:auto!important;right:0!important;top:0!important;width:var(--talent-right-width)!important;height:100dvh!important;z-index:95!important;flex-direction:column!important;background:#fff!important;border-left:1px solid #e8e8eb!important;border-right:0!important;box-shadow:-10px 0 30px rgba(28,45,74,.035)!important}
+.talent-rail{display:none!important}
+body.george-page-active .talent-rail{display:flex!important}
+body.george-page-active .george-panel{display:none!important}
+.app{margin-right:var(--talent-right-width)!important}
+.george-messages{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain}
+.george-composer{flex:0 0 auto!important;position:relative!important;bottom:0!important;background:#fff!important;z-index:2!important}
+.george-input{min-height:44px!important;max-height:115px!important;resize:vertical}
+.george-live-note{font-size:9px!important}
+.george-controls{flex-wrap:wrap!important;flex-direction:row!important}
+.george-control{padding:6px 8px!important}
+.george-page{height:calc(100dvh - 125px);min-height:540px;display:flex;flex-direction:column;padding-bottom:0!important}
+.george-page-grid{flex:1;min-height:0}
+.george-page-chat{height:100%;min-height:0!important;max-height:100%;overflow:hidden}
+.george-page-messages{min-height:0;flex:1 1 0;overscroll-behavior:contain}
+.george-page-composer{flex:0 0 auto;position:relative;background:white}
+.george-page-input{min-height:45px;max-height:110px;resize:vertical}
+.candidate-workbench,.candidate-workbench:not(.hidden){left:auto!important;right:0!important;top:0!important;bottom:0!important;width:var(--talent-right-width)!important;height:100dvh!important;z-index:110!important;padding:15px 13px 24px!important;background:#f8f9fa!important;border-left:1px solid #e1e4e7;box-shadow:-8px 0 28px #1c2d4a15}
+.candidate-workbench-inner{width:100%!important;max-width:none!important}
+.candidate-profile-shell{display:flex!important;flex-direction:column!important;gap:12px!important}
+.candidate-profile-main,.candidate-profile-side{width:100%;min-width:0;gap:11px}
+.candidate-profile-hero{padding:16px!important;border-radius:15px!important}
+.candidate-profile-hero h1{font-size:23px!important}
+.candidate-section-card{padding:14px!important;border-radius:14px!important}
+.candidate-workbench-top{gap:6px;flex-wrap:wrap}
+.candidate-workbench-top .btn{font-size:10px;padding:7px!important}
+.recruiter-guide{padding:10px 13px!important;margin-bottom:13px!important;border-radius:13px!important}
+.recruiter-guide h2{font-size:14px!important;margin:2px 0!important}
+.recruiter-guide h2 span{font-size:11px!important}
+.recruiter-guide-summary{display:none!important}
+.recruiter-guide-grid{display:none!important}
+.recruiter-guide-step b{font-size:15px!important}
+.recruiter-guide-actions{margin-top:8px!important;gap:6px!important}
+.recruiter-guide-actions .btn{min-height:29px!important;font-size:9px!important;padding:5px 8px!important}
+.recruiter-guide-progress{margin-top:7px!important}
+.recruiter-journey-slider{display:flex;align-items:center;gap:10px;margin-top:8px}
+.recruiter-journey-slider input{flex:1;min-width:60px;accent-color:#B94D3A;cursor:pointer}
+.recruiter-journey-slider span{font-size:9px;font-weight:650;color:#1C2D4A;white-space:nowrap}
+.recruiter-journey-preview{margin-top:5px;font-size:10px;color:#6c737a;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.recruiter-journey-preview button{border:0;background:#f6e9e5;color:#953f30;border-radius:7px;padding:5px 8px;font-size:9px;cursor:pointer;white-space:nowrap}
+.recruiter-guide.reduced .recruiter-journey-slider,.recruiter-guide.reduced .recruiter-journey-preview{display:none!important}
+@media(max-width:700px){:root{--talent-right-width:min(390px,100vw)}.app{margin-right:0!important}.george-panel,.talent-rail{width:100vw!important;position:relative!important;height:70dvh!important}.candidate-workbench{width:100vw!important}.george-page{height:auto;min-height:650px}.george-page-grid{min-height:600px}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2002,6 +2048,8 @@ function renderRecruiterGuide(){
       '</div>'+
       '<div class="recruiter-guide-step"><b>'+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</b><span>workflow step</span></div>'+
     '</div>'+
+    '<div class="recruiter-journey-slider"><input id="recruiterJourneyRange" type="range" min="0" max="'+(RECRUITER_GUIDE_STEPS.length-1)+'" value="'+i+'" aria-label="Explore the sourcing workflow"><span id="recruiterJourneyStep">Step '+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</span></div>'+ 
+    '<div class="recruiter-journey-preview"><span id="recruiterJourneyTitle">'+esc(s.title)+'</span><button type="button" data-recruiter-guide-action="rolebrief">View role brief</button></div>'+
     '<div class="recruiter-guide-grid">'+
       '<div class="recruiter-guide-box"><small>Do now</small><b>'+esc(s.doNow)+'</b></div>'+
       '<div class="recruiter-guide-box"><small>Done when</small><b>'+esc(s.doneWhen)+'</b></div>'+
@@ -2043,6 +2091,7 @@ document.addEventListener('click',(e)=>{
   if(action==='open')openGuideAction(RECRUITER_GUIDE_STEPS[guideIndex()].action);
   if(action==='workflow')openGuideAction('workflow');
   if(action==='george')askGeorgeAboutCurrentStep();
+  if(action==='rolebrief')openGuideAction('brief');
 });
 
 const processStrip=document.getElementById('processStrip');
@@ -2104,5 +2153,59 @@ refreshRecruiterGuide();
 })();
 </script>
 <script type="module" src="./live.js"></script>
+<script id="right-rail-workspace-20261013">
+(function(){
+ 'use strict';
+ const byId=id=>document.getElementById(id);
+ const georgeView=byId('view-george');
+ const rail=byId('talentExplorerRail');
+ const george=byId('georgePanel');
+ const workbench=byId('candidateWorkbench');
+ function syncPanel(){
+   const isGeorge=!!georgeView&&!georgeView.classList.contains('hidden');
+   document.body.classList.toggle('george-page-active',isGeorge);
+   if(george)george.setAttribute('aria-hidden',isGeorge?'true':'false');
+   if(rail)rail.setAttribute('aria-hidden',isGeorge?'false':'true');
+ }
+ if(georgeView)new MutationObserver(syncPanel).observe(georgeView,{attributes:true,attributeFilter:['class']});
+ syncPanel();
+ const input=byId('georgePageInput');
+ const dictation=document.createElement('button');
+ dictation.type='button';
+ dictation.id='georgePageDictate';
+ dictation.className='george-page-tool';
+ dictation.innerHTML='<svg class="icon"><use href="#i-mic"></use></svg><span>Dictate</span>';
+ dictation.title='Dictate text into the George chat';
+ const tools=byId('georgePageVoice')?.parentElement;
+ if(tools){tools.insertBefore(dictation,byId('georgePageUpload'));}
+ let recognition=null;
+ dictation.addEventListener('click',()=>{
+   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+   if(!SR){dictation.title='Dictation unavailable in this browser; try browser speech recognition or system dictation';alert('Dictation is not supported by this browser. Try Chrome speech recognition or your operating system dictation.');return;}
+   if(recognition){recognition.stop();return;}
+   const rec=new SR(); recognition=rec;rec.lang=navigator.language||'en-US';rec.continuous=true;rec.interimResults=true;
+   const prefix=input.value.trim();let final='';
+   dictation.classList.add('listening');dictation.querySelector('span').textContent='Stop dictation';
+   rec.onresult=e=>{let interim='';for(let j=0;j<e.results.length;j++){const segment=e.results[j][0].transcript;if(e.results[j].isFinal){final+=segment+' ';}else{interim+=segment;}}input.value=[prefix,final.trim(),interim.trim()].filter(Boolean).join(' ');};
+   rec.onerror=()=>{dictation.title='Microphone access denied or speech recognition unavailable';};
+   rec.onend=()=>{recognition=null;dictation.classList.remove('listening');dictation.querySelector('span').textContent='Dictate';};
+   try{rec.start();}catch{recognition=null;dictation.classList.remove('listening');}
+ });
+ // A ChatGPT-style Enter-to-send composer; Shift+Enter creates a new line.
+ input?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();byId('georgePageSend')?.click();}},true);
+ byId('georgeInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();byId('georgeExecute')?.click();}},true);
+ const slider=()=>byId('recruiterJourneyRange');
+ const roleAction=()=>document.querySelector('[data-recruiter-guide-action="rolebrief"]');
+ document.addEventListener('input',e=>{
+   if(e.target!==slider())return;
+   const range=e.target;const steps=['Define the role brief','Calibration Round 1','Structured feedback','Calibration Round 2','Final calibration feedback','Lock sourcing profile','Candidate market map','Production sourcing','Evidence review','Recruiter decision','Shortlist and outreach'];
+   const v=Number(range.value);
+   const title=byId('recruiterJourneyTitle'),count=byId('recruiterJourneyStep');
+   if(title)title.textContent=v===0?'Define the role brief':(window.RECRUITER_GUIDE_STEPS?.[v]?.title||steps[v]||'Workflow stage '+(v+1));
+   if(count)count.textContent='Step '+(v+1)+' / '+(Number(range.max)+1);
+   const b=roleAction();if(b)b.textContent=v===0?'Open role brief':'View role brief';
+ });
+})();
+</script>
 </body>
 </html>
