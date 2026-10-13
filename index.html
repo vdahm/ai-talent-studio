@@ -1464,7 +1464,13 @@ body:has(#view-talent:not(.hidden)) #georgePanel{visibility:visible!important;po
 body:has(#view-talent:not(.hidden)) #candidateWorkbench.hidden{display:none!important}
 @media(max-width:1100px){body:has(#view-talent:not(.hidden)) #georgePanel{display:none!important}body.responsive-rail-open:has(#view-talent:not(.hidden)) #georgePanel{display:flex!important}}
 @media(max-width:600px){#talentInlineProfile .talent-inline-profile-bar{align-items:flex-start}}
-</style></head>
+</style><style id="talent-profile-sticky-header-clearance-20261013">
+:root{scroll-padding-top:calc(var(--ui-top,166px) + 18px)}
+#view-talent #talentInlineProfile:not(.hidden){scroll-margin-top:calc(var(--ui-top,166px) + 18px)!important}
+#view-talent .talent-inline-profile-bar{scroll-margin-top:calc(var(--ui-top,166px) + 20px)}
+@media(max-width:700px){#view-talent #talentInlineProfile:not(.hidden){scroll-margin-top:calc(var(--ui-top,166px) + 12px)!important}}
+</style>
+</head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2126,7 +2132,7 @@ function renderCandidateWorkbench(id){const c=getCandidate(id);if(!c)return;
 if(state.view==='talent'){
   george.candidateId=id;activeId=id;
   const inline=$('talentInlineProfile');
-  if(inline){inline.innerHTML='<div class="talent-inline-profile-bar"><div><span class="eyebrow">CANDIDATE PROFILE</span><h2>'+esc(displayName(c))+'</h2></div><button type="button" class="btn" id="talentInlineClose">← All candidates</button></div><div class="talent-inline-profile-content">'+candidatePanelHtml(c)+'</div>';inline.classList.remove('hidden');$('candidateWorkbench').classList.add('hidden');inline.scrollIntoView({block:'start',behavior:'smooth'});updateGeorgeContext();return;}
+  if(inline){inline.innerHTML='<div class="talent-inline-profile-bar"><div><span class="eyebrow">CANDIDATE PROFILE</span><h2>'+esc(displayName(c))+'</h2></div><button type="button" class="btn" id="talentInlineClose">← All candidates</button></div><div class="talent-inline-profile-content">'+candidatePanelHtml(c)+'</div>';inline.classList.remove('hidden');$('candidateWorkbench').classList.add('hidden');requestAnimationFrame(()=>{const header=document.querySelector('.topbar');const offset=(header?header.getBoundingClientRect().height:0)+16;const y=inline.getBoundingClientRect().top+window.scrollY-offset;window.scrollTo({top:Math.max(0,y),behavior:'smooth'});});updateGeorgeContext();return;}
 }
 george.candidateId=id;activeId=id;$('candidateWorkbenchContent').innerHTML=candidatePanelHtml(c);$('candidateWorkbenchContext').textContent=`${processTitle()} · ${c.id}`;$('candidateWorkbench').classList.remove('hidden');$('drawer')?.classList.add('hidden');$('backdrop')?.classList.add('hidden');updateGeorgeContext();}
 function closeCandidateWorkbench(){george.candidateId=null;$('candidateWorkbench').classList.add('hidden');$('talentInlineProfile')?.classList.add('hidden');updateGeorgeContext();}
