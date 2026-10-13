@@ -489,6 +489,50 @@ button[data-view="talent"]{display:none!important}
   .mobile-menu{display:none!important}
 }
 </style>
+
+<style id="george-page-styles">
+.george-page{max-width:1100px;margin:0 auto;padding-bottom:40px}
+.george-page-hero{padding:12px 0 26px;border-bottom:1px solid #e8e8eb;margin-bottom:24px}
+.george-page-hero .eyebrow{color:#8b8b92}
+.george-page-hero h1{font-size:42px;line-height:1.08;letter-spacing:-1.8px;color:#202123;margin:10px 0 9px}
+.george-page-hero h1 span{color:#B94D3A}
+.george-page-hero p{max-width:660px;color:#777780;font-size:12px;line-height:1.75}
+.george-page-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:20px}
+.george-page-chat{background:#fff;border:1px solid #e3e3e6;border-radius:22px;min-height:590px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.035)}
+.george-page-chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 18px;border-bottom:1px solid #ededee}
+.george-page-chat-head h2{font-size:15px;color:#25252a;letter-spacing:-.25px}
+.george-page-chat-head p{font-size:9px;color:#919198;margin-top:3px}
+.george-page-live{width:8px;height:8px;border-radius:50%;background:#5b9a78;box-shadow:0 0 0 5px #edf6f1}
+.george-page-messages{flex:1;overflow:auto;padding:22px 22px 14px;background:#fafafa}
+.george-page-messages .george-empty{background:transparent!important;border:0!important;padding:24px 6px!important}
+.george-page-composer{padding:14px 16px 16px;background:#fff;border-top:1px solid #ededee}
+.george-page-composer-box{border:1px solid #d9d9dd;border-radius:24px;background:#fff;padding:12px 13px 9px;box-shadow:0 2px 9px rgba(0,0,0,.04)}
+.george-page-input{width:100%;min-height:82px;resize:none;border:0;outline:0;background:transparent;font:inherit;font-size:13px;line-height:1.6;color:#28282d}
+.george-page-input::placeholder{color:#9c9ca3}
+.george-page-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.george-page-tools{display:flex;gap:7px;flex-wrap:wrap}
+.george-page-tool{border:1px solid #e0e0e3;background:#fff;border-radius:999px;min-height:33px;padding:7px 11px;font-size:9px;font-weight:650;color:#5d5d65;display:inline-flex;align-items:center;gap:6px}
+.george-page-tool:hover{background:#f5f5f6}
+.george-page-send{width:36px;height:36px;border:0;border-radius:50%;background:#202123;color:#fff;display:grid;place-items:center}
+.george-page-send .icon,.george-page-tool .icon{width:13px;height:13px}
+.george-page-side{display:flex;flex-direction:column;gap:14px}
+.george-page-card{background:#fff;border:1px solid #e3e3e6;border-radius:18px;padding:16px}
+.george-page-card small{display:block;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:#9999a0;font-weight:700;margin-bottom:7px}
+.george-page-card h3{font-size:14px;color:#2b2b30;margin:0 0 6px}
+.george-page-card p{font-size:10px;line-height:1.65;color:#7e7e86}
+.george-page-context{padding:12px;border-radius:13px;background:#f6f7f8;margin-top:10px}
+.george-page-context b{display:block;font-size:11px;color:#394149}
+.george-page-context span{display:block;font-size:9px;color:#858c92;line-height:1.5;margin-top:4px}
+.george-quick-list{display:grid;gap:7px;margin-top:10px}
+.george-quick{border:1px solid #e6e6e8;background:#fff;border-radius:12px;padding:10px 11px;text-align:left;color:#4b4b52;font-size:10px;line-height:1.45}
+.george-quick:hover{background:#f7f7f8;border-color:#d9d9dc}
+.george-capabilities{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.george-capability{border:1px solid #ececef;border-radius:12px;padding:10px;background:#fbfbfc}
+.george-capability b{display:block;font-size:10px;color:#404047;margin-bottom:4px}
+.george-capability span{font-size:8.5px;line-height:1.45;color:#8a8a91}
+@media(max-width:1180px){.george-page-grid{grid-template-columns:1fr}.george-page-side{display:grid;grid-template-columns:1fr 1fr}.george-page-chat{min-height:520px}}
+@media(max-width:760px){.george-page-hero h1{font-size:34px}.george-page-side{grid-template-columns:1fr}.george-capabilities{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -522,7 +566,7 @@ button[data-view="talent"]{display:none!important}
  <div class="workspace-label">WORKSPACE</div>
  <nav>
   <button class="navbtn active" data-view="overview"><svg class="icon"><use href="#i-grid"/></svg><span>Overview</span></button>
-  <button class="navbtn" data-view="talent"><svg class="icon"><use href="#i-users"/></svg><span>Talent explorer</span><span class="count" id="navCount">35</span></button>
+  <button class="navbtn" data-view="george"><svg class="icon"><use href="#i-message"/></svg><span>George</span><span class="count">AI</span></button>
   <button class="navbtn" data-view="market"><svg class="icon"><use href="#i-radar"/></svg><span>Market map</span></button>
   <button class="navbtn" data-view="evidence"><svg class="icon"><use href="#i-shield"/></svg><span>Evidence</span></button>
   <button class="navbtn" data-view="workflow"><svg class="icon"><use href="#i-flow"/></svg><span>3D Sourcing</span></button>
@@ -546,6 +590,65 @@ button[data-view="talent"]{display:none!important}
   </div>
   <div class="insight-row"><section class="panel"><div class="panel-head"><div><h2>Where the expertise sits</h2><p>Primary clusters in the reviewed pool</p></div><button class="textbtn" data-view="market">All clusters <svg class="icon"><use href="#i-arrow"/></svg></button></div><div class="clusters-mini" id="clusterMini"></div></section><div class="insight-note"><div class="eyebrow" style="font-size:9px">MARKET PERSPECTIVE</div><h3>A focused market.<br>Not an endless list.</h3><p>The original market model estimates 65&ndash;90 high-fit profiles. The recommended next step is a controlled search wave, not volume at the expense of relevance.</p><button class="textbtn" data-view="market">Explore the market model <svg class="icon"><use href="#i-arrow"/></svg></button></div></div>
  </section>
+
+ <section class="view hidden" id="view-george">
+  <div class="george-page">
+   <div class="george-page-hero">
+    <div class="eyebrow">CONTEXTUAL AI COPILOT</div>
+    <h1>George <span>Your Copilot</span></h1>
+    <p>Use George as the conversational control layer for your search. Ask questions about the active candidate, dictate recruiter feedback, prepare a new search, challenge evidence, or move the sourcing process forward with confirmation.</p>
+   </div>
+   <div class="george-page-grid">
+    <section class="george-page-chat" aria-label="George conversation workspace">
+     <div class="george-page-chat-head">
+      <div><h2>Conversation</h2><p>Synced with the persistent George panel</p></div>
+      <span class="george-page-live" aria-hidden="true"></span>
+     </div>
+     <div id="georgePageMessages" class="george-page-messages"></div>
+     <div class="george-page-composer">
+      <div class="george-page-composer-box">
+       <textarea id="georgePageInput" class="george-page-input" placeholder="Ask George anything about the current search, candidate or sourcing process..."></textarea>
+       <div class="george-page-controls">
+        <div class="george-page-tools">
+         <button id="georgePageVoice" class="george-page-tool" type="button"><svg class="icon"><use href="#i-mic"/></svg>Speak with George</button>
+         <button id="georgePageUpload" class="george-page-tool" type="button"><svg class="icon"><use href="#i-plus"/></svg>Upload content</button>
+        </div>
+        <button id="georgePageSend" class="george-page-send" type="button" aria-label="Send to George"><svg class="icon"><use href="#i-arrow"/></svg></button>
+       </div>
+      </div>
+     </div>
+    </section>
+    <aside class="george-page-side">
+     <section class="george-page-card">
+      <small>Current context</small>
+      <h3>George follows your workspace</h3>
+      <p>The active view, sourcing stage and opened candidate are automatically used as context.</p>
+      <div class="george-page-context"><b id="georgePageContextTitle">Overview</b><span id="georgePageContextDetail">Current sourcing context</span></div>
+     </section>
+     <section class="george-page-card">
+      <small>Quick actions</small>
+      <h3>Try George</h3>
+      <div class="george-quick-list">
+       <button class="george-quick" type="button" data-george-page-prompt="What is the next step in this sourcing process?">What is the next step?</button>
+       <button class="george-quick" type="button" data-george-page-prompt="Summarize the current sourcing profile and the most important hard exclusions.">Summarize the sourcing profile</button>
+       <button class="george-quick" type="button" data-george-page-prompt="What should I review before moving into the next production batch?">Prepare the next production decision</button>
+       <button class="george-quick" type="button" data-george-page-prompt="Open a new search and help me build the role brief.">Start a new search</button>
+      </div>
+     </section>
+     <section class="george-page-card">
+      <small>What George can do</small>
+      <div class="george-capabilities">
+       <div class="george-capability"><b>Candidate Q&A</b><span>Explain inclusion, fit, evidence and uncertainty.</span></div>
+       <div class="george-capability"><b>Recruiter feedback</b><span>Capture voice or text feedback in candidate context.</span></div>
+       <div class="george-capability"><b>Search setup</b><span>Turn natural-language instructions into a role brief.</span></div>
+       <div class="george-capability"><b>Process control</b><span>Prepare process-changing actions and request confirmation.</span></div>
+      </div>
+     </section>
+    </aside>
+   </div>
+  </div>
+ </section>
+
  <section class="view hidden" id="view-talent">
   <div class="view-head"><div><div class="eyebrow">PEOPLE, WITH CONTEXT</div><h1>Talent explorer</h1><p>Review, enrich and move candidates through the sourcing process without losing the historical decisions.</p></div><div class="row"><button class="btn" data-action="feedbackSummary" id="submitFeedbackTop"><svg class="icon"><use href="#i-message"/></svg>Submit feedback</button><button class="btn" id="campaignSelectedBtn" data-ats-action="campaignSelected"><svg class="icon"><use href="#i-spark"/></svg>Send to campaign</button><button class="btn primary" id="downloadSelectedBtn" data-action="downloadSelected"><svg class="icon"><use href="#i-download"/></svg>Download selected</button></div></div>
   <div id="processStrip" class="process-strip"></div>
@@ -692,7 +795,7 @@ const sourceHost=s=>{try{return new URL(s).hostname.replace(/^www\./,'');}catch{
 function tierBadge(t){const cl=t==='A'?'green':t==='D'?'amber':t==='B'?'purple':'gray';return `<span class="pill ${cl} tier">Tier ${esc(t)}</span>`;}
 function toast(msg){clearTimeout(toastTimer);$('toast').textContent=msg;$('toast').classList.remove('hidden');toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3600);}
 function applyBrand(){document.documentElement.style.setProperty('--accent',brand.accent);const rgb=[1,3,5].map(i=>parseInt(brand.accent.slice(i,i+2),16));document.documentElement.style.setProperty('--accent-rgb',rgb.join(','));document.documentElement.style.setProperty('--accent-soft',`rgba(${rgb.join(',')},.085)`);$$('[data-brand-name]').forEach(e=>e.textContent=brand.name);$$('[data-tagline]').forEach(e=>e.textContent=brand.tagline);$$('[data-logo]').forEach(e=>{e.innerHTML=brand.logo?`<img alt="${esc(brand.name)} logo" src="${brand.logo}">`:esc(brand.monogram);});document.title=brand.name+' | Talent Studio';}
-function switchView(view){if(!['overview','talent','market','evidence','workflow'].includes(view))return;state.view=view;$$('.view').forEach(e=>{e.classList.toggle('hidden',e.id!=='view-'+view);e.classList.toggle('print-target',e.id==='view-'+view);});$$('[data-view]').forEach(e=>{if(e.classList.contains('navbtn')){e.classList.toggle('active',e.dataset.view===view);e.setAttribute('aria-current',e.dataset.view===view?'page':'false');}});$('sidebar').classList.remove('open');$('navOverlay').classList.remove('on');if(view==='talent')renderTalent();window.scrollTo({top:0,behavior:'instant'});}
+function switchView(view){if(!['overview','george','talent','market','evidence','workflow'].includes(view))return;state.view=view;$$('.view').forEach(e=>{e.classList.toggle('hidden',e.id!=='view-'+view);e.classList.toggle('print-target',e.id==='view-'+view);});$$('[data-view]').forEach(e=>{if(e.classList.contains('navbtn')){e.classList.toggle('active',e.dataset.view===view);e.setAttribute('aria-current',e.dataset.view===view?'page':'false');}});$('sidebar').classList.remove('open');$('navOverlay').classList.remove('on');if(view==='talent')renderTalent();window.scrollTo({top:0,behavior:'instant'});}
 function metric(label,value,sub,ico){return `<div class="metric"><div class="metric-top"><span>${label}</span>${icon(ico)}</div><div class="num">${value}</div><div class="metric-bottom"><span class="dot"></span>${sub}</div></div>`;}
 function clusters(){const groups={};for(const c of getPool().filter(c=>reviewOf(c).status!=='excluded'&&c.cluster)){(groups[c.cluster]??=[]).push(c);}return Object.entries(groups).map(([name,people])=>({name,short:DATA.meta.clusterNames[name]||name,people,count:people.length,evidence:Math.round(people.reduce((n,c)=>n+(c.evidence||0),0)/people.length),match:Math.round(people.reduce((n,c)=>n+(c.match||0),0)/people.length)})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));}
 function renderOverview(){const pool=getPool().filter(c=>reviewOf(c).status!=='excluded'),cs=clusters();$('overviewMetrics').innerHTML=metric('Profiles in this stage',pool.length,currentProcess().title,'users')+metric('Feedback pending',pool.filter(c=>!reviewOf(c).feedbackGiven).length,'Human review gate','message')+metric('Expertise clusters',new Set(pool.map(c=>c.cluster).filter(Boolean)).size,'Visible at this step','grid')+(stageHasEvidence()?metric('High-evidence profiles',pool.filter(c=>c.evidence>=80).length,'Evidence available','shield'):metric('Evidence enrichment','Later step','Not yet present','shield'));const top=stageHasEvidence()?[...pool].sort((a,b)=>(b.evidence||0)-(a.evidence||0)).slice(0,4):pool.slice(0,4);$('topList').innerHTML=top.map(c=>`<button class="top-row" data-candidate="${c.id}"><div class="initial ${esc((c.firm||'').toLowerCase())}">${esc(initials(c))}</div><div class="person"><div class="name">${esc(displayName(c))}</div><div class="sub">${esc(c.title.split('|')[0])} &middot; ${esc(c.firm)}</div></div><div class="score">${stageHasEvidence()?c.evidence:(c.fit??'—')}<small>${stageHasEvidence()?'EVIDENCE':'FIT'}</small></div></button>`).join('');$('clusterMini').innerHTML=cs.slice(0,4).map(c=>`<button class="cluster-bar" data-cluster="${esc(c.name)}" style="border:0;background:none;text-align:left;padding:0"><div class="caption"><span>${esc(c.short)}</span><b style="font-weight:500">${c.count}</b></div><div class="bar"><span style="width:${Math.min(100,c.count/9*100)}%"></span></div></button>`).join('');renderRadar();}
@@ -1051,7 +1154,7 @@ phone:[
 'use strict';
 const george={candidateId:null,attachments:[],pendingAction:null,listening:null,conversation:readStore('vd.studio.george.conversation',[])};
 if(!Array.isArray(george.conversation))george.conversation=[];
-const viewNames={overview:'Overview',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
+const viewNames={overview:'Overview',george:'George · Your Copilot',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
 const processTitle=()=>{const s=PROCESS_STEPS.find(x=>x.id===state.processStep);return s?s.title:'Current sourcing step';};
 function candidateContext(){return george.candidateId?getCandidate(george.candidateId):null;}
 function modalTitle(){const m=$('modal');if(!m||m.classList.contains('hidden'))return'';return m.querySelector('.modal-head h2,h2')?.textContent?.trim()||'Open submenu';}
@@ -1082,7 +1185,7 @@ function candidateWhy(c){
 function candidateScore(c){let out=`For ${displayName(c)}, the stored calibrated fit is ${c.fit??'not available'}/100.`;if(c.match!=null)out+=` Claim alignment is ${c.match}/100.`;if(c.evidence!=null)out+=` Evidence strength is ${c.evidence}/100 (${c.tier||'tier not set'}).`;if(c.caveat)out+=`\n\nMain caveat: ${c.caveat}`;return out;}
 function candidateEvidence(c){const src=(c.sources||[]).filter(Boolean);let out=`Evidence for ${displayName(c)}: ${c.evidence??'not scored'}/100${c.tier?' · Tier '+c.tier:''}.`;if(c.summary)out+=`\n\n${c.summary}`;if(c.quantitative)out+=`\n\nQuantitative evidence: ${c.quantitative}`;if(c.caveat)out+=`\n\nCaveat: ${c.caveat}`;if(src.length)out+=`\n\nStored sources: ${src.join(' · ')}`;return out;}
 function candidateSummary(c){const a=(c.areas||'').split(';').map(x=>x.trim()).filter(Boolean).slice(0,5);return `${displayName(c)} is stored as ${c.title||'role not available'} at ${c.company||'company not available'} in ${c.location||'location not available'}.${a.length?' Main expertise: '+a.join(', ')+'.':''}\n\n${c.summary||c.researchNote||'No additional professional summary is stored for this profile.'}`;}
-function activeViewAnswer(q){const step=PROCESS_STEPS.find(x=>x.id===state.processStep);const next=step?.next?PROCESS_STEPS.find(x=>x.id===step.next):null;if(/next step|nächste[rn]? schritt|weiter/i.test(q)){return next?`The current process step is “${step.title}”. The next defined step is “${next.title}”. You can ask me to prepare that transition; I will request confirmation before changing the process state.`:`“${step?.title||'Current step'}” is currently the last defined step in this mock workflow.`;}if(state.view==='talent')return `You are in Talent Explorer at “${step?.title||state.processStep}”. I can explain the visible pool, open or fill a new-search brief, answer questions about a selected candidate, or capture recruiter feedback.`;if(state.view==='market')return `You are in Candidate Market Map. I can explain how the market estimate relates to the locked sourcing profile and what must be completed before the Evidence Check.`;if(state.view==='evidence')return `You are in Evidence Check. I can explain evidence strength, corroboration gaps and why the evidence changes confidence without making an automatic hiring decision.`;if(state.view==='workflow')return `You are in 3D Sourcing. I can explain the current process state, the locked criteria and the historical calibration decisions.`;return `You are on the Overview. I can explain the radar, the ranking signals or take a search instruction and prepare the Talent Explorer / New Search inputs.`;}
+function activeViewAnswer(q){const step=PROCESS_STEPS.find(x=>x.id===state.processStep);const next=step?.next?PROCESS_STEPS.find(x=>x.id===step.next):null;if(/next step|nächste[rn]? schritt|weiter/i.test(q)){return next?`The current process step is “${step.title}”. The next defined step is “${next.title}”. You can ask me to prepare that transition; I will request confirmation before changing the process state.`:`“${step?.title||'Current step'}” is currently the last defined step in this mock workflow.`;}if(state.view==='george')return `You are in the dedicated George workspace at “${step?.title||state.processStep}”. I can answer questions about the current search, candidate and evidence, capture recruiter feedback, prepare a new search, or propose the next process action for confirmation.`;if(state.view==='talent')return `You are in Talent Explorer at “${step?.title||state.processStep}”. I can explain the visible pool, open or fill a new-search brief, answer questions about a selected candidate, or capture recruiter feedback.`;if(state.view==='market')return `You are in Candidate Market Map. I can explain how the market estimate relates to the locked sourcing profile and what must be completed before the Evidence Check.`;if(state.view==='evidence')return `You are in Evidence Check. I can explain evidence strength, corroboration gaps and why the evidence changes confidence without making an automatic hiring decision.`;if(state.view==='workflow')return `You are in 3D Sourcing. I can explain the current process state, the locked criteria and the historical calibration decisions.`;return `You are on the Overview. I can explain the radar, the ranking signals or take a search instruction and prepare the Talent Explorer / New Search inputs.`;}
 function fillSearchFromGeorge(text){
  showNewSearch();setTimeout(()=>{const brief=$('searchBrief');if(brief)brief.value=text;const companies=$('searchCompanies');if(companies&&/mckinsey|bcg|bain/i.test(text))companies.value=['McKinsey','BCG','Bain'].filter(x=>new RegExp(x,'i').test(text)).join(', ')||companies.value;const locations=$('searchLocations');const locs=['Singapore','Malaysia','Germany','USA','United States','Switzerland','Austria'].filter(x=>new RegExp(x.replace('United States','USA|United States'),'i').test(text));if(locations&&locs.length)locations.value=locs.join(', ');updateGeorgeContext();},0);
  return 'I opened New Search and placed your instruction into the search brief. Review the structured fields on the left before starting the research run.';
@@ -1167,6 +1270,58 @@ renderGeorge();renderAttachments();updateGeorgeContext();
 })();
 </script>
 
+
+
+<script id="george-page-script">
+(function(){
+  'use strict';
+  const $g=(id)=>document.getElementById(id);
+  const pageMessages=$g('georgePageMessages');
+  const sourceMessages=$g('georgeMessages');
+  const pageInput=$g('georgePageInput');
+  if(!pageMessages||!sourceMessages||!pageInput)return;
+
+  function syncMessages(){
+    pageMessages.innerHTML=sourceMessages.innerHTML;
+    pageMessages.scrollTop=pageMessages.scrollHeight;
+  }
+  function syncContext(){
+    const title=$g('georgeContextTitle')?.textContent||'Current workspace';
+    const detail=$g('georgeContextDetail')?.textContent||'';
+    if($g('georgePageContextTitle'))$g('georgePageContextTitle').textContent=title;
+    if($g('georgePageContextDetail'))$g('georgePageContextDetail').textContent=detail;
+  }
+  function send(text){
+    const value=String(text||pageInput.value||'').trim();
+    if(!value)return;
+    const persistentInput=$g('georgeInput');
+    if(!persistentInput)return;
+    persistentInput.value=value;
+    pageInput.value='';
+    $g('georgeExecute')?.click();
+    setTimeout(()=>{syncMessages();syncContext();},0);
+  }
+
+  $g('georgePageSend')?.addEventListener('click',()=>send());
+  pageInput.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();send();}
+  });
+  $g('georgePageVoice')?.addEventListener('click',()=>$g('georgeSpeak')?.click());
+  $g('georgePageUpload')?.addEventListener('click',()=>$g('georgeUploadBtn')?.click());
+  document.addEventListener('click',(e)=>{
+    const b=e.target.closest('[data-george-page-prompt]');
+    if(!b)return;
+    send(b.dataset.georgePagePrompt||'');
+  });
+
+  new MutationObserver(syncMessages).observe(sourceMessages,{childList:true,subtree:true,characterData:true});
+  const contextRoot=$g('georgePanel');
+  if(contextRoot)new MutationObserver(syncContext).observe(contextRoot,{childList:true,subtree:true,characterData:true});
+
+  syncMessages();
+  syncContext();
+})();
+</script>
 
 <script id="talent-rail-script">
 (function(){
