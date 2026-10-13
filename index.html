@@ -652,6 +652,43 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
   .sidebar-toggle{display:none!important}
 }
 </style>
+
+<style id="george-folder-only-styles">
+/* George is no longer a permanent column.
+   The hidden runtime panel remains in the DOM only as the conversation engine. */
+:root{--george-left-width:0px}
+.george-panel{display:none!important}
+.app{
+  margin-left:var(--nav-width)!important;
+  margin-right:var(--talent-right-width)!important;
+}
+.candidate-workbench{
+  left:var(--nav-width)!important;
+  right:var(--talent-right-width)!important;
+}
+.backdrop{
+  left:var(--nav-width)!important;
+  right:var(--talent-right-width)!important;
+}
+.modal{
+  left:calc(
+    var(--nav-width) +
+    (100vw - var(--nav-width) - var(--talent-right-width))/2
+  )!important;
+  max-width:calc(100vw - var(--nav-width) - var(--talent-right-width) - 30px)!important;
+}
+.modal.wide{
+  width:min(1030px,calc(100vw - var(--nav-width) - var(--talent-right-width) - 30px))!important;
+}
+#liveUserChip{
+  right:calc(var(--talent-right-width) + 18px)!important;
+}
+@media(max-width:980px){
+  .app{margin-left:var(--nav-width)!important}
+  .candidate-workbench{left:var(--nav-width)!important}
+  .backdrop{left:var(--nav-width)!important}
+}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -678,14 +715,14 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 00-2-2H5a2 2 0 00-2 2v9a2 2 0 002 2h3"/></symbol>
 <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
-<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M8 21h8"/></symbol><symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol><symbol id="i-type" viewBox="0 0 24 24"><path d="M4 6V4h16v2M12 4v16M8 20h8"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M18 10a7 7 0 00-12-3l-2 3M6 14a7 7 0 0012 3l2-3"/></symbol></defs></svg>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3M8 21h8"/></symbol><symbol id="i-message" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol><symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M3 8h18"/></symbol><symbol id="i-type" viewBox="0 0 24 24"><path d="M4 6V4h16v2M12 4v16M8 20h8"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M18 10a7 7 0 00-12-3l-2 3M6 14a7 7 0 0012 3l2-3"/></symbol></defs></svg>
 <div class="nav-overlay" id="navOverlay"></div>
 <aside class="sidebar" id="sidebar" aria-label="Main navigation">
  <div class="brand"><div class="brand-logo" data-logo>VD</div><div class="brand-text"><div class="brand-name" data-brand-name>Volker Dahm</div><div class="brand-sub" data-tagline>AI Talent Partner</div></div><button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar"><span class="collapse-glyph" aria-hidden="true">‹</span></button></div>
  <div class="workspace-label">WORKSPACE</div>
  <nav>
   <button class="navbtn active" data-view="overview"><svg class="icon"><use href="#i-grid"/></svg><span>Overview</span></button>
-  <button class="navbtn" data-view="george"><svg class="icon"><use href="#i-message"/></svg><span>George</span><span class="count">AI</span></button>
+  <button class="navbtn" data-view="george"><svg class="icon"><use href="#i-folder"/></svg><span>George</span><span class="count">AI</span></button>
   <button class="navbtn" data-view="market"><svg class="icon"><use href="#i-radar"/></svg><span>Market map</span></button>
   <button class="navbtn" data-view="evidence"><svg class="icon"><use href="#i-shield"/></svg><span>Evidence</span></button>
   <button class="navbtn" data-view="workflow"><svg class="icon"><use href="#i-flow"/></svg><span>3D Sourcing</span></button>
@@ -720,7 +757,7 @@ body:not(.sidebar-collapsed){--nav-width:var(--nav-expanded-width)}
    <div class="george-page-grid">
     <section class="george-page-chat" aria-label="George conversation workspace">
      <div class="george-page-chat-head">
-      <div><h2>Conversation</h2><p>Synced with the persistent George panel</p></div>
+      <div><h2>Conversation</h2><p>George opens here only when you choose the folder</p></div>
       <span class="george-page-live" aria-hidden="true"></span>
      </div>
      <div id="georgePageMessages" class="george-page-messages"></div>
