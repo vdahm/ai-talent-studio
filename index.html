@@ -2532,6 +2532,7 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     search.closest('label').classList.remove('hidden');
     list.classList.remove('hidden');
     railRoot.querySelector('.talent-rail-actions')?.classList.remove('hidden');
+    window.dispatchEvent(new CustomEvent('studio:rail-profile',{detail:{open:false}}));
   }
   function openRailProfile(id){
     const c=typeof getCandidate==='function'?getCandidate(id):null;
@@ -2553,6 +2554,7 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     railDetail.dataset.candidateName=name;
     window.talentStudioGeorge?.selectCandidate?.(id);
     railDetail.classList.remove('hidden');
+    window.dispatchEvent(new CustomEvent('studio:rail-profile',{detail:{open:true,candidateId:id}}));
     railDetail.scrollTop=0;
   }
   let railDictation=null;
@@ -3237,7 +3239,7 @@ function pending(c){
 function name(c){return String(c.name||'Candidate')}
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function paintCandidates(){
- if(currentTool!=='talent')return;
+ if(currentTool!=='talent'||document.getElementById('talentRailCandidateDetail')?.classList.contains('hidden')===false)return;
  const st=step(),assigned=relevant(),total=assigned.length,role=['brief','locked'].includes(st);
  let outstanding=role?assigned:assigned.filter(pending),completed=role?0:total-outstanding.length;
  const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
@@ -3278,7 +3280,7 @@ function update(force=false){
  document.body.classList.toggle('task-rail-context-feedback',tool==='talent'&&/feedback/.test(st));
  document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
  document.body.classList.toggle('task-rail-context-production',tool==='talent'&&st==='production');
- if(tool==='talent')paintCandidates();
+ if(tool==='talent' && document.getElementById('talentRailCandidateDetail')?.classList.contains('hidden')!==false)paintCandidates();
  if(typeof window.renderEvidenceWorkbench==='function')window.renderEvidenceWorkbench();
 }
 document.addEventListener('click',e=>{
@@ -3451,5 +3453,28 @@ render();
 #talentRailCandidateDetail .decision-btns button{flex:1 1 74px}
 #talentRailCandidateDetail .rail-george-chat{flex:0 0 auto!important}
 </style>
+<script id="studio-routing-guard-20261014">
+(function(){
+ 'use strict';
+ const rail=document.getElementById('talentExplorerRail');
+ if(!rail)return;
+ // Single delegation boundary: candidate buttons in the right rail never
+ // reach any main-workspace candidate handler.
+ rail.addEventListener('click',function(e){
+  const candidate=e.target.closest('[data-rail-candidate],[data-task-open]');
+  if(!candidate)return;
+  const id=candidate.getAttribute('data-rail-candidate')||candidate.getAttribute('data-task-open');
+  if(!id)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+  window.openTalentRailCandidate?.(id);
+ },true);
+ // Preserve current main page while inspecting a sidebar candidate.
+ window.addEventListener('studio:rail-profile',function(e){
+  const main=document.getElementById('workflowCandidateDetail');
+  const wb=document.getElementById('candidateWorkbench');
+  if(e.detail?.open){main?.classList.add('hidden');wb?.classList.add('hidden');}
+ });
+})();
+</script>
 </body>
 </html>
