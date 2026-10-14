@@ -2846,7 +2846,10 @@ function journeyProgress(step){
   return {done:n,total:people.length,label:'assessed',remaining:people.length-n};
  }
  if(step.id==='brief'){
-  const br=state.liveBrief||{};const keys=['role','companies','locations','focus'],done=keys.filter(k=>String(br[k]||'').trim()).length;
+  // Reuse the same resolved brief as the right sidebar, including locked-profile fallback.
+  const br=typeof window.getStudioRoleBrief==='function'?window.getStudioRoleBrief():(state.liveBrief||{});
+  const keys=['role','companies','locations','focus'];
+  const done=keys.filter(k=>String(br[k]||'').trim()).length;
   return {done,total:keys.length,label:'defined',remaining:keys.length-done};
  }
  if(step.id==='evidence'){
@@ -3180,6 +3183,9 @@ function projectBrief(){
   source:state.liveBrief?'Current search + locked sourcing profile':'Locked sourcing profile'
  };
 }
+// Shared canonical role brief for sidebar, top journey, and workflow cards.
+window.getStudioRoleBrief=projectBrief;
+if(typeof window.refreshRecruiterGuide==='function')requestAnimationFrame(window.refreshRecruiterGuide);
 function roleBrief(){
  const b=projectBrief(),fields=[['role','Target role / seniority','briefcase'],['companies','Target companies','building'],['locations','Search geography','map-pin'],['focus','Experience & focus','target']];
  const complete=fields.filter(([k])=>String(b[k]||'').trim()).length;
