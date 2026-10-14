@@ -1952,7 +1952,12 @@ function applyFeedbackReset(){const ids=state.resetMode==='all'?getPool().map(c=
 function feedbackRuleChanges(changed){const step=state.processStep;if(['cal1','feedback1'].includes(step))return ['Retain the Principal-to-Partner core range.','Keep Expert Partner variants available where the consulting role remains relevant.','Exclude office-leadership titles above ordinary Partner level.','Exclude operating-company CEO transitions from the target pool.'];if(['cal2','feedback2'].includes(step))return ['Use the second-round approvals to lock the refined sourcing profile.','Maintain Singapore and Malaysia as the target geography.','Preserve individual exclusions instead of generalising them to an entire expert track.'];const excluded=changed.filter(c=>reviewOf(c).status==='excluded').length,approved=changed.filter(c=>reviewOf(c).status==='approved').length;return [`${approved} updated profile${approved===1?'':'s'} reinforce the positive anchor set.`,`${excluded} updated exclusion${excluded===1?'':'s'} will be retained as negative signal${excluded===1?'':'s'}.`,'Candidate-specific comments remain attached and are applied to the next controlled search step.'];}
 function showFeedbackSummary(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});if(!changed.length){toast('There is no new feedback to submit. Reopen or change at least one profile first.');return;}const counts={approved:0,hold:0,excluded:0,pending:0};changed.forEach(c=>counts[reviewOf(c).status in counts?reviewOf(c).status:'pending']++);const open=pool.filter(c=>!reviewOf(c).feedbackGiven).length,changes=feedbackRuleChanges(changed);$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Review feedback before the next step.')+`<p class="intro">This is the decision gate. Nothing changes the search until you confirm. You can continue even with open feedback; those profiles remain explicitly pending.</p><div class="summary-grid"><div class="summary-stat"><b>${counts.approved}</b><span>Approved</span></div><div class="summary-stat"><b>${counts.hold}</b><span>On hold</span></div><div class="summary-stat"><b>${counts.excluded}</b><span>Excluded</span></div><div class="summary-stat"><b>${open}</b><span>Still pending</span></div></div>${open?`<div class="stage-warning"><b>${open} profile${open===1?' is':'s are'} still open.</b> They will remain Feedback pending and will not be silently approved or excluded.</div>`:''}<div class="field"><label>Feedback captured in this submission</label><div class="check-list">${changed.map(c=>`<div class="check-row"><span>${esc(feedbackSummaryFor(c))}</span></div>`).join('')}</div></div><div class="field" style="margin-top:16px"><label>Search changes derived from this feedback</label><div class="notice" style="margin:0">${changes.map(x=>`&bull; ${esc(x)}`).join('<br>')}</div></div><div class="modal-foot"><button class="btn" data-action="close">Go back</button><button class="btn primary" data-action="confirmFeedback">Confirm &amp; continue ${icon('arrow')}</button></div>`;showLayer('modal');}
 function confirmFeedback(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});for(const c of changed)setReview(c,{feedbackProcessed:true});const step=currentProcess(),nextId=step.next||step.id;setProcessStep(nextId,true);closeLayers();toast('Feedback submitted. The next process step is now active.');}
-function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return;state.processStep=id;saveStore('vd.studio.processStep',id);/* The current journey step does not change main-workspace filters or selections. */renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate&&state.view!=='workflow')switchView(step.targetView||'talent');window.dispatchEvent(new Event('studio-step-changed'));window.dispatchEvent(new CustomEvent('studio:changed',{detail:{type:'step',step:id}}));toast(`Process snapshot: ${step.title}`);}
+function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return false;
+ const from=PROCESS_STEPS.findIndex(x=>x.id===state.processStep),to=PROCESS_STEPS.findIndex(x=>x.id===id);
+ if(to>from){if(to!==from+1){toast('Complete each sourcing step before moving ahead.');return false;}
+  const gate=journeyProgress(PROCESS_STEPS[from]);
+  if(gate.total===0||gate.remaining!==0){toast(gate.remaining===null?'Review and approve this step before continuing.':gate.remaining+' tasks remain in the current step.');return false;}
+ }state.processStep=id;saveStore('vd.studio.processStep',id);/* The current journey step does not change main-workspace filters or selections. */renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate&&state.view!=='workflow')switchView(step.targetView||'talent');window.dispatchEvent(new Event('studio-step-changed'));window.dispatchEvent(new CustomEvent('studio:changed',{detail:{type:'step',step:id}}));toast(`Process snapshot: ${step.title}`);return true;}
 function showEnrichmentDownload(){if(!state.liveMode&&processIndex()<PROCESS_STEPS.findIndex(x=>x.id==='evidence')){toast('Download unlocks only after the Evidence Check.');return;}const selected=state.selected.map(getCandidate).filter(Boolean);if(!selected.length){toast('Select one or more profiles first.');return;}const already=selected.filter(c=>['enriched','downloaded'].includes(reviewOf(c).lifecycle)).length;$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Prepare selected profiles for download.')+`<p class="intro">Choose how much research should happen before the selected profiles leave the workspace. Expertise comes first; contact completion is a separate download-stage option.</p><div class="quota-card"><div><span>DEMO ENRICHMENT BALANCE</span><strong>${state.enrichmentQuota}</strong></div><div style="text-align:right"><span>${selected.length} PROFILE${selected.length===1?'':'S'} SELECTED</span><b style="font-size:11px;color:#6b5980">${already} already expertise-enriched</b></div></div><div class="field"><label>Expertise enrichment</label><div class="enrich-choice"><label class="enrich-tile"><input type="radio" name="expertisePlan" value="existing" ${already===selected.length?'checked':''}><strong>Use existing research</strong><p>Download the research already in the workspace. No new enrichment credit.</p></label><label class="enrich-tile"><input type="radio" name="expertisePlan" value="full" ${already!==selected.length?'checked':''}><strong>Full expertise check</strong><p>Activity areas, up to three attributable projects and external corroboration where available. 1 credit per profile.</p></label></div></div><div class="field" style="margin-top:14px"><label>Optional profile completion at download</label><label class="enrich-tile"><input type="checkbox" id="contactEnrich"><strong>Complete public business contact data</strong><p>Email, phone or other business contact fields where they can be lawfully and reliably found. +1 credit per profile. No value is invented when unavailable.</p></label></div><div id="creditCost" class="credit-line"></div><div class="security-note">This standalone mockup demonstrates the workflow and uses a demo credit balance. A connected research service is required to perform real enrichment.</div><div class="modal-foot"><button class="btn" data-action="close">Cancel</button><button class="btn primary" data-action="startDownloadPipeline">Start &amp; download ${icon('arrow')}</button></div>`;showLayer('modal');updateCreditCost();}
 function updateCreditCost(){const selected=state.selected.length,full=document.querySelector('input[name="expertisePlan"]:checked')?.value==='full',contact=!!$('contactEnrich')?.checked,cost=selected*((full?1:0)+(contact?1:0)),el=$('creditCost');if(el)el.innerHTML=`<span>Estimated enrichment cost</span><b>${cost} credit${cost===1?'':'s'} &middot; ${Math.max(0,state.enrichmentQuota-cost)} remaining</b>`;}
 function selectedCsv(){const list=state.selected.map(getCandidate).filter(Boolean);const headers=['Candidate ID','Name','Current title','Current company','Location','Profile URL','Decision','Feedback status','Feedback processed','Processing status','Main activity areas','Research note'];const rows=[headers.map(csvSafe).join(',')];for(const c of list){const r=reviewOf(c);rows.push([c.id,c.name,c.title,c.company,c.location,c.profileUrl,r.status,r.feedbackGiven?'Received':'Pending',r.feedbackProcessed?'Yes':'No',r.lifecycle,c.areas,c.researchNote].map(csvSafe).join(','));}return '\uFEFF'+rows.join('\r\n');}
@@ -2852,7 +2857,7 @@ function renderSearchCriteriaInGuide(host){
 let journeyInspected=null;
 function journeyProgress(step){
  const source=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;
- const ids=step.ids||[],people=ids.length?ids.map(id=>source.find(c=>c.id===id)).filter(Boolean):source;
+ const ids=[...new Set(step.ids||[])],seen=new Set(),people=(ids.length?ids.map(id=>source.find(c=>c.id===id)).filter(Boolean):source).filter(c=>{const key=String(c.profileUrl||c.id||'').trim().toLowerCase().replace(/\/$/,'');if(!key||seen.has(key))return false;seen.add(key);return true;});
  const progress=(done,total,label)=>({done,total,label,remaining:Math.max(0,total-done)});
  if(step.id==='brief'){
   const brief=window.getStudioSourcingProfile?.()||window.getStudioRoleBrief?.()||state.liveBrief||{};
@@ -2862,21 +2867,21 @@ function journeyProgress(step){
  if(step.id==='locked'){
   const brief=window.getStudioSourcingProfile?.()||{};
   const keys=['role','companies','locations','focus'];
-  return progress(keys.filter(k=>String(brief[k]||'').trim()).length,keys.length,'criteria available');
+  const valid=keys.every(k=>String(brief[k]||'').trim());return progress(valid&&localStorage.getItem('vd.studio.approval.locked.v1')==='approved'?1:0,1,'profile approval');
  }
  if(step.id==='feedback1'||step.id==='feedback2'){
   return progress(people.filter(c=>{
-   const data={...stageDefaultReview(c,step.id),...(stageReview[step.id]?.[c.profileUrl]||{})};
-   return data.feedbackGiven&&['approved','hold','excluded'].includes(data.status);
+   const data=stageReview[step.id]?.[c.profileUrl];
+   return !!data&&data.feedbackGiven===true&&['approved','hold','excluded'].includes(data.status)&&data.feedbackSource!=='historical';
   }).length,people.length,'reviewed');
  }
  if(step.id==='cal1'||step.id==='cal2'){
   // Calibration represents sourced profiles available for recruiter review,
   // not feedback that belongs to the separate subsequent feedback step.
-  return progress(people.filter(c=>Boolean(c.id&&c.title&&(c.company||c.firm||c.summary))).length,ids.length||people.length,'profiles loaded');
+  return progress(people.filter(c=>Boolean(c.id&&c.title&&(c.company||c.firm||c.summary))).length,ids.length||people.length,'unique profiles loaded');
  }
  if(step.id==='market'){
-  return progress(people.filter(c=>Boolean(c.location&&(c.company||c.firm))).length,people.length,'mapped profiles');
+  const mapped=people.length>0&&people.every(c=>Boolean(c.location&&(c.company||c.firm)));return progress(mapped&&localStorage.getItem('vd.studio.approval.market.v1')==='approved'?1:0,1,'market map approval');
  }
  if(step.id==='evidence'){
   let records={};try{records=JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}')||{};}catch{}
@@ -2919,22 +2924,30 @@ function renderRecruiterGuide(){
  }).join('');
  const remaining=p.remaining===null?'Completion requires an explicit review':p.remaining===0?'All measurable tasks completed':(inspected.id==='feedback1'||inspected.id==='feedback2')?p.remaining+' candidate feedback decisions remaining':p.remaining+' tasks remaining';
  const action=(inspected.id==='feedback1'||inspected.id==='feedback2')?'Continue Feedback':'Open Step';
+ const approval=(inspected.id==='locked'||inspected.id==='market')&&p.done===0?'<button type="button" data-stage-approve="'+esc(inspected.id)+'">Review &amp; approve</button>':'';
  host.innerHTML='<div class="sourcing-stepper-head"><strong>Sourcing Journey</strong><small>Current step '+(idx+1)+' of 9 · '+esc(current.title)+'</small></div>'+
  '<div class="journey-scroll-row"><button class="journey-scroll-arrow" data-journey-scroll="-1" type="button" aria-label="Scroll steps left">‹</button><div class="sourcing-stepper-track" role="group" aria-label="Nine sourcing steps">'+steps+'</div><button class="journey-scroll-arrow" data-journey-scroll="1" type="button" aria-label="Scroll steps right">›</button></div>'+
- '<div class="sourcing-step-detail"><div class="step-copy"><b>'+esc(inspected.title)+'</b><p class="step-progress">'+esc(remaining)+'</p></div><button type="button" data-journey-continue="'+esc(inspected.id)+'">'+esc(action)+'</button></div>';
+ '<div class="sourcing-step-detail"><div class="step-copy"><b>'+esc(inspected.title)+'</b><p class="step-progress">'+esc(remaining)+'</p></div>'+approval+'<button type="button" data-journey-continue="'+esc(inspected.id)+'">'+esc(action)+'</button></div>';
  const track=host.querySelector('.sourcing-stepper-track');track.scrollLeft=previousScroll;
  if(!host.dataset.journeyInit){host.dataset.journeyInit='yes';requestAnimationFrame(()=>{const selected=host.querySelector('.sourcing-step.current');if(selected&&track){track.scrollLeft=Math.max(0,selected.offsetLeft-track.offsetLeft-track.clientWidth/2+selected.clientWidth/2);}});}
 }
 document.addEventListener('click',e=>{
+ const approve=e.target.closest('[data-stage-approve]');
+ if(approve){const id=approve.dataset.stageApprove,st=PROCESS_STEPS.find(x=>x.id===id);
+  if(!st||state.processStep!==id){toast('Review the active step first.');return;}
+  if(id==='locked'){const brief=window.getStudioSourcingProfile?.()||{};if(!['role','companies','locations','focus'].every(k=>String(brief[k]||'').trim())){toast('Complete the locked sourcing criteria before approval.');return;}}
+  if(id==='market'){const src=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;if(!st.ids.length||!st.ids.every(i=>{const c=src.find(p=>p.id===i);return c&&c.location&&(c.company||c.firm); })){toast('Complete the candidate market map before approval.');return;}}
+  localStorage.setItem('vd.studio.approval.'+id+'.v1','approved');toast('Step approved.');renderRecruiterGuide();return;
+ }
  const arrow=e.target.closest('[data-journey-scroll]');if(arrow){document.querySelector('#recruiterGuide .sourcing-stepper-track')?.scrollBy({left:Number(arrow.dataset.journeyScroll)*300,behavior:'smooth'});return;}
- const step=e.target.closest('[data-journey-step]');if(step){const requested=PROCESS_STEPS.findIndex(x=>x.id===step.dataset.journeyStep),active=processIndex();journeyInspected=step.dataset.journeyStep;if(requested>=0&&requested!==active)setProcessStep(step.dataset.journeyStep,false);renderRecruiterGuide();return;}
+ const step=e.target.closest('[data-journey-step]');if(step){const requested=PROCESS_STEPS.findIndex(x=>x.id===step.dataset.journeyStep),active=processIndex();journeyInspected=step.dataset.journeyStep;if(requested>=0&&requested!==active){setProcessStep(step.dataset.journeyStep,false);journeyInspected=state.processStep;}renderRecruiterGuide();return;}
  const next=e.target.closest('[data-journey-continue]');if(!next)return;
  const id=next.dataset.journeyContinue,stepInfo=PROCESS_STEPS.find(s=>s.id===id);if(!stepInfo)return;
- if(state.processStep!==id){const targetIndex=PROCESS_STEPS.findIndex(x=>x.id===id),activeIndex=processIndex();setProcessStep(id,false);}
+ if(state.processStep!==id){if(!setProcessStep(id,false)){journeyInspected=state.processStep;renderRecruiterGuide();return;}}
  if(['feedback1','feedback2'].includes(id)){
   if(typeof window.switchView==='function')window.switchView('workflow');
   document.querySelector('[data-task-tool="auto"]')?.click();
-  const target=stepInfo.ids.map(n=>ALL_CANDIDATES.find(c=>c.id===n)).find(c=>c&&!({...stageDefaultReview(c,id),...(stageReview[id]?.[c.profileUrl]||{})}).feedbackGiven);
+  const target=stepInfo.ids.map(n=>ALL_CANDIDATES.find(c=>c.id===n)).find(c=>c&&!(stageReview[id]?.[c.profileUrl]?.feedbackGiven===true));
   if(target&&typeof window.openCandidate==='function')window.openCandidate(target.id,true,true);
  }else if(typeof window.switchView==='function')window.switchView(stepInfo.targetView||'workflow');
  journeyInspected=id;renderRecruiterGuide();
@@ -3705,7 +3718,7 @@ function refresh(){
    const records=claims(c);let n=0;for(const [key] of records){if(saved[c.id+'::'+key]?.status&&saved[c.id+'::'+key].status!=='unreviewed')n++}
    totalClaims+=records.length;doneClaims+=n;if(records.length&&n===records.length)profilesComplete++;
    sourceLinks+=(c.sources||[]).filter(v=>/^https?:\/\//.test(String(v))).length;
-   const r=reviewOf(c);if(['approved','hold','excluded'].includes(r.status))decided++;if(r.status==='approved')approved++;if(r.status==='approved'&&r.shortlisted)shortlisted++;
+   const r=reviewOf(c);if(r.feedbackGiven===true&&r.feedbackSource!=='historical'&&['approved','hold','excluded'].includes(r.status))decided++;if(r.status==='approved')approved++;if(r.status==='approved'&&r.shortlisted)shortlisted++;
  }
  const esc=v=>String(v).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[ch]));
  if(st==='evidence'){
