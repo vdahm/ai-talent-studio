@@ -1584,6 +1584,25 @@ body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRa
 #taskRailControls [data-task-tool][hidden],#taskRailGeorgeControls [data-task-tool][hidden]{display:none!important}
 body.task-rail-context-evidence .task-feedback-buttons,body.task-rail-context-production .task-feedback-buttons{display:none!important}
 </style>
+<style id="evidence-workbench-css-20261014">
+#evidenceWorkbench{display:none;padding:12px;border-top:1px solid #dce3eb;overflow:auto;flex:1 1 auto;min-height:0}
+body.task-rail-context-evidence #evidenceWorkbench{display:block}
+body.task-rail-context-evidence #talentRailList,body.task-rail-context-evidence #taskRailDescription,body.task-rail-context-evidence #talentExplorerRail .talent-rail-search{display:none!important}
+#evidenceWorkbench .ev-title{font-size:13px;font-weight:700;color:#1c2d4a;margin-bottom:6px}
+#evidenceWorkbench .ev-sub{font-size:11px;color:#71808e;line-height:1.5;margin-bottom:12px}
+#evidenceWorkbench select,#evidenceWorkbench button{font:inherit}
+#evidenceWorkbench .ev-select{width:100%;padding:9px;border:1px solid #dce3eb;border-radius:9px;background:#fff;margin-bottom:10px}
+#evidenceWorkbench .ev-claim{border:1px solid #e0e5eb;border-radius:11px;padding:11px;margin:9px 0;background:#fff}
+#evidenceWorkbench .ev-claim b{font-size:11px;color:#21334e}
+#evidenceWorkbench .ev-claim p{font-size:11px;line-height:1.5;color:#455666;margin:7px 0;overflow-wrap:anywhere}
+#evidenceWorkbench .ev-claim small{font-size:10px;color:#65758a}
+#evidenceWorkbench .ev-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+#evidenceWorkbench .ev-actions button,#evidenceWorkbench .ev-ask{border:1px solid #d4dce6;background:#f6f8fa;border-radius:7px;padding:6px 8px;font-size:10px}
+#evidenceWorkbench .ev-actions button.active{background:#1c2d4a;color:#fff}
+#evidenceWorkbench a{font-size:10px;overflow-wrap:anywhere;display:block;margin-top:5px}
+#evidenceWorkbench .ev-ask{background:#1c2d4a;color:#fff;margin-top:10px;width:100%}
+#evidenceWorkbench .ev-progress{font-size:11px;font-weight:650;margin:10px 0;color:#1c2d4a}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2945,6 +2964,7 @@ function update(force=false){
  document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
  document.body.classList.toggle('task-rail-context-production',tool==='talent'&&st==='production');
  if(tool==='talent')paintCandidates();
+ if(typeof window.renderEvidenceWorkbench==='function')window.renderEvidenceWorkbench();
 }
 document.addEventListener('click',e=>{
  const choice=e.target.closest('[data-task-tool]');
@@ -2966,6 +2986,63 @@ document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintC
 window.addEventListener('studio-step-changed',()=>update(true));
 window.setInterval(()=>{if(currentTool!== (override==='auto'?taskFor():override))update(true)},700);
 update(true);
+})();
+</script><script id="evidence-workbench-controller-20261014">
+(function(){
+'use strict';
+const rail=document.getElementById('talentExplorerRail');if(!rail)return;
+const host=document.createElement('section');host.id='evidenceWorkbench';host.setAttribute('aria-label','Claim-by-claim evidence review');
+rail.appendChild(host);
+const key='vd.studio.evidenceClaims.v1';
+let records={};try{records=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{}
+let selected='';
+const escv=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function sourceLinks(c){return [...new Set([...(c.sources||[]),...(c.baselineSources||[])])].filter(v=>/^https?:\/\//i.test(v));}
+function claims(c){const arr=[
+ ['Current role', [c.title,c.company].filter(Boolean).join(' at ')],
+ ['Professional expertise', c.areas||c.cluster],
+ ...(c.projects||[]).slice(0,3).map((v,i)=>['Project '+(i+1),v]),
+ ['Quantified outcomes',c.quantitative],
+ ['Independent corroboration',c.summary]
+ ];return arr.filter(([k,v])=>v&&String(v).trim()).map(([label,statement],i)=>({id:label, label,statement:String(statement)}));}
+function verdict(c,cl){
+ const t=cl.statement.toLowerCase();
+ if(/no (specific|independently|public|client|attributable|reliable)|not (verified|found|attributable)|weak|could not|no evidence|not independently/.test(t))return'Gap flagged by existing research';
+ return sourceLinks(c).length?'Sources available · attribution not yet verified':'No source linked';
+}
+function save(){try{localStorage.setItem(key,JSON.stringify(records))}catch{}}
+function render(){
+ if(!document.body.classList.contains('task-rail-context-evidence'))return;
+ const pool=typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[];
+ if(!selected||!pool.some(c=>c.id===selected))selected=pool[0]?.id||'';
+ const c=pool.find(c=>c.id===selected);if(!c)return;
+ const rows=claims(c),links=sourceLinks(c),statuses=rows.map(cl=>records[c.id+'::'+cl.id]?.status||'unreviewed'),done=statuses.filter(x=>x!=='unreviewed').length;
+ host.innerHTML='<div class="ev-title">Evidence verification</div><div class="ev-sub">Examine each claim against the listed original sources. Automated flags are research hints, not AI-verified facts.</div>'+
+ '<select id="evCandidate" class="ev-select" aria-label="Select candidate">'+pool.map(x=>'<option value="'+escv(x.id)+'" '+(x.id===selected?'selected':'')+'>'+escv(x.name||x.id)+'</option>').join('')+'</select>'+
+ '<div class="ev-progress">'+done+' / '+rows.length+' claims reviewed · '+links.length+' source links</div>'+
+ rows.map(cl=>{const id=c.id+'::'+cl.id,record=records[id]||{},hint=verdict(c,cl);
+ return '<article class="ev-claim"><b>'+escv(cl.label)+'</b><p>'+escv(cl.statement)+'</p><small>'+escv(hint)+'</small><div class="ev-actions">'+[['verified','Verified'],['partial','Partial'],['unverified','Unverified']].map(([value,label])=>'<button type="button" data-ev-key="'+escv(id)+'" data-ev-status="'+value+'" class="'+(record.status===value?'active':'')+'">'+label+'</button>').join('')+'</div></article>';
+ }).join('')+
+ '<div class="ev-title">Research sources</div>'+ (links.length?links.map((url,i)=>'<a href="'+escv(url)+'" target="_blank" rel="noopener noreferrer">Source '+(i+1)+' · '+escv((()=>{try{return new URL(url).hostname}catch{return url}})())+' ↗</a>').join(''):'<div class="ev-sub">No source URL recorded.</div>')+
+ '<div class="ev-sub" style="margin-top:9px">Research caveat: '+escv(c.caveat||'Source independence must be checked manually.')+'</div>'+
+ '<button class="ev-ask" type="button" id="evAskGeorge">Discuss claims with George ↗</button>';
+}
+host.addEventListener('change',e=>{if(e.target.id==='evCandidate'){selected=e.target.value;render()}});
+host.addEventListener('click',e=>{
+ const b=e.target.closest('[data-ev-status]');if(b){records[b.dataset.evKey]={status:b.dataset.evStatus,reviewedAt:new Date().toISOString()};save();render();return}
+ if(e.target.closest('#evAskGeorge')){
+ const c=ALL_CANDIDATES.find(x=>x.id===selected);if(!c)return;
+ const prompt='Review the evidence for '+c.name+'. Evaluate each claim separately, distinguish self-reported profile information from independent sources, identify missing attribution, contradictions and questions for human verification. Do not claim any source has been checked unless you can actually access it.\n\n'+claims(c).map(cl=>cl.label+': '+cl.statement).join('\n')+'\nSources: '+sourceLinks(c).join(', ');
+ const field=document.getElementById('georgePageInput');
+ if(typeof window.switchView==='function')window.switchView('george');
+ else document.querySelector('[data-view="george"]')?.click();
+ setTimeout(()=>{const input=document.getElementById('georgePageInput')||field;if(input){input.value=prompt;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()}},80);
+ }
+});
+window.renderEvidenceWorkbench=render;
+window.addEventListener('studio-step-changed',render);
+document.addEventListener('click',e=>{if(e.target.closest('[data-task-tool],[data-process-step],[data-view]'))setTimeout(render,40)});
+render();
 })();
 </script></body>
 </html>
