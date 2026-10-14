@@ -1655,6 +1655,11 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 #view-workflow .combined-step.current .combined-step-body{padding-top:12px!important}
 #view-workflow .combined-step.current .combined-step-progress strong{color:#972f20!important}
 @media(max-width:560px){#view-workflow .combined-step.current .combined-step-state{padding:5px 7px!important;font-size:9px!important}}
+</style><style id="workflow-main-active-block-20261014">
+#view-workflow #workflowSteps .combined-step.current{position:relative!important;background:#fff3ee!important;border:2px solid #bd4939!important;box-shadow:0 5px 22px rgba(189,73,57,.16)!important;opacity:1!important;transform:translateX(2px)}
+#view-workflow #workflowSteps .combined-step.current::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:#bd4939;z-index:1}
+#view-workflow #workflowSteps .combined-step.current .combined-step-heading{background:#ffece4!important}
+#view-workflow #workflowSteps .combined-step.current .combined-step-state{background:#bd4939!important;color:white!important}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -3142,6 +3147,24 @@ window.renderEvidenceWorkbench=render;
 window.addEventListener('studio-step-changed',render);
 document.addEventListener('click',e=>{if(e.target.closest('[data-task-tool],[data-process-step],[data-view]'))setTimeout(render,40)});
 render();
+})();
+</script><script id="workflow-main-active-sync-20261014">
+(function(){
+ function sync(){
+  const host=document.getElementById('workflowSteps');if(!host)return;
+  const selected=(typeof state!=='undefined'&&state&&state.processStep)||localStorage.getItem('vd.studio.processStep')||'brief';
+  host.querySelectorAll('.combined-step').forEach(card=>{
+   const btn=card.querySelector('[data-process-step]');if(!btn)return;
+   const active=btn.getAttribute('data-process-step')===selected;
+   card.classList.toggle('current',active);
+   btn.setAttribute('aria-current',active?'step':'false');
+   const tag=card.querySelector('.combined-step-state');
+   if(tag){if(active)tag.textContent='● YOU ARE HERE';else if(tag.textContent.includes('YOU ARE HERE'))tag.textContent='Go to step →';}
+  });
+ }
+ document.addEventListener('DOMContentLoaded',sync);
+ window.addEventListener('studio-step-changed',sync);
+ document.addEventListener('click',function(e){if(e.target.closest('#workflowSteps [data-process-step]'))queueMicrotask(sync);});
 })();
 </script></body>
 </html>
