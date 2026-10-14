@@ -2514,6 +2514,49 @@ renderGeorge();renderAttachments();updateGeorgeContext();
   }
 
   search.addEventListener('input',render);
+  // Keep the active main workspace visible when a profile is selected in the right rail.
+  // The right rail owns this preview; the full profile can still be opened explicitly.
+  const railRoot=$r('talentExplorerRail');
+  const railDetail=document.createElement('section');
+  railDetail.id='talentRailCandidateDetail';
+  railDetail.className='talent-rail-candidate-detail hidden';
+  railDetail.setAttribute('aria-label','Selected candidate profile');
+  list.parentElement.appendChild(railDetail);
+  function closeRailProfile(){
+    railDetail.classList.add('hidden');
+    railDetail.replaceChildren();
+    search.closest('label').classList.remove('hidden');
+    list.classList.remove('hidden');
+    railRoot.querySelector('.talent-rail-actions')?.classList.remove('hidden');
+  }
+  function openRailProfile(id){
+    const c=typeof getCandidate==='function'?getCandidate(id):null;
+    if(!c)return;
+    const name=typeof displayName==='function'?displayName(c):(c.name||'Candidate');
+    const safe=typeof esc==='function'?esc:(value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+    railDetail.innerHTML='<div class="talent-rail-detail-nav"><button type="button" data-rail-detail-back="1">← All candidates</button><span>Candidate profile</span></div>'+
+      '<h3>'+safe(name)+'</h3><p class="talent-rail-detail-sub">'+safe(c.title||'')+' · '+safe(c.company||'')+'</p>'+
+      (typeof candidatePanelHtml==='function'?'<div class="talent-rail-detail-body">'+candidatePanelHtml(c)+'</div>':'<p>'+safe(c.location||'')+'</p>');
+    search.closest('label').classList.add('hidden');
+    list.classList.add('hidden');
+    railRoot.querySelector('.talent-rail-actions')?.classList.add('hidden');
+    railDetail.classList.remove('hidden');
+    railDetail.scrollTop=0;
+  }
+  railDetail.addEventListener('click',e=>{
+    if(e.target.closest('[data-rail-detail-back]'))closeRailProfile();
+  });
+  list.addEventListener('click',e=>{
+    const row=e.target.closest('[data-rail-candidate]');
+    const workflow=document.getElementById('view-workflow');
+    if(!row||!workflow||workflow.classList.contains('hidden'))return;
+    e.preventDefault();e.stopImmediatePropagation();
+    activeRailId=row.dataset.railCandidate;
+    openRailProfile(activeRailId);
+  },true);
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-view]')&&(!document.getElementById('view-workflow')||document.getElementById('view-workflow').classList.contains('hidden')))closeRailProfile();
+  });
   list.addEventListener('click',(e)=>{
     const row=e.target.closest('[data-rail-candidate]');
     if(!row)return;
@@ -3252,5 +3295,17 @@ render();
  window.addEventListener('studio-step-changed',sync);
  document.addEventListener('click',function(e){if(e.target.closest('#workflowSteps [data-process-step]'))queueMicrotask(sync);});
 })();
-</script></body>
+</script><style id="talent-rail-workflow-preview-20261014">
+#talentRailCandidateDetail{flex:1;min-height:0;overflow-y:auto;padding:12px 15px 32px;background:#fff}
+#talentRailCandidateDetail.hidden{display:none!important}
+#talentRailCandidateDetail .talent-rail-detail-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px;font-size:10px;color:#8791a0}
+#talentRailCandidateDetail .talent-rail-detail-nav button{border:1px solid #e5e8ee;border-radius:9px;background:#fff;padding:8px 11px;font-size:11px;cursor:pointer}
+#talentRailCandidateDetail>h3{font-size:18px;line-height:1.3;margin-bottom:5px;overflow-wrap:anywhere}
+#talentRailCandidateDetail .talent-rail-detail-sub{color:#7d8792;font-size:11px;line-height:1.6;margin-bottom:14px}
+#talentRailCandidateDetail .talent-rail-detail-body{min-width:0;overflow-wrap:anywhere}
+#talentRailCandidateDetail .candidate-profile-shell{width:100%;min-width:0;max-width:100%;display:block}
+#talentRailCandidateDetail .candidate-profile-shell *{max-width:100%;box-sizing:border-box}
+#talentRailCandidateDetail .candidate-profile-shell table{display:block;overflow-x:auto}
+</style>
+</body>
 </html>
