@@ -2947,7 +2947,7 @@ document.addEventListener('click',e=>{
  if(['feedback1','feedback2'].includes(id)){
   if(typeof window.switchView==='function')window.switchView('workflow');
   document.querySelector('[data-task-tool="auto"]')?.click();
-  const target=stepInfo.ids.map(n=>ALL_CANDIDATES.find(c=>c.id===n)).find(c=>c&&!({...stageDefaultReview(c,id),...(stageReview[id]?.[c.profileUrl]||{})}).feedbackGiven);
+  const target=stepInfo.ids.map(n=>ALL_CANDIDATES.find(c=>c.id===n)).find(c=>c&&!(stageReview[id]?.[c.profileUrl]?.feedbackGiven===true));
   if(target&&typeof window.openCandidate==='function')window.openCandidate(target.id,true,true);
  }else if(typeof window.switchView==='function')window.switchView(stepInfo.targetView||'workflow');
  journeyInspected=id;renderRecruiterGuide();
@@ -3718,7 +3718,7 @@ function refresh(){
    const records=claims(c);let n=0;for(const [key] of records){if(saved[c.id+'::'+key]?.status&&saved[c.id+'::'+key].status!=='unreviewed')n++}
    totalClaims+=records.length;doneClaims+=n;if(records.length&&n===records.length)profilesComplete++;
    sourceLinks+=(c.sources||[]).filter(v=>/^https?:\/\//.test(String(v))).length;
-   const r=reviewOf(c);if(['approved','hold','excluded'].includes(r.status))decided++;if(r.status==='approved')approved++;if(r.status==='approved'&&r.shortlisted)shortlisted++;
+   const r=reviewOf(c);if(r.feedbackGiven===true&&r.feedbackSource!=='historical'&&['approved','hold','excluded'].includes(r.status))decided++;if(r.status==='approved')approved++;if(r.status==='approved'&&r.shortlisted)shortlisted++;
  }
  const esc=v=>String(v).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[ch]));
  if(st==='evidence'){
