@@ -3525,7 +3525,7 @@ render();
 
 <style id="talent-rail-morning-compact-20261014">
 /* Morning-style contextual rail, full information scrolls INSIDE the normal rail. */
-body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:390px!important}
+body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(470px,40vw,650px)!important}
 body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;max-width:100%!important;background:#fff!important}
 #talentRailCandidateDetail{min-width:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:12px 15px 22px!important;background:#fff!important}
 #talentRailCandidateDetail .candidate-profile-shell{display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important}
@@ -3535,7 +3535,7 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
 #talentRailCandidateDetail .candidate-section-card{border-top:2px solid #b94d3a!important}
 #talentRailCandidateDetail .candidate-profile-hero h1{font-size:20px!important}
 #talentRailCandidateDetail .rail-george-chat{position:sticky!important;bottom:-22px!important;margin:15px -15px -22px!important;padding:10px 14px 15px!important;border-top:2px solid #b94d3a!important;background:#fff!important}
-@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(390px,100vw)!important}}
+@media(max-width:1100px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(66vw,600px)!important}}@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
 </style><style id="talent-rail-all-fields-style">
 #talentRailCandidateDetail .talent-rail-all-fields dl{margin:0;display:grid;gap:10px}
 #talentRailCandidateDetail .talent-rail-data-row{padding:10px 0;border-bottom:1px solid #edf0f3;min-width:0}
