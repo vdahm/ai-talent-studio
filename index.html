@@ -3656,5 +3656,69 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
 #view-workflow > #task89Data,
 #view-workflow > #studioReviewTasks89,
 #view-workflow > #studioWorkflowContext{display:none!important}
-</style></body>
+</style>
+<style id="ats-20261014-task89-and-rail-restoration">
+/* Main 3D Sourcing has exactly three named modules. Operational details stay in the contextual rail. */
+#view-workflow > #workflowCandidateDetail{display:none!important}
+#view-workflow > .notice,#view-workflow > .row.edit-only,
+#view-workflow > #calibrationTaskData,#view-workflow > #task89Data,
+#view-workflow > #studioReviewTasks89,#view-workflow > #studioWorkflowContext{display:none!important}
+#view-workflow .recruiter-playbook{display:block!important}
+/* Restore yesterday's compact, contained right rail; no full-workspace expansion. */
+body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(340px,30vw,480px)!important}
+body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;max-width:calc(100vw - var(--ui-sidebar))!important}
+#talentRailCandidateDetail{background:#fff!important;padding:12px 14px 24px!important}
+#talentRailCandidateDetail .talent-rail-detail-nav{top:-12px!important;background:#fff!important}
+#talentRailCandidateDetail .candidate-profile-shell{display:block!important}
+#talentRailCandidateDetail .candidate-profile-hero{border-left:4px solid #b94d3a!important}
+#talentRailCandidateDetail .candidate-profile-hero h1{font-size:23px!important}
+#talentRailCandidateDetail .candidate-profile-main,#talentRailCandidateDetail .candidate-profile-side{gap:10px!important}
+#talentRailCandidateDetail .candidate-section-card{margin:10px 0!important}
+#atsTask89Sidebar{margin:8px 11px 14px;padding:12px;border:1px solid #e2e5e9;border-left:3px solid #b94d3a;border-radius:12px;background:#fff}
+#atsTask89Sidebar[hidden]{display:none!important}
+#atsTask89Sidebar h3{font-size:13px;color:#1c2d4a;margin:0 0 6px}
+#atsTask89Sidebar p{font-size:11px;line-height:1.5;color:#667085;margin:0 0 9px}
+#atsTask89Sidebar .ats89-meter{height:6px;background:#edf1f4;border-radius:9px;overflow:hidden;margin:9px 0}
+#atsTask89Sidebar .ats89-meter i{display:block;height:100%;background:#168269}
+#atsTask89Sidebar .ats89-numbers{font-size:11px;font-weight:650;color:#b94d3a}
+#atsTask89Sidebar .ats89-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}
+#atsTask89Sidebar .ats89-grid span{background:#f7f8fa;border-radius:8px;padding:9px;font-size:10px;color:#627284}
+#atsTask89Sidebar .ats89-grid b{display:block;font-size:16px;color:#1c2d4a;margin-top:3px}
+@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
+</style>
+<script id="ats-task89-connected-dashboard-20261014">
+(function(){
+'use strict';
+const rail=document.getElementById('talentExplorerRail');
+if(!rail)return;
+const host=document.createElement('section');host.id='atsTask89Sidebar';host.setAttribute('aria-label','Task eight and nine connected evidence and shortlist progress');
+const list=document.getElementById('talentRailList');list?.parentElement?.insertBefore(host,list);
+function claims(c){return [['Current role',[c.title,c.company].filter(Boolean).join(' at ')],['Professional expertise',c.areas||c.cluster],...(c.projects||[]).slice(0,3).map((v,i)=>['Project '+(i+1),v]),['Quantified outcomes',c.quantitative],['Independent corroboration',c.summary]].filter(([,v])=>String(v||'').trim())}
+function data(){try{return JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}')||{}}catch{return {}}}
+function refresh(){
+ if(typeof state==='undefined'||typeof PROCESS_STEPS==='undefined'||typeof ALL_CANDIDATES==='undefined')return;
+ const st=state.processStep;host.hidden=!['evidence','production'].includes(st);if(host.hidden)return;
+ const step=PROCESS_STEPS.find(x=>x.id===st);const all=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;
+ const set=new Set(step?.ids||[]);const assigned=set.size?all.filter(c=>set.has(c.id)):all;
+ const saved=data();let totalClaims=0,doneClaims=0,profilesComplete=0,sourceLinks=0,approved=0,shortlisted=0,decided=0;
+ for(const c of assigned){
+   const records=claims(c);let n=0;for(const [key] of records){if(saved[c.id+'::'+key]?.status&&saved[c.id+'::'+key].status!=='unreviewed')n++}
+   totalClaims+=records.length;doneClaims+=n;if(records.length&&n===records.length)profilesComplete++;
+   sourceLinks+=(c.sources||[]).filter(v=>/^https?:\/\//.test(String(v))).length;
+   const r=reviewOf(c);if(['approved','hold','excluded'].includes(r.status))decided++;if(r.status==='approved')approved++;if(r.status==='approved'&&r.shortlisted)shortlisted++;
+ }
+ const esc=v=>String(v).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;'}[ch]));
+ if(st==='evidence'){
+ const percent=totalClaims?Math.round(100*doneClaims/totalClaims):0;
+ host.innerHTML='<h3>Task 8 · Evidence check</h3><p>Existing candidate intelligence and source links are connected. Human review must confirm each claim; a listed link is not verification.</p><div class="ats89-numbers">'+doneClaims+' / '+totalClaims+' claims reviewed</div><div class="ats89-meter"><i style="width:'+percent+'%"></i></div><div class="ats89-grid"><span>Profiles fully reviewed<b>'+profilesComplete+' / '+assigned.length+'</b></span><span>Claims still pending<b>'+Math.max(0,totalClaims-doneClaims)+'</b></span><span>Research links<b>'+sourceLinks+'</b></span><span>Next action<b>Review evidence</b></span></div>';
+ }else{
+ const pending=Math.max(0,assigned.length-decided);
+ host.innerHTML='<h3>Task 9 · Production decision gate</h3><p>Current recruiter decisions and shortlists are connected to candidate records. Campaign, export and ATS transfer require a separately recorded action.</p><div class="ats89-numbers">'+shortlisted+' shortlisted · '+approved+' approved</div><div class="ats89-meter"><i style="width:'+(assigned.length?Math.round(100*decided/assigned.length):0)+'%"></i></div><div class="ats89-grid"><span>Decisions recorded<b>'+decided+' / '+assigned.length+'</b></span><span>Decision status pending<b>'+pending+'</b></span><span>Approved not shortlisted<b>'+Math.max(0,approved-shortlisted)+'</b></span><span>Shortlisted<b>'+shortlisted+'</b></span></div>';
+ }
+}
+let queued=false;function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})}
+['studio:changed','studio-step-changed','studio:evidence-updated','studio:rail-profile','pageshow'].forEach(e=>window.addEventListener(e,schedule));
+document.addEventListener('change',schedule);refresh();
+})();
+</script></body>
 </html>
