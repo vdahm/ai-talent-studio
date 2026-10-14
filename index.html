@@ -1603,7 +1603,13 @@ body.task-rail-context-evidence #talentRailList,body.task-rail-context-evidence 
 #evidenceWorkbench .ev-ask{background:#1c2d4a;color:#fff;margin-top:10px;width:100%}
 #evidenceWorkbench .ev-progress{font-size:11px;font-weight:650;margin:10px 0;color:#1c2d4a}
 </style>
-</head>
+<style id="workspace-task-separation-20261014">
+.task-progress-counter{font-size:12px;font-weight:650;color:#1c2d4a;margin:7px 0}
+.task-rail-summary{font-size:10px;line-height:1.55;color:#65758a;margin:6px 0}
+.task-rail-assessment{font-size:10px;margin:7px 0}.task-rail-assessment p{padding:5px 0;line-height:1.5}
+.task-feedback-note{display:block;width:100%;font-size:11px;border:1px solid #dfe5ed;border-radius:8px;padding:7px;margin:7px 0;resize:vertical}
+.task-shortlist-button{background:#1c2d4a;color:white;border:0;padding:8px;border-radius:8px}
+</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -1852,7 +1858,7 @@ const sourceHost=s=>{try{return new URL(s).hostname.replace(/^www\./,'');}catch{
 function tierBadge(t){const cl=t==='A'?'green':t==='D'?'amber':t==='B'?'purple':'gray';return `<span class="pill ${cl} tier">Tier ${esc(t)}</span>`;}
 function toast(msg){clearTimeout(toastTimer);$('toast').textContent=msg;$('toast').classList.remove('hidden');toastTimer=setTimeout(()=>$('toast').classList.add('hidden'),3600);}
 function applyBrand(){document.documentElement.style.setProperty('--accent',brand.accent);const rgb=[1,3,5].map(i=>parseInt(brand.accent.slice(i,i+2),16));document.documentElement.style.setProperty('--accent-rgb',rgb.join(','));document.documentElement.style.setProperty('--accent-soft',`rgba(${rgb.join(',')},.085)`);$$('[data-brand-name]').forEach(e=>e.textContent=brand.name);$$('[data-tagline]').forEach(e=>e.textContent=brand.tagline);$$('[data-logo]').forEach(e=>{e.innerHTML=brand.logo?`<img alt="${esc(brand.name)} logo" src="${brand.logo}">`:esc(brand.monogram);});document.title=brand.name+' | Talent Studio';}
-function switchView(view){if(!['overview','george','talent','market','evidence','workflow'].includes(view))return;state.view=view;$$('.view').forEach(e=>{e.classList.toggle('hidden',e.id!=='view-'+view);e.classList.toggle('print-target',e.id==='view-'+view);});$$('[data-view]').forEach(e=>{if(e.classList.contains('navbtn')){e.classList.toggle('active',e.dataset.view===view);e.setAttribute('aria-current',e.dataset.view===view?'page':'false');}});$('sidebar').classList.remove('open');$('navOverlay').classList.remove('on');if(view==='talent'){state.query='';state.country='';state.firm='';state.tier='';state.cluster='';state.shortlistOnly=false;state.decisionFilter='all';state.feedbackFilter='';state.lifecycleFilter='';state.originFilter='';state.campaignFilter='';state.recruitStage='';renderTalent();}window.scrollTo({top:0,behavior:'instant'});}
+function switchView(view){if(!['overview','george','talent','market','evidence','workflow'].includes(view))return;state.view=view;$$('.view').forEach(e=>{e.classList.toggle('hidden',e.id!=='view-'+view);e.classList.toggle('print-target',e.id==='view-'+view);});$$('[data-view]').forEach(e=>{if(e.classList.contains('navbtn')){e.classList.toggle('active',e.dataset.view===view);e.setAttribute('aria-current',e.dataset.view===view?'page':'false');}});$('sidebar').classList.remove('open');$('navOverlay').classList.remove('on');if(view==='talent'){renderTalent();}window.scrollTo({top:0,behavior:'instant'});}
 function metric(label,value,sub,ico){return `<div class="metric"><div class="metric-top"><span>${label}</span>${icon(ico)}</div><div class="num">${value}</div><div class="metric-bottom"><span class="dot"></span>${sub}</div></div>`;}
 function clusters(){const groups={};for(const c of getPool().filter(c=>reviewOf(c).status!=='excluded'&&c.cluster)){(groups[c.cluster]??=[]).push(c);}return Object.entries(groups).map(([name,people])=>({name,short:DATA.meta.clusterNames[name]||name,people,count:people.length,evidence:Math.round(people.reduce((n,c)=>n+(c.evidence||0),0)/people.length),match:Math.round(people.reduce((n,c)=>n+(c.match||0),0)/people.length)})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));}
 function renderOverview(){const pool=getPool().filter(c=>reviewOf(c).status!=='excluded'),cs=clusters();$('overviewMetrics').innerHTML=metric('Profiles in this stage',pool.length,currentProcess().title,'users')+metric('Feedback pending',pool.filter(c=>!reviewOf(c).feedbackGiven).length,'Human review gate','message')+metric('Expertise clusters',new Set(pool.map(c=>c.cluster).filter(Boolean)).size,'Visible at this step','grid')+(stageHasEvidence()?metric('High-evidence profiles',pool.filter(c=>c.evidence>=80).length,'Evidence available','shield'):metric('Evidence enrichment','Later step','Not yet present','shield'));const top=stageHasEvidence()?[...pool].sort((a,b)=>(b.evidence||0)-(a.evidence||0)).slice(0,4):pool.slice(0,4);$('topList').innerHTML=top.map(c=>`<button class="top-row" data-candidate="${c.id}"><div class="initial ${esc((c.firm||'').toLowerCase())}">${esc(initials(c))}</div><div class="person"><div class="name">${esc(displayName(c))}</div><div class="sub">${esc(c.title.split('|')[0])} &middot; ${esc(c.firm)}</div></div><div class="score">${stageHasEvidence()?c.evidence:(c.fit??'—')}<small>${stageHasEvidence()?'EVIDENCE':'FIT'}</small></div></button>`).join('');$('clusterMini').innerHTML=cs.slice(0,4).map(c=>`<button class="cluster-bar" data-cluster="${esc(c.name)}" style="border:0;background:none;text-align:left;padding:0"><div class="caption"><span>${esc(c.short)}</span><b style="font-weight:500">${c.count}</b></div><div class="bar"><span style="width:${Math.min(100,c.count/9*100)}%"></span></div></button>`).join('');renderRadar();}
@@ -1880,7 +1886,7 @@ function applyFeedbackReset(){const ids=state.resetMode==='all'?getPool().map(c=
 function feedbackRuleChanges(changed){const step=state.processStep;if(['cal1','feedback1'].includes(step))return ['Retain the Principal-to-Partner core range.','Keep Expert Partner variants available where the consulting role remains relevant.','Exclude office-leadership titles above ordinary Partner level.','Exclude operating-company CEO transitions from the target pool.'];if(['cal2','feedback2'].includes(step))return ['Use the second-round approvals to lock the refined sourcing profile.','Maintain Singapore and Malaysia as the target geography.','Preserve individual exclusions instead of generalising them to an entire expert track.'];const excluded=changed.filter(c=>reviewOf(c).status==='excluded').length,approved=changed.filter(c=>reviewOf(c).status==='approved').length;return [`${approved} updated profile${approved===1?'':'s'} reinforce the positive anchor set.`,`${excluded} updated exclusion${excluded===1?'':'s'} will be retained as negative signal${excluded===1?'':'s'}.`,'Candidate-specific comments remain attached and are applied to the next controlled search step.'];}
 function showFeedbackSummary(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});if(!changed.length){toast('There is no new feedback to submit. Reopen or change at least one profile first.');return;}const counts={approved:0,hold:0,excluded:0,pending:0};changed.forEach(c=>counts[reviewOf(c).status in counts?reviewOf(c).status:'pending']++);const open=pool.filter(c=>!reviewOf(c).feedbackGiven).length,changes=feedbackRuleChanges(changed);$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Review feedback before the next step.')+`<p class="intro">This is the decision gate. Nothing changes the search until you confirm. You can continue even with open feedback; those profiles remain explicitly pending.</p><div class="summary-grid"><div class="summary-stat"><b>${counts.approved}</b><span>Approved</span></div><div class="summary-stat"><b>${counts.hold}</b><span>On hold</span></div><div class="summary-stat"><b>${counts.excluded}</b><span>Excluded</span></div><div class="summary-stat"><b>${open}</b><span>Still pending</span></div></div>${open?`<div class="stage-warning"><b>${open} profile${open===1?' is':'s are'} still open.</b> They will remain Feedback pending and will not be silently approved or excluded.</div>`:''}<div class="field"><label>Feedback captured in this submission</label><div class="check-list">${changed.map(c=>`<div class="check-row"><span>${esc(feedbackSummaryFor(c))}</span></div>`).join('')}</div></div><div class="field" style="margin-top:16px"><label>Search changes derived from this feedback</label><div class="notice" style="margin:0">${changes.map(x=>`&bull; ${esc(x)}`).join('<br>')}</div></div><div class="modal-foot"><button class="btn" data-action="close">Go back</button><button class="btn primary" data-action="confirmFeedback">Confirm &amp; continue ${icon('arrow')}</button></div>`;showLayer('modal');}
 function confirmFeedback(){const pool=getPool(),changed=pool.filter(c=>{const r=reviewOf(c);return r.feedbackGiven&&!r.feedbackProcessed;});for(const c of changed)setReview(c,{feedbackProcessed:true});const step=currentProcess(),nextId=step.next||step.id;setProcessStep(nextId,true);closeLayers();toast('Feedback submitted. The next process step is now active.');}
-function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return;state.processStep=id;saveStore('vd.studio.processStep',id);state.query='';state.country='';state.firm='';state.tier='';state.cluster='';state.decisionFilter='active';state.feedbackFilter='';state.lifecycleFilter='';state.originFilter='';state.campaignFilter='';state.recruitStage='';state.shortlistOnly=false;state.compare=[];state.selected=[];renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate&&state.view!=='workflow')switchView(step.targetView||'talent');window.dispatchEvent(new Event('studio-step-changed'));toast(`Process snapshot: ${step.title}`);}
+function setProcessStep(id,navigate=true){const step=PROCESS_STEPS.find(x=>x.id===id);if(!step)return;state.processStep=id;saveStore('vd.studio.processStep',id);/* The current journey step does not change main-workspace filters or selections. */renderOverview();renderMarket();renderEvidence();renderWorkflow();renderTalent();if(navigate&&state.view!=='workflow')switchView(step.targetView||'talent');window.dispatchEvent(new Event('studio-step-changed'));toast(`Process snapshot: ${step.title}`);}
 function showEnrichmentDownload(){if(!state.liveMode&&processIndex()<PROCESS_STEPS.findIndex(x=>x.id==='evidence')){toast('Download unlocks only after the Evidence Check.');return;}const selected=state.selected.map(getCandidate).filter(Boolean);if(!selected.length){toast('Select one or more profiles first.');return;}const already=selected.filter(c=>['enriched','downloaded'].includes(reviewOf(c).lifecycle)).length;$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Prepare selected profiles for download.')+`<p class="intro">Choose how much research should happen before the selected profiles leave the workspace. Expertise comes first; contact completion is a separate download-stage option.</p><div class="quota-card"><div><span>DEMO ENRICHMENT BALANCE</span><strong>${state.enrichmentQuota}</strong></div><div style="text-align:right"><span>${selected.length} PROFILE${selected.length===1?'':'S'} SELECTED</span><b style="font-size:11px;color:#6b5980">${already} already expertise-enriched</b></div></div><div class="field"><label>Expertise enrichment</label><div class="enrich-choice"><label class="enrich-tile"><input type="radio" name="expertisePlan" value="existing" ${already===selected.length?'checked':''}><strong>Use existing research</strong><p>Download the research already in the workspace. No new enrichment credit.</p></label><label class="enrich-tile"><input type="radio" name="expertisePlan" value="full" ${already!==selected.length?'checked':''}><strong>Full expertise check</strong><p>Activity areas, up to three attributable projects and external corroboration where available. 1 credit per profile.</p></label></div></div><div class="field" style="margin-top:14px"><label>Optional profile completion at download</label><label class="enrich-tile"><input type="checkbox" id="contactEnrich"><strong>Complete public business contact data</strong><p>Email, phone or other business contact fields where they can be lawfully and reliably found. +1 credit per profile. No value is invented when unavailable.</p></label></div><div id="creditCost" class="credit-line"></div><div class="security-note">This standalone mockup demonstrates the workflow and uses a demo credit balance. A connected research service is required to perform real enrichment.</div><div class="modal-foot"><button class="btn" data-action="close">Cancel</button><button class="btn primary" data-action="startDownloadPipeline">Start &amp; download ${icon('arrow')}</button></div>`;showLayer('modal');updateCreditCost();}
 function updateCreditCost(){const selected=state.selected.length,full=document.querySelector('input[name="expertisePlan"]:checked')?.value==='full',contact=!!$('contactEnrich')?.checked,cost=selected*((full?1:0)+(contact?1:0)),el=$('creditCost');if(el)el.innerHTML=`<span>Estimated enrichment cost</span><b>${cost} credit${cost===1?'':'s'} &middot; ${Math.max(0,state.enrichmentQuota-cost)} remaining</b>`;}
 function selectedCsv(){const list=state.selected.map(getCandidate).filter(Boolean);const headers=['Candidate ID','Name','Current title','Current company','Location','Profile URL','Decision','Feedback status','Feedback processed','Processing status','Main activity areas','Research note'];const rows=[headers.map(csvSafe).join(',')];for(const c of list){const r=reviewOf(c);rows.push([c.id,c.name,c.title,c.company,c.location,c.profileUrl,r.status,r.feedbackGiven?'Received':'Pending',r.feedbackProcessed?'Yes':'No',r.lifecycle,c.areas,c.researchNote].map(csvSafe).join(','));}return '\uFEFF'+rows.join('\r\n');}
@@ -2918,35 +2924,67 @@ let override='auto',priorStep='',currentTool='';
 function step(){try{return state.processStep||'brief'}catch(e){return'brief'}}
 function view(){try{return state.view||'overview'}catch(e){return'overview'}}
 function taskFor(){
- const st=step(),v=view();
- if(v==='george')return'talent';
- if(v==='talent')return'george';
- if(['feedback1','feedback2','evidence','production'].includes(st))return'talent';
- return'george';
+ const v=view(),st=step();
+ if(v==='george')return 'talent';
+ if(['feedback1','feedback2','brief','locked','market','evidence','production','cal1','cal2'].includes(st))return 'talent';
+ return 'george';
+}
+function projectCandidates(){
+ return state.liveMode?state.live:ALL_CANDIDATES;
 }
 function relevant(){
- const st=step();
- if(st==='cal1'||st==='feedback1')return ALL_CANDIDATES.filter(c=>/^C(0[1-9]|1[0-9]|20)$/.test(c.id));
- if(st==='cal2'||st==='feedback2')return ALL_CANDIDATES.filter(c=>!['C16','C17','C18','C19','C20'].includes(c.id));
- if(st==='brief')return [];
- return ALL_CANDIDATES.filter(c=>!['C16','C17','C18','C19','C20'].includes(c.id));
+ const pool=projectCandidates(),st=step(),assignment=PROCESS_STEPS.find(s=>s.id===st);
+ if(['feedback1','feedback2','cal1','cal2','evidence','production'].includes(st)){
+   const ids=new Set(assignment?.ids||[]);
+   return pool.filter(c=>ids.has(c.id));
+ }
+ return [];
+}
+function taskReview(c,st=step()){
+ if(st==='feedback1'||st==='feedback2'){
+  return {...stageDefaultReview(c,st),...(stageReview[st]?.[c.profileUrl]||{})};
+ }
+ return reviewOf(c);
+}
+function pending(c){
+ const st=step(),r=taskReview(c);
+ if(st==='feedback1'||st==='feedback2')return !(r.feedbackGiven&&['approved','hold','excluded'].includes(r.status));
+ if(st==='production')return r.status==='approved'&&!r.shortlisted;
+ if(st==='evidence'){
+  try {
+   const saved=JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}');
+   return !Object.keys(saved).some(k=>k.startsWith(c.id+'::')&&saved[k].status);
+  }catch{return true}
+ }
+ return true;
 }
 function name(c){return String(c.name||'Candidate')}
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function paintCandidates(){
  if(currentTool!=='talent')return;
- let entries=relevant();const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
- entries=entries.filter(c=>[c.name,c.title,c.company,c.location].join(' ').toLowerCase().includes(term));
- document.getElementById('talentRailCount').textContent=entries.length;
- const isFeedback=/feedback/.test(step()),isEvidence=step()==='evidence',isProduction=step()==='production';
- if(isProduction)entries=entries.filter(c=>{try{const r=reviewOf(c);return !!r.shortlisted||r.status==='approved'}catch(e){return false}});
- const finished=isFeedback?entries.filter(c=>{try{return !!reviewOf(c).feedbackGiven}catch(e){return false}}).length:0;
- desc.innerHTML='<strong>'+({brief:'Search criteria',cal1:'Calibration round 1',feedback1:'Step 3 · Candidate feedback',cal2:'Calibration round 2',feedback2:'Candidate feedback · Round 2',locked:'Locked sourcing profile',market:'Candidate market map',evidence:'Evidence check',production:'Production & shortlist'}[step()]||'Candidate workspace')+'</strong>'+ (isFeedback?' · '+finished+'/'+entries.length+' feedback decisions completed.':isEvidence?' · Inspect supporting evidence and verify each claim.':isProduction?' · Approved and shortlisted profiles only.':' · Candidates relevant to the current stage.');
- list.innerHTML=entries.map(c=>{
-  let status='pending';try{status=reviewOf(c).status||'pending'}catch(e){}
-  return '<div class="task-rail-candidate"><button type="button" class="talent-rail-row" data-rail-candidate="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">'+(isEvidence?'Evidence review · ':isProduction?'Shortlist · ':'Decision: ')+escapeHTML(status)+'</span></span></button>'+(isFeedback?'<div class="task-feedback-buttons" data-feedback-id="'+escapeHTML(c.id)+'">'+['approved','hold','excluded'].map(d=>'<button type="button" data-task-decision="'+d+'" class="'+(status===d?'selected':'')+'">'+(d==='hold'?'Hold':d==='approved'?'Approve':'Exclude')+'</button>').join('')+'</div>':'')+'</div>';
- }).join('') || '<p class="talent-rail-empty">No candidates for this step.</p>';
+ const st=step(),assigned=relevant(),total=assigned.length;
+ let outstanding=assigned.filter(pending),completed=total-outstanding.length;
+ const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
+ outstanding=outstanding.filter(c=>[c.name,c.title,c.company,c.location].join(' ').toLowerCase().includes(term));
+ const count=document.getElementById('talentRailCount');if(count)count.textContent=outstanding.length;
+ const feedback=/^feedback/.test(st),role=['brief','locked'].includes(st);
+ if(role){
+  const b=state.liveBrief||{},fields=['role','companies','locations','focus'],missing=fields.filter(k=>!String(b[k]||'').trim());
+  desc.innerHTML='<strong>Role requirements · '+missing.length+' outstanding</strong>';
+  list.innerHTML=missing.length?missing.map(k=>'<div class="task-rail-candidate"><b>'+escapeHTML(k)+'</b><p>Required information is missing.</p></div>').join(''):'<p class="talent-rail-empty">Role requirements are complete.</p>';
+  return;
+ }
+ desc.innerHTML='<strong>'+escapeHTML((PROCESS_STEPS.find(x=>x.id===st)?.title)||'Current tasks')+'</strong><div class="task-progress-counter">'+completed+'/'+total+' completed · '+(total-completed)+' remaining</div>';
+ if(!outstanding.length){list.innerHTML='<p class="talent-rail-empty">'+(total===completed?'All assigned tasks complete.':'No matching pending tasks.')+'</p>';return;}
+ list.innerHTML=outstanding.map(c=>{
+  const r=taskReview(c),summary=(c.summary||c.researchNote||c.areas||'').slice(0,220);
+  return '<div class="task-rail-candidate" data-feedback-id="'+escapeHTML(c.id)+'"><button type="button" class="talent-rail-row" data-task-open="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">Match '+escapeHTML(c.match??c.fit??'—')+'/100 · Evidence '+escapeHTML(c.evidence??'—')+'/100</span></span></button><p class="task-rail-summary">'+escapeHTML(summary)+'</p><details class="task-rail-assessment"><summary>Why / How / What</summary><p><b>Why</b> '+escapeHTML(c.raw?.Why||c.summary||'Fit to be assessed')+'</p><p><b>How</b> '+escapeHTML(c.areas||c.projects?.[0]||'Not documented')+'</p><p><b>What</b> '+escapeHTML(c.evidenceType||c.caveat||'Check original sources')+'</p></details>'+
+  (feedback?'<textarea class="task-feedback-note" data-task-note="'+escapeHTML(c.id)+'" rows="2" placeholder="Optional qualitative feedback"></textarea><div class="task-feedback-buttons">'+[['approved','Keep'],['excluded','Reject'],['hold','Review later']].map(([value,label])=>'<button type="button" data-task-decision="'+value+'">'+label+'</button>').join('')+'</div>':'')+
+  (st==='production'?'<button type="button" class="task-shortlist-button" data-task-shortlist="'+escapeHTML(c.id)+'">Add to shortlist</button>':'')+
+  '</div>';
+ }).join('');
 }
+
 function update(force=false){
  const st=step();if(priorStep!==st){priorStep=st;document.body.classList.remove('task-rail-collapsed');}
  const tool=override==='auto'?taskFor():override;
@@ -2971,12 +3009,18 @@ document.addEventListener('click',e=>{
  if(choice){override=choice.dataset.taskTool;document.body.classList.remove('task-rail-collapsed');update(true);return;}
  if(e.target.closest('[data-task-collapse]')){document.body.classList.add('task-rail-collapsed');return;}
  if(e.target.closest('#taskRailRestore')){document.body.classList.remove('task-rail-collapsed');update(true);return;}
+ const open=e.target.closest('[data-task-open]');
+ if(open){if(typeof switchView==='function')switchView('talent');if(typeof openCandidate==='function')openCandidate(open.dataset.taskOpen,true,false);return;}
+ const short=e.target.closest('[data-task-shortlist]');
+ if(short){const c=projectCandidates().find(c=>c.id===short.dataset.taskShortlist);if(c){setReview(c,{shortlisted:true});renderTalent();update(true);refreshRecruiterGuide();}return;}
  const decision=e.target.closest('[data-task-decision]');
  if(decision){
-  const id=decision.closest('[data-feedback-id]')?.dataset.feedbackId,c=ALL_CANDIDATES.find(c=>c.id===id);
+  const id=decision.closest('[data-feedback-id]')?.dataset.feedbackId,c=projectCandidates().find(x=>x.id===id);
   if(!c)return;
-  try{setReview(c,{status:decision.dataset.taskDecision,feedbackGiven:true,feedbackProcessed:false});renderTalent();renderWorkflow();update(true);}
-  catch(err){console.warn('Feedback update unavailable',err);}
+  const note=document.querySelector('[data-task-note="'+id+'"]')?.value||'';
+  setReview(c,{status:decision.dataset.taskDecision,feedbackGiven:true,feedbackProcessed:false,note:note||taskReview(c).note,lastFeedbackAt:new Date().toISOString()});
+  renderTalent();renderWorkflow();refreshRecruiterGuide();update(true);
+  return;
  }
  if(e.target.closest('#workflowCandidateClose')){document.getElementById('workflowCandidateDetail')?.classList.add('hidden');}
  if(e.target.closest('[data-rail-candidate]'))requestAnimationFrame(update);
