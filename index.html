@@ -2974,7 +2974,29 @@ function taskFor(){
  return view()==='george'?'talent':'george';
 }
 function resolvedTool(){const v=view();const suggested=taskFor();let selected=override||suggested;if(v==='george'&&selected==='george')selected='talent';if(v==='talent'&&selected==='talent')selected='george';return selected;}
-function roleBrief(){const b=state.liveBrief||{};const fields=[['role','Target role'],['companies','Target companies'],['locations','Locations'],['focus','Skills / focus']];const missing=fields.filter(([k])=>!String(b[k]||'').trim());rolePanel.innerHTML='<h3>Role Brief</h3><p>'+missing.length+' of '+fields.length+' requirements still missing</p>'+fields.map(([key,label])=>'<div class="task-role-field"><b>'+escapeHTML(label)+'</b><span>'+escapeHTML(Array.isArray(b[key])?b[key].join(', '):b[key]||'Not defined')+'</span></div>').join('');}
+function projectBrief(){
+ const criteria={};
+ document.querySelectorAll('#view-workflow dl.criteria dt').forEach(dt=>{
+  const dd=dt.nextElementSibling;if(dd?.tagName==='DD')criteria[dt.textContent.trim().toLowerCase()]=dd.textContent.trim();
+ });
+ const live=state.liveBrief||{};
+ const value=(key,fallback)=>{const v=live[key];return (Array.isArray(v)?v.join(', '):String(v??'').trim())||fallback||'';};
+ return {
+  role:value('role',criteria['seniority']||''),
+  companies:value('companies',criteria['target firms']||''),
+  locations:value('locations',criteria['geography']||''),
+  focus:value('focus',[criteria['career path'],criteria['ceiling']].filter(Boolean).join(' · ')),
+  criteria,
+  source:state.liveBrief?'Current search + locked sourcing profile':'Locked sourcing profile'
+ };
+}
+function roleBrief(){
+ const b=projectBrief(),fields=[['role','Target role / seniority'],['companies','Target companies'],['locations','Locations'],['focus','Skills / focus']];
+ const missing=fields.filter(([k])=>!String(b[k]||'').trim());
+ rolePanel.innerHTML='<h3>Role Brief</h3><p>'+escapeHTML(b.source)+' · '+(missing.length?missing.length+' requirement(s) not defined':'Search criteria available')+'</p>'+
+ fields.map(([key,label])=>'<div class="task-role-field"><b>'+escapeHTML(label)+'</b><span>'+escapeHTML(b[key]||'Not defined')+'</span></div>').join('')+
+ '<div class="task-role-field"><b>Exclusions</b><span>'+escapeHTML([b.criteria['individual exclusions'],b.criteria['ceiling']].filter(Boolean).join(' · ')||'Not specified')+'</span></div>';
+}
 function projectCandidates(){
  return state.liveMode?state.live:ALL_CANDIDATES;
 }
@@ -2982,9 +3004,9 @@ function relevant(){
  const pool=projectCandidates(),st=step(),assignment=PROCESS_STEPS.find(s=>s.id===st);
  if(['feedback1','feedback2','cal1','cal2','evidence','production'].includes(st)){
    const ids=new Set(assignment?.ids||[]);
-   return pool.filter(c=>ids.has(c.id));
+   return ids.size?pool.filter(c=>ids.has(c.id)):pool;
  }
- return [];
+ return pool;
 }
 function taskReview(c,st=step()){
  if(st==='feedback1'||st==='feedback2'){
@@ -3015,7 +3037,7 @@ function paintCandidates(){
  const count=document.getElementById('talentRailCount');if(count)count.textContent=outstanding.length;
  const feedback=/^feedback/.test(st),role=['brief','locked'].includes(st);
  if(role){
-  const b=state.liveBrief||{},fields=['role','companies','locations','focus'],missing=fields.filter(k=>!String(b[k]||'').trim());
+  const b=projectBrief(),fields=['role','companies','locations','focus'],missing=fields.filter(k=>!String(b[k]||'').trim());
   desc.innerHTML='<strong>Role requirements · '+missing.length+' outstanding</strong>';
   list.innerHTML=missing.length?missing.map(k=>'<div class="task-rail-candidate"><b>'+escapeHTML(k)+'</b><p>Required information is missing.</p></div>').join(''):'<p class="talent-rail-empty">Role requirements are complete.</p>';
   return;
@@ -3036,7 +3058,7 @@ function update(force=false){
  const tool=resolvedTool();
  currentTool=tool;
  // Search creation is a task only in discovery/calibration, never in feedback or verification.
- const searchRequired=(st==='cal1'||st==='cal2')&&relevant().length>0;
+ const searchRequired=(st==='cal1'||st==='cal2');
  searchAction.hidden=!(tool==='talent'&&searchRequired);
  searchAction.disabled=!searchRequired;
  document.body.classList.toggle('task-rail-show-talent',tool==='talent'||tool==='brief');
