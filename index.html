@@ -2925,12 +2925,12 @@ document.addEventListener('click',function(e){if(e.target.closest('#talentInline
 (function(){
 const talent=document.getElementById('talentExplorerRail'),george=document.getElementById('georgePanel'),list=document.getElementById('talentRailList');if(!talent||!george||!list)return;
 const bar=document.createElement('div');bar.id='taskRailControls';
-bar.innerHTML='<button type="button" data-task-tool="auto">Auto</button><button type="button" data-task-tool="george">George</button><button type="button" data-task-tool="talent">Talent</button><button type="button" data-task-tool="brief">Role Brief</button><button type="button" class="task-rail-collapse" data-task-collapse="1" aria-label="Collapse sidebar">‹</button>';
+bar.innerHTML='<button type="button" data-task-tool="george">George</button><button type="button" data-task-tool="talent">Talent</button><button type="button" data-task-tool="brief">Role Brief</button><button type="button" class="task-rail-collapse" data-task-collapse="1" aria-label="Collapse sidebar">‹</button>';
 talent.prepend(bar);
 const geobar=bar.cloneNode(true);geobar.id='taskRailGeorgeControls';george.prepend(geobar);
 const desc=document.createElement('div');desc.id='taskRailDescription';talent.insertBefore(desc,talent.querySelector('.talent-rail-search'));
 const restore=document.createElement('button');restore.id='taskRailRestore';restore.textContent='Open sidebar ›';document.body.appendChild(restore);
-let override='auto',priorStep='',currentTool='';
+let override=null,priorStep='',currentTool='',priorView='';
 const searchAction=document.createElement('button');searchAction.type='button';searchAction.id='taskRailContextNewSearch';searchAction.className='btn primary';searchAction.textContent='New search';searchAction.hidden=true;
 talent.querySelector('.talent-rail-actions')?.appendChild(searchAction);
 searchAction.addEventListener('click',()=>{if(typeof showNewSearch==='function')showNewSearch();});
@@ -2944,7 +2944,7 @@ function taskFor(){
  if(['feedback1','feedback2','evidence','production','cal1','cal2','market'].includes(st))return 'talent';
  return v==='talent'?'brief':'george';
 }
-function resolvedTool(){let selected=override==='auto'?taskFor():override;const v=view();if(v==='george'&&selected==='george')selected='talent';if(v==='talent'&&selected==='talent'&&override!=='auto')selected='brief';return selected;}
+function resolvedTool(){const v=view();const suggested=taskFor();let selected=override||suggested;if(v==='george'&&selected==='george')selected='talent';if(v==='talent'&&selected==='talent')selected='george';return selected;}
 function roleBrief(){const b=state.liveBrief||{};const fields=[['role','Target role'],['companies','Target companies'],['locations','Locations'],['focus','Skills / focus']];const missing=fields.filter(([k])=>!String(b[k]||'').trim());rolePanel.innerHTML='<h3>Role Brief</h3><p>'+missing.length+' of '+fields.length+' requirements still missing</p>'+fields.map(([key,label])=>'<div class="task-role-field"><b>'+escapeHTML(label)+'</b><span>'+escapeHTML(Array.isArray(b[key])?b[key].join(', '):b[key]||'Not defined')+'</span></div>').join('');}
 function projectCandidates(){
  return state.liveMode?state.live:ALL_CANDIDATES;
@@ -3003,7 +3003,7 @@ function paintCandidates(){
 }
 
 function update(force=false){
- const st=step();if(priorStep!==st){priorStep=st;document.body.classList.remove('task-rail-collapsed');}
+ const st=step(),v=view();if(priorView!==v){priorView=v;override=null;}if(priorStep!==st){priorStep=st;override=null;document.body.classList.remove('task-rail-collapsed');}
  const tool=resolvedTool();
  currentTool=tool;
  // Search creation is a task only in discovery/calibration, never in feedback or verification.
@@ -3017,7 +3017,7 @@ function update(force=false){
  if(tool==='brief')roleBrief();
  george.setAttribute('aria-hidden',String(tool!=='george'));
  document.querySelectorAll('[data-task-tool]').forEach(b=>{
-  b.classList.toggle('active',b.dataset.taskTool===override);
+  b.classList.toggle('active',b.dataset.taskTool===tool);
   // Auto owns its active tool: avoid a duplicate George Chat or Candidates tab.
   b.hidden=(view()==='george'&&b.dataset.taskTool==='george')||(view()==='talent'&&b.dataset.taskTool==='talent');
  });
