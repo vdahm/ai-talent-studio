@@ -1546,7 +1546,15 @@ body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRa
 .sourcing-step-detail .step-progress{font-weight:650;color:#b94d3a}
 .topbar #recruiterGuide .recruiter-journey-slider,.topbar #recruiterGuide .recruiter-guide-grid,.topbar #recruiterGuide .recruiter-guide-top{display:none!important}
 @media(max-width:850px){.topbar{padding:7px!important}.topbar #recruiterGuide{padding:8px!important}.topbar #recruiterGuide .sourcing-step{flex-basis:122px!important;min-width:122px!important}.sourcing-step-detail{align-items:flex-start}}
-</style></head>
+</style><style id="journey-stepper-visible-fix-20261014">
+.topbar #recruiterGuide .journey-scroll-row{display:flex!important;align-items:stretch!important;gap:5px!important;min-width:0!important;width:100%!important}
+.topbar #recruiterGuide .sourcing-stepper-track{flex:1 1 auto!important;min-width:0!important;overflow-x:auto!important;display:flex!important;gap:6px!important}
+.topbar #recruiterGuide .journey-scroll-arrow{display:block!important;flex:0 0 28px!important;background:#f2f4f7!important;border:1px solid #dce3eb!important;border-radius:9px!important;font-size:20px!important;color:#1c2d4a!important;cursor:pointer}
+.topbar #recruiterGuide .sourcing-step-detail{display:flex!important}
+.topbar #recruiterGuide .sourcing-stepper-head{display:flex!important}
+.topbar #recruiterGuide .sourcing-step{display:flex!important;min-height:58px!important}
+</style>
+</head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2586,33 +2594,64 @@ function renderSearchCriteriaInGuide(host){
   host.innerHTML='<div class="criteria-guide-heading"><div><div class="recruiter-guide-kicker">Sourcing Journey · Search criteria</div><h2>Candidate Search Criteria</h2><p>Characteristics of the candidates we are looking for</p></div><button type="button" class="criteria-guide-back" data-recruiter-guide-action="back">← Workflow step</button></div>'+
   '<div class="criteria-guide-list">'+items.map(([label,value])=>'<div class="criteria-guide-item"><small>'+esc(label)+'</small><b>'+esc(value)+'</b></div>').join('')+'</div>';
 }
-function renderRecruiterGuide(){
-  const host=document.getElementById('recruiterGuide');
-  if(!host)return;
-  if(guidePanelMode==='criteria'){renderSearchCriteriaInGuide(host);return;}
-  const i=guideIndex();
-  const s=RECRUITER_GUIDE_STEPS[i];
-  const pct=Math.round(((i+1)/RECRUITER_GUIDE_STEPS.length)*100);
-  const next=RECRUITER_GUIDE_STEPS[Math.min(i+1,RECRUITER_GUIDE_STEPS.length-1)];
-  host.innerHTML=
-    '<div class="recruiter-guide-top">'+
-      '<div>'+
-        '<div class="recruiter-guide-kicker">Sourcing Journey · Current stage</div>'+
-        '<h2>'+esc(s.title)+' <span>→ '+esc(s.verb)+'</span></h2>'+
-        '<div class="recruiter-guide-summary">The system can do the research work, but this is the recruiter decision that keeps the search calibrated and auditable.</div>'+
-      '</div>'+
-      '<div class="recruiter-guide-step"><b>'+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</b><span>workflow step</span></div>'+
-    '</div>'+
-    '<div class="recruiter-journey-slider"><input id="recruiterJourneyRange" type="range" min="0" max="'+(RECRUITER_GUIDE_STEPS.length-1)+'" value="'+i+'" aria-label="Explore the sourcing workflow"><span id="recruiterJourneyStep">Step '+(i+1)+' / '+RECRUITER_GUIDE_STEPS.length+'</span></div>'+ 
-    '<div class="recruiter-journey-preview"><span id="recruiterJourneyTitle">'+esc(s.title)+'</span><button type="button" data-recruiter-guide-action="rolebrief">View Search Criteria</button></div>'+
-    '<div class="recruiter-guide-grid">'+
-      '<div class="recruiter-guide-box"><small>Do now</small><b>'+esc(s.doNow)+'</b></div>'+
-      '<div class="recruiter-guide-box"><small>Done when</small><b>'+esc(s.doneWhen)+'</b></div>'+
-      '<div class="recruiter-guide-box"><small>What this creates</small><b>'+esc(s.output)+'</b>'+(i<RECRUITER_GUIDE_STEPS.length-1?'<p>Next: '+esc(next.title)+'</p>':'<p>Continue only after reviewing each production batch.</p>')+'</div>'+
-    '</div>'+
-    '<div class="recruiter-guide-progress"><span style="width:'+pct+'%"></span></div>'+
-    '<div class="recruiter-guide-actions" hidden></div>';
+let journeyInspected=null;
+function journeyProgress(step){
+ const ids=step.ids||[],people=ids.map(id=>ALL_CANDIDATES.find(c=>c.id===id)).filter(Boolean);
+ if(step.id==='feedback1'||step.id==='feedback2'){
+  const n=people.filter(c=>{const def=stageDefaultReview(c,step.id),saved=stageReview[step.id]?.[c.profileUrl]||{};const r={...def,...saved};return r.feedbackGiven&&['approved','hold','excluded'].includes(r.status);}).length;
+  return {done:n,total:people.length,label:'reviewed',remaining:people.length-n};
+ }
+ if(step.id==='cal1'||step.id==='cal2'){
+  const reviewStep=step.id==='cal1'?'feedback1':'feedback2';
+  const n=people.filter(c=>Boolean(stageReview[reviewStep]?.[c.profileUrl]?.feedbackGiven)).length;
+  return {done:n,total:people.length,label:'assessed',remaining:people.length-n};
+ }
+ if(step.id==='brief'){
+  const br=state.liveBrief||{};const keys=['role','companies','locations','focus'],done=keys.filter(k=>String(br[k]||'').trim()).length;
+  return {done,total:keys.length,label:'defined',remaining:keys.length-done};
+ }
+ if(step.id==='evidence'){
+  const n=people.filter(c=>Number(c.evidence)>0&&Array.isArray(c.sources)&&c.sources.length>0).length;
+  return {done:n,total:people.length,label:'verified records',remaining:people.length-n};
+ }
+ return {done:0,total:0,label:'Requires review',remaining:null};
 }
+function renderRecruiterGuide(){
+ const host=document.getElementById('recruiterGuide');if(!host)return;
+ const active=state.processStep||'brief',current=PROCESS_STEPS.find(s=>s.id===active)||PROCESS_STEPS[0];
+ const inspected=PROCESS_STEPS.find(s=>s.id===journeyInspected)||current;
+ const idx=PROCESS_STEPS.findIndex(s=>s.id===active),p=journeyProgress(inspected);
+ const previousScroll=host.querySelector('.sourcing-stepper-track')?.scrollLeft||0;
+ const steps=PROCESS_STEPS.map((step,i)=>{
+  const d=journeyProgress(step),complete=d.total>0&&d.done===d.total;
+  const klass=step.id===active?'current':complete?'done':'pending';
+  const status=complete?'✓':String(i+1);
+  const progress=d.total>0?d.done+'/'+d.total+' '+d.label:'Review required';
+  const width=d.total>0?Math.round(d.done/d.total*100):0;
+  return '<button class="sourcing-step '+klass+'" type="button" data-journey-step="'+esc(step.id)+'" aria-current="'+(step.id===active?'step':'false')+'" aria-label="'+esc(step.title+' '+progress)+'"><span class="sourcing-step-line"><span class="mark">'+status+'</span>'+esc(progress)+'</span><span class="sourcing-step-title">'+esc(step.title)+'</span><span class="sourcing-step-meter"><i style="width:'+width+'%"></i></span></button>';
+ }).join('');
+ const remaining=p.remaining===null?'Completion requires an explicit review':p.remaining===0?'All measurable tasks completed':(inspected.id==='feedback1'||inspected.id==='feedback2')?p.remaining+' candidate feedback decisions remaining':p.remaining+' tasks remaining';
+ const action=(inspected.id==='feedback1'||inspected.id==='feedback2')?'Continue Feedback':'Open Step';
+ host.innerHTML='<div class="sourcing-stepper-head"><strong>Sourcing Journey</strong><small>Current step '+(idx+1)+' of 9 · '+esc(current.title)+'</small></div>'+
+ '<div class="journey-scroll-row"><button class="journey-scroll-arrow" data-journey-scroll="-1" type="button" aria-label="Scroll steps left">‹</button><div class="sourcing-stepper-track" role="group" aria-label="Nine sourcing steps">'+steps+'</div><button class="journey-scroll-arrow" data-journey-scroll="1" type="button" aria-label="Scroll steps right">›</button></div>'+
+ '<div class="sourcing-step-detail"><div class="step-copy"><b>'+esc(inspected.title)+'</b><p class="step-progress">'+esc(remaining)+'</p></div><button type="button" data-journey-continue="'+esc(inspected.id)+'">'+esc(action)+'</button></div>';
+ const track=host.querySelector('.sourcing-stepper-track');track.scrollLeft=previousScroll;
+ if(!host.dataset.journeyInit){host.dataset.journeyInit='yes';requestAnimationFrame(()=>host.querySelector('.sourcing-step.current')?.scrollIntoView({block:'nearest',inline:'center'}));}
+}
+document.addEventListener('click',e=>{
+ const arrow=e.target.closest('[data-journey-scroll]');if(arrow){document.querySelector('#recruiterGuide .sourcing-stepper-track')?.scrollBy({left:Number(arrow.dataset.journeyScroll)*300,behavior:'smooth'});return;}
+ const step=e.target.closest('[data-journey-step]');if(step){journeyInspected=step.dataset.journeyStep;renderRecruiterGuide();return;}
+ const next=e.target.closest('[data-journey-continue]');if(!next)return;
+ const id=next.dataset.journeyContinue,stepInfo=PROCESS_STEPS.find(s=>s.id===id);if(!stepInfo)return;
+ if(state.processStep!==id)setProcessStep(id,false);
+ if(['feedback1','feedback2'].includes(id)){
+  if(typeof window.switchView==='function')window.switchView('workflow');
+  document.querySelector('[data-task-tool="auto"]')?.click();
+  const target=stepInfo.ids.map(n=>ALL_CANDIDATES.find(c=>c.id===n)).find(c=>c&&!({...stageDefaultReview(c,id),...(stageReview[id]?.[c.profileUrl]||{})}).feedbackGiven);
+  if(target&&typeof window.openCandidate==='function')window.openCandidate(target.id,true,true);
+ }else if(typeof window.switchView==='function')window.switchView(stepInfo.targetView||'workflow');
+ journeyInspected=id;renderRecruiterGuide();
+});
 function renderRecruiterPlaybook(){
   const host=document.getElementById('recruiterPlaybookList');
   if(!host)return;
@@ -2889,78 +2928,6 @@ document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintC
 window.addEventListener('studio-step-changed',()=>update(true));
 window.setInterval(()=>{if(currentTool!== (override==='auto'?taskFor():override))update(true)},700);
 update(true);
-})();
-</script><script id="sourcing-progress-stepper-controller-20261014">
-(function(){
-'use strict';
-if(typeof PROCESS_STEPS==='undefined'||typeof renderRecruiterGuide!=='function')return;
-const ESC=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let inspected=null,raf=0;
-const feedbackIds=new Set(['feedback1','feedback2']);
-function dataFor(x){
- const ids=x.ids||[],all=typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[],people=ids.map(id=>all.find(c=>c.id===id)).filter(Boolean);
- if(feedbackIds.has(x.id)){
- const reviewed=people.filter(c=>{const record=stageReview?.[x.id]?.[c.profileUrl];const base=typeof stageDefaultReview==='function'?stageDefaultReview(c,x.id):{};const r=record?{...base,...record}:base;return !!r.feedbackGiven&&['approved','hold','excluded'].includes(r.status);}).length;
- return {done:reviewed,total:people.length,remaining:people.length-reviewed,unit:'reviewed',known:true};
- }
- if(x.id==='cal1'||x.id==='cal2'){
- const nextId=x.id==='cal1'?'feedback1':'feedback2';
- const set=stageReview?.[nextId]||{};
- const touched=people.filter(c=>!!set[c.profileUrl]?.feedbackGiven).length;
- return {done:touched,total:people.length,remaining:people.length-touched,unit:'assessed',known:true};
- }
- if(x.id==='brief'){
- const b=state.liveBrief||{};
- const fields=['role','companies','locations','focus'];const n=fields.filter(k=>String(b[k]||'').trim()).length;
- return {done:n,total:fields.length,remaining:fields.length-n,unit:'defined',known:true};
- }
- if(x.id==='locked'){const b=state.liveBrief||{};return{known:false,unit:'Confirm locked search profile',done:0,total:0,remaining:null};}
- if(x.id==='market'){return{known:false,unit:'Review market sizing and cluster evidence',done:0,total:0,remaining:null};}
- if(x.id==='evidence'){
- const completed=people.filter(c=>Array.isArray(c.sources)&&c.sources.length&&Number(c.evidence)>0).length;
- return {known:true,done:completed,total:people.length,remaining:people.length-completed,unit:'evidence records'};
- }
- return {known:false,unit:'Review production and shortlist gates',done:0,total:0,remaining:null};
-}
-function draw(){
- const host=document.getElementById('recruiterGuide');if(!host)return;
- const selected=PROCESS_STEPS.find(x=>x.id===inspected)||PROCESS_STEPS.find(x=>x.id===state.processStep)||PROCESS_STEPS[0];
- const activeIndex=PROCESS_STEPS.findIndex(x=>x.id===state.processStep);
- const entries=PROCESS_STEPS.map((x,i)=>{const d=dataFor(x),active=x.id===state.processStep;const complete=d.known&&d.total>0&&d.done===d.total;
- const status=active?'current':complete?'done':i<active?'blocked':'pending';
- const short=d.known?(d.done+'/'+d.total+' '+d.unit):'Pending verification';
- const pc=d.known&&d.total>0?Math.round(100*d.done/d.total):0;
- return '<button type="button" class="sourcing-step '+status+'" data-sourcing-step="'+ESC(x.id)+'" aria-current="'+(active?'step':'false')+'" aria-label="'+ESC(x.title)+' — '+ESC(short)+'"><span class="sourcing-step-line"><span class="mark">'+(complete?'✓':status==='blocked'?'!':i+1)+'</span><span>'+ESC(short)+'</span></span><span class="sourcing-step-title">'+ESC(x.title)+'</span><span class="sourcing-step-meter"><i style="width:'+pc+'%"></i></span></button>';
- }).join('');
- const d=dataFor(selected),isFeedback=feedbackIds.has(selected.id),action=isFeedback?'Continue Feedback':selected.id==='brief'?'Review Role Brief':selected.id==='evidence'?'Continue Evidence Check':'Open Step';
- const message=isFeedback?d.remaining+' candidate feedback decisions remaining':d.known?d.remaining+' of '+d.total+' tasks remaining':selected.description;
- host.innerHTML='<div class="sourcing-stepper-head"><strong>Sourcing Journey</strong><small>Step '+(activeIndex+1)+' of '+PROCESS_STEPS.length+' · '+ESC(PROCESS_STEPS[activeIndex]?.title)+'</small></div>'+
- '<div class="sourcing-stepper-track" role="group" aria-label="Sourcing steps">'+entries+'</div>'+
- '<div class="sourcing-step-detail"><div class="step-copy"><b>'+ESC(selected.title)+'</b><p class="step-progress">'+ESC(message)+'</p><p>Suggested next action: '+ESC(isFeedback?'Review the next candidate without a decision':selected.description)+'</p></div><button type="button" data-sourcing-continue="'+ESC(selected.id)+'">'+action+'</button></div>';
- const track=host.querySelector('.sourcing-stepper-track');const active=host.querySelector('.sourcing-step.current');if(track&&active&&track.scrollLeft===0){track.scrollLeft=Math.max(0,active.offsetLeft-track.offsetLeft-track.clientWidth/2+active.clientWidth/2);}
-}
-renderRecruiterGuide=draw;
-window.refreshRecruiterGuide=()=>{draw();if(typeof renderRecruiterPlaybook==='function')renderRecruiterPlaybook();};
-document.addEventListener('click',e=>{
- const stepBtn=e.target.closest('[data-sourcing-step]');
- if(stepBtn){inspected=stepBtn.dataset.sourcingStep;draw();return;}
- const next=e.target.closest('[data-sourcing-continue]');if(!next)return;
- const id=next.dataset.sourcingContinue,x=PROCESS_STEPS.find(s=>s.id===id);if(!x)return;
- if(state.processStep!==id&&typeof setProcessStep==='function')setProcessStep(id,false);
- if(typeof window.switchView==='function')window.switchView(id==='brief'?'workflow':x.targetView||'workflow');
- if(feedbackIds.has(id)){
- const d=dataFor(x),pending=x.ids.map(cid=>ALL_CANDIDATES.find(c=>c.id===cid)).find(c=>{const r=stageReview?.[id]?.[c.profileUrl]||stageDefaultReview(c,id);return !r.feedbackGiven;});
- document.querySelector('[data-task-tool="auto"]')?.click();
- if(pending&&typeof window.openCandidate==='function')window.openCandidate(pending.id,true,true);
- }
- inspected=id;draw();
-});
-const originalSetReview=setReview;
-setReview=function(c,patch){const result=originalSetReview(c,patch);schedule();return result;};
-function schedule(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{raf=0;draw();});}
-window.addEventListener('studio-step-changed',()=>{inspected=null;schedule();});
-document.addEventListener('click',e=>{if(e.target.closest('[data-task-decision],[data-decision],[data-action="confirmFeedback"]'))setTimeout(schedule,60);});
-draw();
 })();
 </script></body>
 </html>
