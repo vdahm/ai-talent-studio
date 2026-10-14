@@ -2572,6 +2572,26 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     document.getElementById('georgeExecute')?.click();
     input.value='';syncRailGeorge();
   }
+  // Shared sidebar-only candidate viewer for both Talent and workflow task lists.
+  window.openTalentRailCandidate=function(id){
+    const c=typeof getCandidate==='function'?getCandidate(id):null;
+    if(!c)return false;
+    activeRailId=id;
+    document.getElementById('workflowCandidateDetail')?.classList.add('hidden');
+    document.getElementById('candidateWorkbench')?.classList.add('hidden');
+    openRailProfile(id);
+    return true;
+  };
+  // Capture task-list navigation before older document-level handlers can
+  // route the same click into the 3D Sourcing main workspace.
+  railRoot.addEventListener('click',e=>{
+    const task=e.target.closest('[data-task-open]');
+    if(!task)return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    window.openTalentRailCandidate(task.dataset.taskOpen);
+  },true);
   railDetail.addEventListener('input',e=>{if(e.target.id==='railGeorgeInput')syncRailGeorge();});
   railDetail.addEventListener('keydown',e=>{if(e.target.id==='railGeorgeInput'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();sendRailGeorge();}});
   railDetail.addEventListener('click',e=>{
@@ -3250,7 +3270,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-task-collapse]')){document.body.classList.add('task-rail-collapsed');return;}
  if(e.target.closest('#taskRailRestore')){document.body.classList.remove('task-rail-collapsed');update(true);return;}
  const open=e.target.closest('[data-task-open]');
- if(open){if(typeof openCandidate==='function')openCandidate(open.dataset.taskOpen,true,false);return;}
+ if(open){e.preventDefault();if(typeof window.openTalentRailCandidate==='function')window.openTalentRailCandidate(open.dataset.taskOpen);return;}
  const short=e.target.closest('[data-task-shortlist]');
  if(short){const c=projectCandidates().find(c=>c.id===short.dataset.taskShortlist);if(c){setReview(c,{shortlisted:true});renderTalent();update(true);refreshRecruiterGuide();}return;}
  const decision=e.target.closest('[data-task-decision]');
