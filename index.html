@@ -1634,6 +1634,19 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 #view-workflow #workflowSteps .workflow-step:hover{background:#f4f6fa!important;border-color:#dce3eb!important}
 #view-workflow #workflowSteps .workflow-step.active{background:#edf2f8!important;border-color:#1c2d4a!important}
 #view-workflow #workflowSteps .stage-action{font-weight:650!important;color:#1c2d4a!important}
+</style><style id="workflow-classic-timeline-restoration-20261014">
+/* Restore the original elegant connected timeline while keeping step navigation. */
+#view-workflow #workflowSteps{display:block!important;padding:22px 25px!important}
+#view-workflow #workflowSteps .workflow-step{display:flex!important;position:relative!important;align-items:flex-start!important;gap:16px!important;border:1px solid transparent!important;border-radius:15px!important;padding:13px 12px 23px!important;margin:0 0 3px!important;background:transparent!important;text-align:left!important;box-shadow:none!important;min-height:88px!important}
+#view-workflow #workflowSteps .workflow-step:not(:last-child)::before{content:"";display:block!important;position:absolute!important;left:27px!important;top:49px!important;bottom:-14px!important;width:1px!important;background:#dce3ea!important;z-index:0}
+#view-workflow #workflowSteps .workflow-step .step-badge{position:relative!important;z-index:1!important;flex:0 0 32px!important}
+#view-workflow #workflowSteps .workflow-step .step-text{flex:1!important;min-width:0!important}
+#view-workflow #workflowSteps .workflow-step h3{font-size:14px!important;line-height:1.4!important;margin:2px 0 6px!important;color:#1c2d4a!important}
+#view-workflow #workflowSteps .workflow-step p{font-size:11px!important;line-height:1.6!important;color:#778390!important}
+#view-workflow #workflowSteps .workflow-step .stage-action{font-size:10px!important;color:#b94d3a!important;margin-top:8px!important;font-weight:600!important}
+#view-workflow #workflowSteps .workflow-step:hover{background:#f7f8fa!important;border-color:#e1e6ec!important}
+#view-workflow #workflowSteps .workflow-step.active{background:#f4f0ec!important;border-color:#dfc7bd!important;box-shadow:inset 3px 0 0 #b94d3a!important}
+@media(max-width:700px){#view-workflow #workflowSteps{padding:12px!important}#view-workflow #workflowSteps .workflow-step{padding:12px 8px 18px!important}}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
