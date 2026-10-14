@@ -1579,6 +1579,11 @@ body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRa
 .topbar #recruiterGuide .sourcing-step-detail button{padding:6px 10px!important;font-size:10px!important;white-space:nowrap!important;flex:0 0 auto!important}
 @media(max-width:720px){.topbar{padding:5px 7px!important}.topbar #recruiterGuide{padding:6px!important}.topbar #recruiterGuide .sourcing-step-detail .step-copy{display:block!important}.topbar #recruiterGuide .sourcing-step-detail p{margin-top:2px!important}.topbar #recruiterGuide .sourcing-stepper-head small{font-size:9px!important}}
 </style>
+<style id="task-rail-auto-context-20261014">
+/* Never repeat the tool already rendered by Auto. */
+#taskRailControls [data-task-tool][hidden],#taskRailGeorgeControls [data-task-tool][hidden]{display:none!important}
+body.task-rail-context-evidence .task-feedback-buttons,body.task-rail-context-production .task-feedback-buttons{display:none!important}
+</style>
 </head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2897,8 +2902,7 @@ function taskFor(){
  const st=step(),v=view();
  if(v==='george')return'talent';
  if(v==='talent')return'george';
- if(['cal1','feedback1','cal2','feedback2','evidence','production'].includes(st))return'talent';
- if(st==='market')return'talent';
+ if(['feedback1','feedback2','evidence','production'].includes(st))return'talent';
  return'george';
 }
 function relevant(){
@@ -2915,11 +2919,13 @@ function paintCandidates(){
  let entries=relevant();const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
  entries=entries.filter(c=>[c.name,c.title,c.company,c.location].join(' ').toLowerCase().includes(term));
  document.getElementById('talentRailCount').textContent=entries.length;
- const isFeedback=/feedback/.test(step());
- desc.innerHTML='<strong>'+({brief:'Search criteria',cal1:'Calibration round 1',feedback1:'Step 3 · Candidate feedback',cal2:'Calibration round 2',feedback2:'Candidate feedback · Round 2',locked:'Locked sourcing profile',market:'Candidate market map',evidence:'Evidence check',production:'Production & shortlist'}[step()]||'Candidate workspace')+'</strong>'+ (isFeedback?'Review each candidate, record a decision, and open the full profile without leaving this step.':'Candidates and research relevant to the current sourcing stage.');
+ const isFeedback=/feedback/.test(step()),isEvidence=step()==='evidence',isProduction=step()==='production';
+ if(isProduction)entries=entries.filter(c=>{try{const r=reviewOf(c);return !!r.shortlisted||r.status==='approved'}catch(e){return false}});
+ const finished=isFeedback?entries.filter(c=>{try{return !!reviewOf(c).feedbackGiven}catch(e){return false}}).length:0;
+ desc.innerHTML='<strong>'+({brief:'Search criteria',cal1:'Calibration round 1',feedback1:'Step 3 · Candidate feedback',cal2:'Calibration round 2',feedback2:'Candidate feedback · Round 2',locked:'Locked sourcing profile',market:'Candidate market map',evidence:'Evidence check',production:'Production & shortlist'}[step()]||'Candidate workspace')+'</strong>'+ (isFeedback?' · '+finished+'/'+entries.length+' feedback decisions completed.':isEvidence?' · Inspect supporting evidence and verify each claim.':isProduction?' · Approved and shortlisted profiles only.':' · Candidates relevant to the current stage.');
  list.innerHTML=entries.map(c=>{
   let status='pending';try{status=reviewOf(c).status||'pending'}catch(e){}
-  return '<div class="task-rail-candidate"><button type="button" class="talent-rail-row" data-rail-candidate="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">Decision: '+escapeHTML(status)+'</span></span></button>'+(isFeedback?'<div class="task-feedback-buttons" data-feedback-id="'+escapeHTML(c.id)+'">'+['approved','hold','excluded'].map(d=>'<button type="button" data-task-decision="'+d+'" class="'+(status===d?'selected':'')+'">'+(d==='hold'?'Hold':d==='approved'?'Approve':'Exclude')+'</button>').join('')+'</div>':'')+'</div>';
+  return '<div class="task-rail-candidate"><button type="button" class="talent-rail-row" data-rail-candidate="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">'+(isEvidence?'Evidence review · ':isProduction?'Shortlist · ':'Decision: ')+escapeHTML(status)+'</span></span></button>'+(isFeedback?'<div class="task-feedback-buttons" data-feedback-id="'+escapeHTML(c.id)+'">'+['approved','hold','excluded'].map(d=>'<button type="button" data-task-decision="'+d+'" class="'+(status===d?'selected':'')+'">'+(d==='hold'?'Hold':d==='approved'?'Approve':'Exclude')+'</button>').join('')+'</div>':'')+'</div>';
  }).join('') || '<p class="talent-rail-empty">No candidates for this step.</p>';
 }
 function update(force=false){
@@ -2930,7 +2936,14 @@ function update(force=false){
  document.body.classList.toggle('task-rail-show-george',tool==='george');
  talent.setAttribute('aria-hidden',String(tool!=='talent'));
  george.setAttribute('aria-hidden',String(tool!=='george'));
- document.querySelectorAll('[data-task-tool]').forEach(b=>b.classList.toggle('active',b.dataset.taskTool===override));
+ document.querySelectorAll('[data-task-tool]').forEach(b=>{
+  b.classList.toggle('active',b.dataset.taskTool===override);
+  // Auto owns its active tool: avoid a duplicate George Chat or Candidates tab.
+  b.hidden=override==='auto'&&b.dataset.taskTool===tool;
+ });
+ document.body.classList.toggle('task-rail-context-feedback',tool==='talent'&&/feedback/.test(st));
+ document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
+ document.body.classList.toggle('task-rail-context-production',tool==='talent'&&st==='production');
  if(tool==='talent')paintCandidates();
 }
 document.addEventListener('click',e=>{
