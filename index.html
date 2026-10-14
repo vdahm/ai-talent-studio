@@ -2870,8 +2870,9 @@ function journeyProgress(step){
   }).length,people.length,'reviewed');
  }
  if(step.id==='cal1'||step.id==='cal2'){
-  const feedbackStep=step.id==='cal1'?'feedback1':'feedback2';
-  return progress(people.filter(c=>Boolean(stageReview[feedbackStep]?.[c.profileUrl]?.feedbackGiven)).length,people.length,'assessed');
+  // Calibration represents sourced profiles available for recruiter review,
+  // not feedback that belongs to the separate subsequent feedback step.
+  return progress(people.filter(c=>Boolean(c.id&&c.title&&(c.company||c.firm||c.summary))).length,ids.length||people.length,'profiles loaded');
  }
  if(step.id==='market'){
   return progress(people.filter(c=>Boolean(c.location&&(c.company||c.firm))).length,people.length,'mapped profiles');
@@ -3583,6 +3584,47 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
  window.addEventListener('pageshow',schedule);
  document.addEventListener('change',schedule);
  schedule();
+})();
+</script><style id="calibration-task-data-20261014">
+#calibrationTaskData{margin:14px 0 22px;background:#fff;border:1px solid #e2e4e7;border-radius:16px;padding:16px}
+#calibrationTaskData h3{color:#1c2d4a;font-size:16px;margin:0 0 6px}
+#calibrationTaskData .calibration-note{color:#667085;font-size:12px;margin-bottom:12px}
+#calibrationTaskData .calibration-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
+#calibrationTaskData .calibration-person{border:1px solid #e8e9ee;border-left:3px solid #b94d3a;border-radius:10px;padding:11px;min-width:0;background:#fff}
+#calibrationTaskData .calibration-person b{color:#1c2d4a;font-size:13px}
+#calibrationTaskData .calibration-person small{display:block;color:#667085;margin-top:4px;overflow-wrap:anywhere}
+#calibrationTaskData .calibration-person .calibration-decision{font-size:11px;color:#a34a38;font-weight:650;margin-top:5px}
+#calibrationTaskData .calibration-person button{background:transparent;border:0;padding:0;text-align:left;cursor:pointer}
+</style>
+<script id="calibration-task-data-20261014">
+(function(){
+ 'use strict';
+ const workflow=document.getElementById('view-workflow'),steps=document.getElementById('workflowSteps');
+ if(!workflow||!steps)return;
+ const host=document.createElement('section');host.id='calibrationTaskData';
+ steps.closest('.panel')?.insertAdjacentElement('afterend',host);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[x]));
+ function refresh(){
+  const current=typeof state!=='undefined'?state.processStep:'';
+  const configurations={
+   cal1:{ids:PROCESS_STEPS.find(x=>x.id==='cal1')?.ids||[],title:'Task 2 · Calibration Round 1',detail:'First 20 sourced profiles. Historical recruiter feedback is shown for reference; approval decisions belong to Feedback Round 1.'},
+   cal2:{ids:PROCESS_STEPS.find(x=>x.id==='cal2')?.ids||[],title:'Task 4 · Calibration Round 2',detail:'15 retained profiles from Round 1 plus 20 additional profiles. Recorded decisions are shown where available; no new approval is inferred.'}
+  };
+  const config=configurations[current];
+  host.hidden=!config;if(!config)return;
+  const all=(state.liveMode&&Array.isArray(state.live))?state.live:ALL_CANDIDATES;
+  const rows=config.ids.map(id=>all.find(c=>c.id===id)).filter(Boolean);
+  host.innerHTML='<h3>'+config.title+' · '+rows.length+' profiles available</h3><p class="calibration-note">'+config.detail+'</p><div class="calibration-grid">'+rows.map(c=>{
+   const n=Number(String(c.id).replace(/\\D/g,''))||0;
+   const historical=n>=1&&n<=15?'Retained after Round 1':n>=16&&n<=20?'Excluded after Round 1':n>=21&&n<=40?'Added in Round 2':'Decision not recorded';
+   const note=typeof HISTORICAL_FEEDBACK!=='undefined'?HISTORICAL_FEEDBACK[c.id]||'':'';
+   return '<article class="calibration-person"><button type="button" data-calibration-candidate="'+esc(c.id)+'"><b>'+esc(c.name||c.id)+'</b></button><small>'+esc([c.title,c.company||c.firm,c.location].filter(Boolean).join(' · '))+'</small><div class="calibration-decision">'+esc(historical)+'</div>'+(note?'<small>'+esc(note)+'</small>':'')+'</article>';
+  }).join('')+'</div>';
+ }
+ host.addEventListener('click',e=>{const b=e.target.closest('[data-calibration-candidate]');if(b)window.openTalentRailCandidate?.(b.dataset.calibrationCandidate);});
+ window.addEventListener('studio:changed',refresh);
+ window.addEventListener('studio-step-changed',refresh);
+ refresh();
 })();
 </script></body>
 </html>
