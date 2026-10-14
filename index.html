@@ -2837,29 +2837,43 @@ function renderSearchCriteriaInGuide(host){
 }
 let journeyInspected=null;
 function journeyProgress(step){
- const ids=step.ids||[],people=ids.map(id=>ALL_CANDIDATES.find(c=>c.id===id)).filter(Boolean);
+ const source=state.liveMode&&Array.isArray(state.live)&&state.live.length?state.live:ALL_CANDIDATES;
+ const ids=step.ids||[],people=ids.length?ids.map(id=>source.find(c=>c.id===id)).filter(Boolean):source;
+ const progress=(done,total,label)=>({done,total,label,remaining:Math.max(0,total-done)});
+ if(step.id==='brief'){
+  const brief=window.getStudioSourcingProfile?.()||window.getStudioRoleBrief?.()||state.liveBrief||{};
+  const keys=['role','companies','locations','focus'];
+  return progress(keys.filter(k=>String(brief[k]||'').trim()).length,keys.length,'defined');
+ }
+ if(step.id==='locked'){
+  const brief=window.getStudioSourcingProfile?.()||{};
+  const keys=['role','companies','locations','focus'];
+  return progress(keys.filter(k=>String(brief[k]||'').trim()).length,keys.length,'criteria available');
+ }
  if(step.id==='feedback1'||step.id==='feedback2'){
-  const n=people.filter(c=>{const def=stageDefaultReview(c,step.id),saved=stageReview[step.id]?.[c.profileUrl]||{};const r={...def,...saved};return r.feedbackGiven&&['approved','hold','excluded'].includes(r.status);}).length;
-  return {done:n,total:people.length,label:'reviewed',remaining:people.length-n};
+  return progress(people.filter(c=>{
+   const data={...stageDefaultReview(c,step.id),...(stageReview[step.id]?.[c.profileUrl]||{})};
+   return data.feedbackGiven&&['approved','hold','excluded'].includes(data.status);
+  }).length,people.length,'reviewed');
  }
  if(step.id==='cal1'||step.id==='cal2'){
-  const reviewStep=step.id==='cal1'?'feedback1':'feedback2';
-  const n=people.filter(c=>Boolean(stageReview[reviewStep]?.[c.profileUrl]?.feedbackGiven)).length;
-  return {done:n,total:people.length,label:'assessed',remaining:people.length-n};
+  const feedbackStep=step.id==='cal1'?'feedback1':'feedback2';
+  return progress(people.filter(c=>Boolean(stageReview[feedbackStep]?.[c.profileUrl]?.feedbackGiven)).length,people.length,'assessed');
  }
- if(step.id==='brief'){
-  // Reuse the same resolved brief as the right sidebar, including locked-profile fallback.
-  const br=typeof window.getStudioRoleBrief==='function'?window.getStudioRoleBrief():(state.liveBrief||{});
-  const keys=['role','companies','locations','focus'];
-  const done=keys.filter(k=>String(br[k]||'').trim()).length;
-  return {done,total:keys.length,label:'defined',remaining:keys.length-done};
+ if(step.id==='market'){
+  return progress(people.filter(c=>Boolean(c.location&&(c.company||c.firm))).length,people.length,'mapped profiles');
  }
  if(step.id==='evidence'){
-  const n=people.filter(c=>Number(c.evidence)>0&&Array.isArray(c.sources)&&c.sources.length>0).length;
-  return {done:n,total:people.length,label:'verified records',remaining:people.length-n};
+  let records={};try{records=JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}')||{};}catch{}
+  return progress(people.filter(c=>Object.keys(records).some(k=>k.startsWith(c.id+'::')&&records[k]?.status&&records[k].status!=='unreviewed')).length,people.length,'reviewed profiles');
  }
- return {done:0,total:0,label:'Requires review',remaining:null};
+ if(step.id==='production'){
+  const approved=people.filter(c=>reviewOf(c).status==='approved');
+  return progress(approved.filter(c=>reviewOf(c).shortlisted).length,approved.length,'shortlisted');
+ }
+ return {done:0,total:0,label:'Review required',remaining:null};
 }
+window.getStudioJourneyProgress=(id)=>{const found=PROCESS_STEPS.find(x=>x.id===id);return found?journeyProgress(found):null;};
 function renderRecruiterGuide(){
  const host=document.getElementById('recruiterGuide');if(!host)return;
  const active=state.processStep||'brief',current=PROCESS_STEPS.find(s=>s.id===active)||PROCESS_STEPS[0];
@@ -3307,6 +3321,8 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintCandidates());
 window.addEventListener('studio-step-changed',()=>update(true));
+window.addEventListener('studio:changed',e=>{if(['feedback','step','view','candidate'].includes(e.detail?.type))requestAnimationFrame(()=>update(true));});
+window.addEventListener('studio:evidence-updated',()=>{update(true);window.refreshRecruiterGuide?.();});
 // Keep Auto visible; the selected tool is content, not a hidden navigation option.
 const mainViews=document.querySelectorAll('.view');
 const observer=new MutationObserver(()=>requestAnimationFrame(()=>update(true)));
@@ -3338,7 +3354,7 @@ function verdict(c,cl){
  if(/no (specific|independently|public|client|attributable|reliable)|not (verified|found|attributable)|weak|could not|no evidence|not independently/.test(t))return'Gap flagged by existing research';
  return sourceLinks(c).length?'Sources available · attribution not yet verified':'No source linked';
 }
-function save(){try{localStorage.setItem(key,JSON.stringify(records))}catch{}}
+function save(){try{localStorage.setItem(key,JSON.stringify(records))}catch{}window.dispatchEvent(new Event('studio:evidence-updated'));}
 function render(){
  if(!document.body.classList.contains('task-rail-context-evidence'))return;
  const pool=typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[];
