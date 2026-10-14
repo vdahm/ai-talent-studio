@@ -3012,7 +3012,7 @@ function update(force=false){
  document.querySelectorAll('[data-task-tool]').forEach(b=>{
   b.classList.toggle('active',b.dataset.taskTool===override);
   // Auto owns its active tool: avoid a duplicate George Chat or Candidates tab.
-  b.hidden=(view()==='george'&&b.dataset.taskTool==='george')||(view()==='talent'&&b.dataset.taskTool==='talent')||(override==='auto'&&b.dataset.taskTool===tool);
+  b.hidden=(view()==='george'&&b.dataset.taskTool==='george')||(view()==='talent'&&b.dataset.taskTool==='talent');
  });
  document.body.classList.toggle('task-rail-context-feedback',tool==='talent'&&/feedback/.test(st));
  document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
@@ -3044,6 +3044,11 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintCandidates());
 window.addEventListener('studio-step-changed',()=>update(true));
+// Keep Auto visible; the selected tool is content, not a hidden navigation option.
+const mainViews=document.querySelectorAll('.view');
+const observer=new MutationObserver(()=>requestAnimationFrame(()=>update(true)));
+mainViews.forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
+window.addEventListener('pageshow',()=>update(true));
 window.setInterval(()=>{if(currentTool!==resolvedTool())update(true)},700);
 update(true);
 })();
