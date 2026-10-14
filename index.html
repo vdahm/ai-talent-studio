@@ -3634,5 +3634,33 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
 body:not(.studio-search-allowed) [data-action="newsearch"],
 body:not(.studio-search-allowed) #taskRailContextNewSearch,
 body:not(.studio-search-allowed) #talentRailNewSearch{display:none!important}
-</style></body>
+</style><style id="task89-data-style">#task89Data{background:#fff;border:1px solid #ddd;border-radius:14px;margin:14px 0;padding:15px}#task89Data .task89-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}#task89Data article{border:1px solid #eee;border-left:3px solid #b94d3a;padding:11px;border-radius:9px}#task89Data button{background:none;border:none;color:#1c2d4a;font-weight:700;cursor:pointer;padding:0}#task89Data small{display:block;color:#667085;margin-top:6px}#task89Data h3{color:#1c2d4a}#task89Data .task89-stats{margin:12px 0;color:#ad4c3b;font-weight:700}</style>
+<script id="task89DataScript">
+(function(){
+'use strict';
+const el=document.getElementById('workflowSteps');if(!el)return;
+const host=document.createElement('section');host.id='task89Data';el.closest('.panel')?.insertAdjacentElement('afterend',host);
+const escape=v=>String(v??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const data=()=>{try{return JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}')||{}}catch{return {}}};
+function claims(c){return [['Current role',[c.title,c.company].filter(Boolean).join(' at ')],['Professional expertise',c.areas||c.cluster],...(c.projects||[]).slice(0,3).map((v,i)=>['Project '+(i+1),v]),['Quantified outcomes',c.quantitative],['Independent corroboration',c.summary]].filter(x=>x[1])}
+function render(){
+ const phase=state.processStep;host.hidden=phase!=='evidence'&&phase!=='production';if(host.hidden)return;
+ const all=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;
+ const ids=PROCESS_STEPS.find(x=>x.id===phase)?.ids||[];
+ const pool=ids.length?ids.map(id=>all.find(c=>c.id===id)).filter(Boolean):all;
+ const reviewed=data();let completed=0,missing=0,approved=0,shortlisted=0;
+ const cards=pool.map(c=>{
+  const decision=reviewOf(c),items=claims(c),done=items.filter(([label])=>{const status=reviewed[c.id+'::'+label]?.status;return status&&status!=='unreviewed'}).length;
+  if(items.length&&done===items.length)completed++;missing+=items.length-done;
+  if(decision.status==='approved')approved++;if(decision.status==='approved'&&decision.shortlisted)shortlisted++;
+  const sources=[...new Set([...(c.sources||[]),...(c.baselineSources||[])])].filter(x=>String(x).startsWith('https://')||String(x).startsWith('http://'));
+  const desc=phase==='evidence'?done+'/'+items.length+' evidence claims reviewed · '+sources.length+' sources':'Decision: '+(decision.status||'pending')+' · '+(decision.shortlisted?'Shortlisted':'Not shortlisted');
+  return '<article><button type="button" data-profile-id="'+escape(c.id)+'">'+escape(c.name||c.id)+'</button><small>'+escape([c.title,c.company||c.firm,c.location].filter(Boolean).join(' · '))+'</small><small>'+escape(desc)+'</small>'+(phase==='evidence'&&sources.length?'<small>'+sources.slice(0,3).map((u,i)=>'<a target="_blank" rel="noopener noreferrer" href="'+escape(u)+'">Source '+(i+1)+'</a>').join(' · ')+'</small>':'')+'</article>';
+ }).join('');
+ host.innerHTML='<h3>Task '+(phase==='evidence'?'8 — Evidence Check':'9 — Production Decision Gate')+'</h3><p>'+(phase==='evidence'?'Existing research and claim-by-claim human verification, without assuming sources are verified.':'Candidate decisions and shortlist status. Campaign or ATS transfer is not claimed without recorded confirmation.')+'</p><div class="task89-stats">'+(phase==='evidence'?completed+'/'+pool.length+' profiles fully reviewed · '+missing+' claims still requiring review':approved+' approved · '+shortlisted+' shortlisted · '+Math.max(0,approved-shortlisted)+' remaining')+'</div><div class="task89-grid">'+cards+'</div>';
+}
+host.addEventListener('click',e=>{const b=e.target.closest('[data-profile-id]');if(b)window.openTalentRailCandidate?.(b.dataset.profileId)});
+['studio:changed','studio-step-changed','studio:evidence-updated'].forEach(name=>window.addEventListener(name,render));render();
+})();
+</script></body>
 </html>
