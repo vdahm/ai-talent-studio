@@ -2859,7 +2859,7 @@ function paintCandidates(){
  }).join('') || '<p class="talent-rail-empty">No candidates for this step.</p>';
 }
 function update(force=false){
- const st=step();if(priorStep!==st){priorStep=st;override='auto';document.body.classList.remove('task-rail-collapsed');}
+ const st=step();if(priorStep!==st){priorStep=st;document.body.classList.remove('task-rail-collapsed');}
  const tool=override==='auto'?taskFor():override;
  currentTool=tool;
  document.body.classList.toggle('task-rail-show-talent',tool==='talent');
@@ -2937,7 +2937,7 @@ function draw(){
  host.innerHTML='<div class="sourcing-stepper-head"><strong>Sourcing Journey</strong><small>Step '+(activeIndex+1)+' of '+PROCESS_STEPS.length+' · '+ESC(PROCESS_STEPS[activeIndex]?.title)+'</small></div>'+
  '<div class="sourcing-stepper-track" role="group" aria-label="Sourcing steps">'+entries+'</div>'+
  '<div class="sourcing-step-detail"><div class="step-copy"><b>'+ESC(selected.title)+'</b><p class="step-progress">'+ESC(message)+'</p><p>Suggested next action: '+ESC(isFeedback?'Review the next candidate without a decision':selected.description)+'</p></div><button type="button" data-sourcing-continue="'+ESC(selected.id)+'">'+action+'</button></div>';
- host.querySelector('.sourcing-step.current')?.scrollIntoView({block:'nearest',inline:'nearest'});
+ const track=host.querySelector('.sourcing-stepper-track');const active=host.querySelector('.sourcing-step.current');if(track&&active&&track.scrollLeft===0){track.scrollLeft=Math.max(0,active.offsetLeft-track.offsetLeft-track.clientWidth/2+active.clientWidth/2);}
 }
 renderRecruiterGuide=draw;
 window.refreshRecruiterGuide=()=>{draw();if(typeof renderRecruiterPlaybook==='function')renderRecruiterPlaybook();};
