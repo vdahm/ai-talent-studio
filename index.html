@@ -1619,7 +1619,7 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 .task-role-field{padding:10px 0;border-bottom:1px solid #e5e9ef;display:flex;flex-direction:column;gap:4px;font-size:11px}
 .task-role-field b{color:#1c2d4a}.task-role-field span{color:#627284;overflow-wrap:anywhere}
 #taskRailControls [data-task-tool][hidden],#taskRailGeorgeControls [data-task-tool][hidden]{display:none!important}
-</style></head>
+</style><style id="context-search-action-20261014">#taskRailContextNewSearch[hidden]{display:none!important}#taskRailContextNewSearch{font-size:11px!important;white-space:nowrap}</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2931,6 +2931,9 @@ const geobar=bar.cloneNode(true);geobar.id='taskRailGeorgeControls';george.prepe
 const desc=document.createElement('div');desc.id='taskRailDescription';talent.insertBefore(desc,talent.querySelector('.talent-rail-search'));
 const restore=document.createElement('button');restore.id='taskRailRestore';restore.textContent='Open sidebar ›';document.body.appendChild(restore);
 let override='auto',priorStep='',currentTool='';
+const searchAction=document.createElement('button');searchAction.type='button';searchAction.id='taskRailContextNewSearch';searchAction.className='btn primary';searchAction.textContent='New search';searchAction.hidden=true;
+talent.querySelector('.talent-rail-actions')?.appendChild(searchAction);
+searchAction.addEventListener('click',()=>{if(typeof showNewSearch==='function')showNewSearch();});
 const rolePanel=document.createElement('section');rolePanel.id='taskRoleBriefPanel';talent.appendChild(rolePanel);
 function step(){try{return state.processStep||'brief'}catch(e){return'brief'}}
 function view(){try{return state.view||'overview'}catch(e){return'overview'}}
@@ -3003,6 +3006,10 @@ function update(force=false){
  const st=step();if(priorStep!==st){priorStep=st;document.body.classList.remove('task-rail-collapsed');}
  const tool=resolvedTool();
  currentTool=tool;
+ // Search creation is a task only in discovery/calibration, never in feedback or verification.
+ const searchRequired=(st==='cal1'||st==='cal2')&&relevant().length>0;
+ searchAction.hidden=!(tool==='talent'&&searchRequired);
+ searchAction.disabled=!searchRequired;
  document.body.classList.toggle('task-rail-show-talent',tool==='talent'||tool==='brief');
  document.body.classList.toggle('task-rail-show-george',tool==='george');
  talent.setAttribute('aria-hidden',String(tool!=='talent'&&tool!=='brief'));
