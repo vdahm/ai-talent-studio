@@ -2594,22 +2594,21 @@ renderGeorge();renderAttachments();updateGeorgeContext();
       try{rec.start();}catch{railDictation=null;}
     }
   });
-  list.addEventListener('click',e=>{
-    const row=e.target.closest('[data-rail-candidate]');
-    const workflow=document.getElementById('view-workflow');
-    if(!row||!workflow||workflow.classList.contains('hidden'))return;
-    e.preventDefault();e.stopImmediatePropagation();
-    activeRailId=row.dataset.railCandidate;
-    openRailProfile(activeRailId);
-  },true);
+  // Rail candidate clicks are handled exclusively by the rail preview below.
+  // Never trigger the main-workspace candidate renderer from this list.
   document.addEventListener('click',e=>{
     if(e.target.closest('[data-view]')&&(!document.getElementById('view-workflow')||document.getElementById('view-workflow').classList.contains('hidden')))closeRailProfile();
   });
   list.addEventListener('click',(e)=>{
     const row=e.target.closest('[data-rail-candidate]');
     if(!row)return;
+    e.preventDefault();
+    e.stopPropagation();
     activeRailId=row.dataset.railCandidate;
-    if(typeof window.openCandidate==='function')window.openCandidate(activeRailId,true,false);
+    // Clear any stale main-area candidate detail without changing current view.
+    document.getElementById('workflowCandidateDetail')?.classList.add('hidden');
+    document.getElementById('candidateWorkbench')?.classList.add('hidden');
+    openRailProfile(activeRailId);
     render();
   });
 
