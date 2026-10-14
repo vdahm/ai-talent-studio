@@ -2540,11 +2540,55 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     search.closest('label').classList.add('hidden');
     list.classList.add('hidden');
     railRoot.querySelector('.talent-rail-actions')?.classList.add('hidden');
+    railDetail.insertAdjacentHTML('beforeend','<div class="rail-george-chat" role="group" aria-label="George candidate chat">'+
+      '<div class="rail-george-heading"><span>George · Ask about this candidate</span></div>'+
+      '<div class="rail-george-compose"><textarea id="railGeorgeInput" rows="1" placeholder="Message George..." aria-label="Message George about candidate"></textarea>'+
+      '<div class="rail-george-controls"><button type="button" data-rail-george="upload" title="Upload content" aria-label="Upload content"><svg class="icon"><use href="#i-plus"/></svg></button>'+
+      '<button type="button" data-rail-george="dictate" title="Dictate" aria-label="Dictate"><svg class="icon"><use href="#i-mic"/></svg></button>'+
+      '<button type="button" class="rail-george-primary" data-rail-george="primary" aria-label="Speak with George"><svg class="icon"><use href="#i-headphones"/></svg><span>Speak with George</span></button></div></div></div>');
+    railDetail.dataset.candidateName=name;
     railDetail.classList.remove('hidden');
     railDetail.scrollTop=0;
   }
+  let railDictation=null;
+  function syncRailGeorge(){
+    const input=railDetail.querySelector('#railGeorgeInput'),primary=railDetail.querySelector('[data-rail-george="primary"]');
+    if(!input||!primary)return;
+    const typed=!!input.value.trim();
+    primary.innerHTML=typed?'<svg class="icon"><use href="#i-arrow"/></svg><span>Send</span>':'<svg class="icon"><use href="#i-headphones"/></svg><span>Speak with George</span>';
+    primary.setAttribute('aria-label',typed?'Send message':'Speak with George');
+  }
+  function sendRailGeorge(){
+    const input=railDetail.querySelector('#railGeorgeInput');
+    if(!input||!input.value.trim())return;
+    const core=document.getElementById('georgeInput');
+    if(!core)return;
+    core.value='About candidate '+(railDetail.dataset.candidateName||'selected')+': '+input.value.trim();
+    document.getElementById('georgeExecute')?.click();
+    input.value='';syncRailGeorge();
+  }
+  railDetail.addEventListener('input',e=>{if(e.target.id==='railGeorgeInput')syncRailGeorge();});
+  railDetail.addEventListener('keydown',e=>{if(e.target.id==='railGeorgeInput'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();sendRailGeorge();}});
   railDetail.addEventListener('click',e=>{
-    if(e.target.closest('[data-rail-detail-back]'))closeRailProfile();
+    if(e.target.closest('[data-rail-detail-back]')){if(railDictation)railDictation.stop();closeRailProfile();return;}
+    const action=e.target.closest('[data-rail-george]')?.dataset.railGeorge;
+    if(!action)return;
+    if(action==='primary'){
+      if(railDetail.querySelector('#railGeorgeInput')?.value.trim())sendRailGeorge();
+      else document.getElementById('georgeSpeak')?.click();
+    }
+    if(action==='upload')document.getElementById('georgeUploadBtn')?.click();
+    if(action==='dictate'){
+      if(railDictation){railDictation.stop();return;}
+      const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+      if(!SR){alert('Speech dictation is not supported in this browser.');return;}
+      const input=railDetail.querySelector('#railGeorgeInput');if(!input)return;
+      const rec=new SR();railDictation=rec;rec.lang=navigator.language||'en-US';rec.continuous=true;rec.interimResults=true;
+      const initial=input.value.trim();let final='';
+      rec.onresult=evt=>{let pending='';for(let i=evt.resultIndex;i<evt.results.length;i++){if(evt.results[i].isFinal)final+=evt.results[i][0].transcript+' ';else pending+=evt.results[i][0].transcript;}input.value=[initial,final.trim(),pending.trim()].filter(Boolean).join(' ');syncRailGeorge();};
+      rec.onend=()=>{railDictation=null;};
+      try{rec.start();}catch{railDictation=null;}
+    }
   });
   list.addEventListener('click',e=>{
     const row=e.target.closest('[data-rail-candidate]');
@@ -3307,5 +3351,16 @@ render();
 #talentRailCandidateDetail .candidate-profile-shell *{max-width:100%;box-sizing:border-box}
 #talentRailCandidateDetail .candidate-profile-shell table{display:block;overflow-x:auto}
 </style>
-</body>
+<style id="rail-george-chatgpt-style-20261014">
+#talentRailCandidateDetail{display:flex;flex-direction:column;gap:0}
+#talentRailCandidateDetail .talent-rail-detail-body{flex:1}
+#talentRailCandidateDetail .rail-george-chat{position:sticky;bottom:-32px;margin:18px -15px -32px;padding:11px 13px 16px;background:linear-gradient(180deg,rgba(255,255,255,.95),#fff 22%);border-top:1px solid #e6e9ee;z-index:2}
+#talentRailCandidateDetail .rail-george-heading{font-size:10px;font-weight:650;color:#667085;margin:0 3px 8px}
+#talentRailCandidateDetail .rail-george-compose{background:#fff;border:1px solid #dfe3ea;border-radius:17px;padding:9px;box-shadow:0 3px 16px rgba(23,35,55,.05)}
+#talentRailCandidateDetail #railGeorgeInput{display:block;width:100%;min-height:42px;max-height:130px;resize:vertical;border:0;outline:0;background:transparent;padding:7px 8px;font-size:12px;line-height:1.5}
+#talentRailCandidateDetail .rail-george-controls{display:flex;gap:7px;align-items:center}
+#talentRailCandidateDetail .rail-george-controls button{border:1px solid #e4e8ee;background:white;border-radius:11px;min-height:34px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;padding:7px;gap:5px}
+#talentRailCandidateDetail .rail-george-controls .icon{width:16px;height:16px}
+#talentRailCandidateDetail .rail-george-controls .rail-george-primary{margin-left:auto;background:#252c36;color:#fff;border-color:#252c36;font-size:11px;font-weight:600;padding:7px 11px}
+</style></body>
 </html>
