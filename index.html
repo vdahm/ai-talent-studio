@@ -3525,5 +3525,48 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
 #talentRailCandidateDetail .talent-rail-data-row{padding:10px 0;border-bottom:1px solid #edf0f3;min-width:0}
 #talentRailCandidateDetail .talent-rail-data-row dt{font-size:11px;font-weight:700;color:#a4483a;margin-bottom:4px}
 #talentRailCandidateDetail .talent-rail-data-row dd{margin:0;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:#263347}
-</style></body>
+</style><style id="studio-shared-information-style">
+.studio-context-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:10px 0 18px}
+.studio-context-summary .context-cell{background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:10px;min-width:0}
+.studio-context-summary small{display:block;color:#667085;font-size:10px}
+.studio-context-summary strong{display:block;color:#1c2d4a;font-size:15px;overflow-wrap:anywhere}
+.studio-context-summary .context-cell:first-child{border-top:3px solid #b94d3a}
+#studioRailContext.studio-context-summary{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 11px;margin:8px 0}
+#studioRailContext .context-cell{padding:8px}
+#studioRailContext strong{font-size:12px}
+@media(max-width:780px){#studioWorkflowContext.studio-context-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script id="studio-unified-information-20261014">
+(function(){
+ 'use strict';
+ const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
+ const workflow=document.getElementById('view-workflow');
+ const rail=document.getElementById('talentExplorerRail');
+ if(!workflow||!rail)return;
+ const main=document.createElement('section');main.id='studioWorkflowContext';main.className='studio-context-summary';main.setAttribute('aria-label','Shared project sourcing information');
+ const head=workflow.querySelector('.view-head');if(head)head.insertAdjacentElement('afterend',main);
+ const side=document.createElement('section');side.id='studioRailContext';side.className='studio-context-summary';side.setAttribute('aria-label','Current sourcing project status');
+ const railHead=rail.querySelector('.talent-rail-head');if(railHead)railHead.insertAdjacentElement('afterend',side);
+ const box=(label,value)=>'<div class="context-cell"><small>'+esc(label)+'</small><strong>'+esc(value)+'</strong></div>';
+ function refresh(){
+  const p=window.getStudioSourcingProfile?.()||{};
+  const active=typeof state!=='undefined'?state.processStep:'brief';
+  const progress=window.getStudioJourneyProgress?.(active)||{};
+  const pool=(typeof state!=='undefined'&&state.liveMode&&Array.isArray(state.live))?state.live:(typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[]);
+  const name=(typeof PROCESS_STEPS!=='undefined'?PROCESS_STEPS.find(x=>x.id===active)?.title:null)||active;
+  const progressLabel=progress.total>0?progress.done+'/'+progress.total+' '+(progress.label||'complete'):'Review required';
+  const content=box('Search profile', (p.completion??0)+'/'+(p.total??4)+' defined')+
+   box('Current sourcing step',name)+box('Step progress',progressLabel)+box('Candidate records',pool.length);
+  if(main.isConnected)main.innerHTML=content;
+  if(side.isConnected)side.innerHTML=content;
+ }
+ let queued=false;
+ function schedule(){if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})}
+ window.refreshStudioInformation=schedule;
+ ['studio:changed','studio-step-changed','studio:evidence-updated'].forEach(event=>window.addEventListener(event,schedule));
+ window.addEventListener('pageshow',schedule);
+ document.addEventListener('change',schedule);
+ schedule();
+})();
+</script></body>
 </html>
