@@ -1652,6 +1652,11 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 #view-workflow #workflowSteps .combined-step.current .combined-step-name b{color:#263d57!important;font-size:13px!important}
 #view-workflow #workflowSteps .combined-step.current .combined-step-state{background:#e4ebf2!important;color:#263d57!important;border-radius:20px!important;padding:5px 9px!important;font-size:10px!important;white-space:nowrap!important}
 #view-workflow #workflowSteps .combined-step:not(.current){opacity:1!important}
+</style><style id="workflow-green-completion-20261014">
+#view-workflow #workflowSteps .combined-step.completed .combined-step-index{background:#e4f4e9!important;color:#247946!important;border:1px solid #a6d8b7!important}
+#view-workflow #workflowSteps .combined-step.completed:not(.current) .combined-step-state{background:#e5f5e9!important;color:#247946!important;border:1px solid #b8dfc4!important;border-radius:20px!important;padding:5px 9px!important}
+#view-workflow #workflowSteps .combined-step.completed:not(.current){border-color:#cfe6d7!important}
+#view-workflow #workflowSteps .combined-step.completed .combined-step-meter i{background:#32985d!important}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1941,10 +1946,10 @@ function renderWorkflow(){
   const summary=d.total>0?d.done+' / '+d.total+' '+d.label:(i<active?'Previously visited':'Review required');
   const remaining=d.total>0?(d.remaining===0?'All measurable tasks complete':d.remaining+' remaining'):'Review completion criteria';
   const percent=d.total>0?Math.round(100*d.done/d.total):0;
-  return '<article class="combined-step '+(isCurrent?'current':'')+'">'+
+  return '<article class="combined-step '+(isCurrent?'current ':'')+(complete?'completed':'')+'">'+
     '<button type="button" class="combined-step-heading" data-process-step="'+esc(x.id)+'" aria-current="'+(isCurrent?'step':'false')+'">'+
       '<span class="combined-step-index">'+(complete?icon('check'):i+1)+'</span><span class="combined-step-name"><b>'+esc(x.title)+'</b><small>'+esc(x.description)+'</small></span>'+
-      '<span class="combined-step-state">'+(isCurrent?'● YOU ARE HERE':complete?'✓ Complete':'Go to step')+' '+(isCurrent?'':icon('arrow'))+'</span></button>'+
+      '<span class="combined-step-state">'+(isCurrent?'● YOU ARE HERE':complete?'✓ Completed':'Go to step')+' '+(isCurrent?'':icon('arrow'))+'</span></button>'+
     '<div class="combined-step-body"><div class="combined-step-progress"><strong>'+esc(summary)+'</strong><span>'+esc(remaining)+'</span></div>'+
       '<div class="combined-step-meter"><i style="width:'+percent+'%"></i></div>'+
       '<div class="combined-step-guidance"><div><small>WHAT TO DO</small><p>'+esc(guide?.doNow||x.description)+'</p></div>'+
