@@ -2534,6 +2534,18 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     railRoot.querySelector('.talent-rail-actions')?.classList.remove('hidden');
     window.dispatchEvent(new CustomEvent('studio:rail-profile',{detail:{open:false}}));
   }
+  function fullCandidateRecordHtml(c){
+    const safe=v=>typeof esc==='function'?esc(String(v??'')):String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const existing=new Set(['id','name','title','company','firm','location','profileUrl','summary','researchNote','areas','projects','sources','fit','match','evidence','caveat','quantitative']);
+    const deny=/password|secret|token|api.?key|credential/i;
+    const fields=Object.entries(c).filter(([k,v])=>!existing.has(k)&&!deny.test(k)&&v!==undefined&&v!==null&&v!==''&&typeof v!=='function');
+    const label=k=>k.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/[_-]/g,' ').replace(/\\b\\w/g,ch=>ch.toUpperCase());
+    const format=v=>{if(Array.isArray(v))return v.map(x=>typeof x==='object'?JSON.stringify(x):String(x)).join(' · ');if(typeof v==='object')return Object.entries(v).map(([k,x])=>label(k)+': '+(typeof x==='object'?JSON.stringify(x):String(x))).join(' | ');return String(v)};
+    const raw=c.raw&&typeof c.raw==='object'?Object.entries(c.raw).filter(([k,v])=>!deny.test(k)&&v!=null&&v!==''):[];
+    if(!fields.length&&!raw.length)return '';
+    const section=(heading,rows)=>rows.length?'<section class="candidate-section-card talent-rail-all-fields"><h3>'+heading+'</h3><dl>'+rows.map(([k,v])=>'<div class="talent-rail-data-row"><dt>'+safe(label(k))+'</dt><dd>'+safe(format(v))+'</dd></div>').join('')+'</dl></section>':'';
+    return section('Additional candidate intelligence',fields)+section('Original candidate research & evidence',raw);
+  }
   function openRailProfile(id){
     const c=typeof getCandidate==='function'?getCandidate(id):null;
     if(!c)return;
@@ -2541,7 +2553,7 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     const safe=typeof esc==='function'?esc:(value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
     railDetail.innerHTML='<div class="talent-rail-detail-nav"><button type="button" data-rail-detail-back="1">← All candidates</button><span>Candidate profile</span></div>'+
       '<h3>'+safe(name)+'</h3><p class="talent-rail-detail-sub">'+safe(c.title||'')+' · '+safe(c.company||'')+'</p>'+
-      (typeof candidatePanelHtml==='function'?'<div class="talent-rail-detail-body">'+candidatePanelHtml(c,true)+'</div>':'<p>'+safe(c.location||'')+'</p>');
+      (typeof candidatePanelHtml==='function'?'<div class="talent-rail-detail-body">'+candidatePanelHtml(c,true)+fullCandidateRecordHtml(c)+'</div>':'<p>'+safe(c.location||'')+'</p>');
     search.closest('label').classList.add('hidden');
     list.classList.add('hidden');
     railRoot.querySelector('.talent-rail-actions')?.classList.add('hidden');
@@ -3508,5 +3520,10 @@ body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;
 #talentRailCandidateDetail .candidate-profile-hero h1{font-size:20px!important}
 #talentRailCandidateDetail .rail-george-chat{position:sticky!important;bottom:-22px!important;margin:15px -15px -22px!important;padding:10px 14px 15px!important;border-top:2px solid #b94d3a!important;background:#fff!important}
 @media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(390px,100vw)!important}}
+</style><style id="talent-rail-all-fields-style">
+#talentRailCandidateDetail .talent-rail-all-fields dl{margin:0;display:grid;gap:10px}
+#talentRailCandidateDetail .talent-rail-data-row{padding:10px 0;border-bottom:1px solid #edf0f3;min-width:0}
+#talentRailCandidateDetail .talent-rail-data-row dt{font-size:11px;font-weight:700;color:#a4483a;margin-bottom:4px}
+#talentRailCandidateDetail .talent-rail-data-row dd{margin:0;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;color:#263347}
 </style></body>
 </html>
