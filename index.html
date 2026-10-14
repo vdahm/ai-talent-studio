@@ -2399,6 +2399,7 @@ window.talentStudioGeorge={
         }:null
       }:null,
       lockedProfile:window.getStudioSourcingProfile?.()||null,
+      projectState:window.getStudioProjectState?.()||null,
       visibleWorkspace:document.getElementById('candidateWorkbench')?.classList.contains('hidden')
         ? document.querySelector('.view:not(.hidden)')?.innerText?.trim().slice(0,7000)||null
         : document.getElementById('candidateWorkbenchContent')?.innerText?.trim().slice(0,7000)||null
@@ -2849,7 +2850,7 @@ function renderSearchCriteriaInGuide(host){
 }
 let journeyInspected=null;
 function journeyProgress(step){
- const source=state.liveMode&&Array.isArray(state.live)&&state.live.length?state.live:ALL_CANDIDATES;
+ const source=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;
  const ids=step.ids||[],people=ids.length?ids.map(id=>source.find(c=>c.id===id)).filter(Boolean):source;
  const progress=(done,total,label)=>({done,total,label,remaining:Math.max(0,total-done)});
  if(step.id==='brief'){
@@ -2877,7 +2878,11 @@ function journeyProgress(step){
  }
  if(step.id==='evidence'){
   let records={};try{records=JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}')||{};}catch{}
-  return progress(people.filter(c=>Object.keys(records).some(k=>k.startsWith(c.id+'::')&&records[k]?.status&&records[k].status!=='unreviewed')).length,people.length,'reviewed profiles');
+  return progress(people.filter(c=>{
+   const claims=[['Current role',[c.title,c.company].filter(Boolean).join(' at ')],['Professional expertise',c.areas||c.cluster],...(c.projects||[]).slice(0,3).map((v,i)=>['Project '+(i+1),v]),['Quantified outcomes',c.quantitative],['Independent corroboration',c.summary]]
+    .filter(([,v])=>v&&String(v).trim()).map(([label])=>label);
+   return claims.length>0&&claims.every(label=>{const status=records[c.id+'::'+label]?.status;return status&&status!=='unreviewed';});
+  }).length,people.length,'fully reviewed profiles');
  }
  if(step.id==='production'){
   const approved=people.filter(c=>reviewOf(c).status==='approved');
@@ -2886,6 +2891,16 @@ function journeyProgress(step){
  return {done:0,total:0,label:'Review required',remaining:null};
 }
 window.getStudioJourneyProgress=(id)=>{const found=PROCESS_STEPS.find(x=>x.id===id);return found?journeyProgress(found):null;};
+window.getStudioProjectState=()=>{
+ const candidatePool=state.liveMode&&Array.isArray(state.live)?state.live:ALL_CANDIDATES;
+ const stages=PROCESS_STEPS.map(step=>({...step,progress:journeyProgress(step)}));
+ const evidenceStep=stages.find(step=>step.id==='evidence');
+ return {searchId:state.liveSearchId||DATA?.meta?.searchId||null,view:state.view,step:state.processStep,
+  lockedProfile:window.getStudioSourcingProfile?.()||null,
+  candidates:{total:candidatePool.length,approved:candidatePool.filter(c=>reviewOf(c).status==='approved').length,shortlisted:candidatePool.filter(c=>!!reviewOf(c).shortlisted).length},
+  stages:stages.map(({id,title,progress})=>({id,title,...progress})),
+  evidenceProgress:evidenceStep?.progress||null};
+};
 function renderRecruiterGuide(){
  const host=document.getElementById('recruiterGuide');if(!host)return;
  const active=state.processStep||'brief',current=PROCESS_STEPS.find(s=>s.id===active)||PROCESS_STEPS[0];
@@ -3257,7 +3272,8 @@ function pending(c){
  if(st==='evidence'){
   try {
    const saved=JSON.parse(localStorage.getItem('vd.studio.evidenceClaims.v1')||'{}');
-   return !Object.keys(saved).some(k=>k.startsWith(c.id+'::')&&saved[k].status);
+   const claims=[['Current role',[c.title,c.company].filter(Boolean).join(' at ')],['Professional expertise',c.areas||c.cluster],...(c.projects||[]).slice(0,3).map((v,i)=>['Project '+(i+1),v]),['Quantified outcomes',c.quantitative],['Independent corroboration',c.summary]].filter(([,v])=>v&&String(v).trim()).map(([label])=>label);
+   return !claims.length||claims.some(label=>!saved[c.id+'::'+label]?.status||saved[c.id+'::'+label]?.status==='unreviewed');
   }catch{return true}
  }
  return true;
