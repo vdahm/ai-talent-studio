@@ -1644,6 +1644,17 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 #view-workflow .combined-step-guidance p{font-size:10px;line-height:1.6;color:#556473;margin-top:5px}
 @media(max-width:1050px){#view-workflow .workflow-combined-layout{grid-template-columns:1fr}}
 @media(max-width:560px){#view-workflow #workflowSteps{padding:10px}#view-workflow .combined-step-body{padding:0 12px 12px}#view-workflow .combined-step-guidance{grid-template-columns:1fr}#view-workflow .combined-step-state{font-size:9px}}
+</style><style id="workflow-active-step-clarity-20261014">
+#view-workflow .combined-step.current{border:2px solid #b94d3a!important;background:#fff6f2!important;box-shadow:0 3px 18px rgba(185,77,58,.12)!important}
+#view-workflow .combined-step.current .combined-step-heading{background:#fff0e9!important}
+#view-workflow .combined-step.current .combined-step-index{background:#b94d3a!important;color:#fff!important;font-weight:800!important}
+#view-workflow .combined-step.current .combined-step-name b{color:#972f20!important;font-size:15px!important}
+#view-workflow .combined-step.current .combined-step-state{background:#b94d3a!important;color:white!important;border-radius:20px!important;padding:7px 10px!important;font-size:10px!important;letter-spacing:.25px!important}
+#view-workflow .combined-step:not(.current){opacity:.81}
+#view-workflow .combined-step:not(.current):hover{opacity:1}
+#view-workflow .combined-step.current .combined-step-body{padding-top:12px!important}
+#view-workflow .combined-step.current .combined-step-progress strong{color:#972f20!important}
+@media(max-width:560px){#view-workflow .combined-step.current .combined-step-state{padding:5px 7px!important;font-size:9px!important}}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -1936,7 +1947,7 @@ function renderWorkflow(){
   return '<article class="combined-step '+(isCurrent?'current':'')+'">'+
     '<button type="button" class="combined-step-heading" data-process-step="'+esc(x.id)+'" aria-current="'+(isCurrent?'step':'false')+'">'+
       '<span class="combined-step-index">'+(complete?icon('check'):i+1)+'</span><span class="combined-step-name"><b>'+esc(x.title)+'</b><small>'+esc(x.description)+'</small></span>'+
-      '<span class="combined-step-state">'+(isCurrent?'Current step':complete?'Complete':'Open step')+' '+icon('arrow')+'</span></button>'+
+      '<span class="combined-step-state">'+(isCurrent?'● YOU ARE HERE':complete?'✓ Complete':'Go to step')+' '+(isCurrent?'':icon('arrow'))+'</span></button>'+
     '<div class="combined-step-body"><div class="combined-step-progress"><strong>'+esc(summary)+'</strong><span>'+esc(remaining)+'</span></div>'+
       '<div class="combined-step-meter"><i style="width:'+percent+'%"></i></div>'+
       '<div class="combined-step-guidance"><div><small>WHAT TO DO</small><p>'+esc(guide?.doNow||x.description)+'</p></div>'+
