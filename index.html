@@ -2879,19 +2879,66 @@ refreshRecruiterGuide();
 </script>
 <script id="candidate-reply-and-account-20261013">
 (function(){
-const wb=document.getElementById('candidateWorkbench');
-if(wb){
- const dock=document.createElement('div');dock.className='candidate-reply-dock';
- dock.innerHTML='<textarea id="candidateGeorgeReply" placeholder="Ask George about this candidate..." aria-label="Message George about this candidate"></textarea><div class="candidate-reply-actions"><small>George · Candidate context</small><button type="button" id="candidateGeorgeSend">Send →</button></div>';
+ const wb=document.getElementById('candidateWorkbench');
+ if(!wb)return;
+ const dock=document.createElement('div');
+ dock.className='candidate-reply-dock';
+ dock.innerHTML='<textarea id="candidateGeorgeReply" placeholder="Ask George about this candidate..." aria-label="Message George about this candidate"></textarea>'+
+ '<div class="candidate-reply-actions"><small>George · Candidate context</small><div class="candidate-george-tools">'+
+ '<button type="button" id="candidateGeorgeSpeak" title="Speak with George" aria-label="Speak with George"><svg class="icon"><use href="#i-headphones"/></svg><span>Speak</span></button>'+
+ '<button type="button" id="candidateGeorgeDictate" title="Dictate into message" aria-label="Dictate"><svg class="icon"><use href="#i-mic"/></svg><span>Dictate</span></button>'+
+ '<button type="button" id="candidateGeorgeUpload" title="Upload content" aria-label="Upload content"><svg class="icon"><use href="#i-plus"/></svg><span>Upload</span></button>'+
+ '<button type="button" id="candidateGeorgeSend" title="Send message" aria-label="Send message"><svg class="icon"><use href="#i-arrow"/></svg><span>Send</span></button></div></div>';
  wb.appendChild(dock);
- function send(){const input=document.getElementById('candidateGeorgeReply');const value=input?.value.trim();if(!value)return;const core=document.getElementById('georgeInput');const page=document.getElementById('georgePageInput');if(core){core.value=value;document.getElementById('georgeExecute')?.click();}if(page){page.value='';}input.value='';wb.classList.add('hidden');}
- document.getElementById('candidateGeorgeSend')?.addEventListener('click',send);
- dock.querySelector('textarea')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
- const obs=new MutationObserver(()=>{dock.style.display=wb.classList.contains('hidden')?'none':'block';});
- obs.observe(wb,{attributes:true,attributeFilter:['class']});dock.style.display='none';
-}
+ const input=dock.querySelector('#candidateGeorgeReply');
+ const btn=id=>dock.querySelector('#'+id);
+ function send(){
+  const value=input.value.trim();
+  if(!value)return;
+  const core=document.getElementById('georgeInput');
+  if(!core)return;
+  core.value=value;
+  document.getElementById('georgeExecute')?.click();
+  input.value='';
+ }
+ btn('candidateGeorgeSend').addEventListener('click',send);
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+ btn('candidateGeorgeUpload').addEventListener('click',()=>document.getElementById('georgeUploadBtn')?.click());
+ btn('candidateGeorgeSpeak').addEventListener('click',()=>{
+   const draft=input.value.trim();
+   if(draft){const core=document.getElementById('georgeInput');if(core)core.value=draft;}
+   document.getElementById('georgeSpeak')?.click();
+ });
+ let recognition=null;
+ btn('candidateGeorgeDictate').addEventListener('click',()=>{
+   if(recognition){recognition.stop();return;}
+   const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+   if(!SpeechRecognition){input.placeholder='Speech recognition is unavailable in this browser';input.focus();return;}
+   const rec=new SpeechRecognition();recognition=rec;
+   rec.lang=navigator.language||'en-US';rec.continuous=true;rec.interimResults=true;
+   const prefix=input.value.trim();let transcript='';
+   const control=btn('candidateGeorgeDictate');
+   control.classList.add('listening');control.querySelector('span').textContent='Stop';
+   rec.onresult=e=>{let partial='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)transcript+=e.results[i][0].transcript+' ';else partial+=e.results[i][0].transcript;}input.value=[prefix,transcript.trim(),partial.trim()].filter(Boolean).join(' ');};
+   rec.onend=()=>{recognition=null;control.classList.remove('listening');control.querySelector('span').textContent='Dictate';};
+   rec.onerror=()=>{input.placeholder='Microphone unavailable or permission denied';};
+   try{rec.start();}catch{rec.onend();}
+ });
+ const obs=new MutationObserver(()=>{dock.style.display=wb.classList.contains('hidden')?'none':'block';if(wb.classList.contains('hidden')&&recognition)recognition.stop();});
+ obs.observe(wb,{attributes:true,attributeFilter:['class']});
+ dock.style.display=wb.classList.contains('hidden')?'none':'block';
 })();
 </script>
+<style id="candidate-george-actions-20261014">
+.candidate-reply-dock .candidate-reply-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.candidate-reply-dock .candidate-george-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.candidate-reply-dock .candidate-george-tools button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:6px 10px;border-radius:10px;border:1px solid #e6e5ed;background:#fff;color:#49475a;font-size:11px;font-weight:600}
+.candidate-reply-dock .candidate-george-tools button:hover{background:#f3f1fa}
+.candidate-reply-dock .candidate-george-tools button.listening{color:#a53737;border-color:#e4aaaa;background:#fff1f1}
+.candidate-reply-dock .candidate-george-tools .icon{height:15px;width:15px}
+.candidate-reply-dock #candidateGeorgeSend{background:var(--accent);border-color:var(--accent);color:white}
+@media(max-width:580px){.candidate-reply-dock .candidate-reply-actions{align-items:flex-start}.candidate-reply-dock .candidate-george-tools{width:100%;justify-content:space-between}.candidate-reply-dock .candidate-george-tools button{flex:1;padding:6px 5px}}
+</style>
 <script id="global-responsive-controller-20261013">
 (function(){
 'use strict';
