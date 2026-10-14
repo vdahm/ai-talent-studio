@@ -2695,10 +2695,10 @@ function renderRecruiterGuide(){
 }
 document.addEventListener('click',e=>{
  const arrow=e.target.closest('[data-journey-scroll]');if(arrow){document.querySelector('#recruiterGuide .sourcing-stepper-track')?.scrollBy({left:Number(arrow.dataset.journeyScroll)*300,behavior:'smooth'});return;}
- const step=e.target.closest('[data-journey-step]');if(step){journeyInspected=step.dataset.journeyStep;renderRecruiterGuide();return;}
+ const step=e.target.closest('[data-journey-step]');if(step){const requested=PROCESS_STEPS.findIndex(x=>x.id===step.dataset.journeyStep),active=processIndex();if(requested>active+1||(requested===active+1&&journeyProgress(PROCESS_STEPS[active]).remaining!==0)){toast('Complete all mandatory tasks in the current step before advancing.');return;}journeyInspected=step.dataset.journeyStep;if(requested===active+1)setProcessStep(step.dataset.journeyStep,false);renderRecruiterGuide();return;}
  const next=e.target.closest('[data-journey-continue]');if(!next)return;
  const id=next.dataset.journeyContinue,stepInfo=PROCESS_STEPS.find(s=>s.id===id);if(!stepInfo)return;
- if(state.processStep!==id)setProcessStep(id,false);
+ if(state.processStep!==id){const targetIndex=PROCESS_STEPS.findIndex(x=>x.id===id),activeIndex=processIndex();if(targetIndex>activeIndex+1||(targetIndex===activeIndex+1&&journeyProgress(PROCESS_STEPS[activeIndex]).remaining!==0)){toast('Complete the current stage before moving forward.');return;}setProcessStep(id,false);}
  if(['feedback1','feedback2'].includes(id)){
   if(typeof window.switchView==='function')window.switchView('workflow');
   document.querySelector('[data-task-tool="auto"]')?.click();
