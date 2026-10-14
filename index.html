@@ -1644,22 +1644,14 @@ body.task-rail-show-brief #taskRoleBriefPanel{display:block}
 #view-workflow .combined-step-guidance p{font-size:10px;line-height:1.6;color:#556473;margin-top:5px}
 @media(max-width:1050px){#view-workflow .workflow-combined-layout{grid-template-columns:1fr}}
 @media(max-width:560px){#view-workflow #workflowSteps{padding:10px}#view-workflow .combined-step-body{padding:0 12px 12px}#view-workflow .combined-step-guidance{grid-template-columns:1fr}#view-workflow .combined-step-state{font-size:9px}}
-</style><style id="workflow-active-step-clarity-20261014">
-#view-workflow .combined-step.current{border:2px solid #b94d3a!important;background:#fff6f2!important;box-shadow:0 3px 18px rgba(185,77,58,.12)!important}
-#view-workflow .combined-step.current .combined-step-heading{background:#fff0e9!important}
-#view-workflow .combined-step.current .combined-step-index{background:#b94d3a!important;color:#fff!important;font-weight:800!important}
-#view-workflow .combined-step.current .combined-step-name b{color:#972f20!important;font-size:15px!important}
-#view-workflow .combined-step.current .combined-step-state{background:#b94d3a!important;color:white!important;border-radius:20px!important;padding:7px 10px!important;font-size:10px!important;letter-spacing:.25px!important}
-#view-workflow .combined-step:not(.current){opacity:.81}
-#view-workflow .combined-step:not(.current):hover{opacity:1}
-#view-workflow .combined-step.current .combined-step-body{padding-top:12px!important}
-#view-workflow .combined-step.current .combined-step-progress strong{color:#972f20!important}
-@media(max-width:560px){#view-workflow .combined-step.current .combined-step-state{padding:5px 7px!important;font-size:9px!important}}
-</style><style id="workflow-main-active-block-20261014">
-#view-workflow #workflowSteps .combined-step.current{position:relative!important;background:#fff3ee!important;border:2px solid #bd4939!important;box-shadow:0 5px 22px rgba(189,73,57,.16)!important;opacity:1!important;transform:translateX(2px)}
-#view-workflow #workflowSteps .combined-step.current::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:#bd4939;z-index:1}
-#view-workflow #workflowSteps .combined-step.current .combined-step-heading{background:#ffece4!important}
-#view-workflow #workflowSteps .combined-step.current .combined-step-state{background:#bd4939!important;color:white!important}
+</style><style id="workflow-subtle-active-20261014">
+#view-workflow #workflowSteps .combined-step.current{position:relative!important;background:#f5f7f9!important;border:1px solid #c6d1dc!important;box-shadow:inset 3px 0 0 #263d57!important;opacity:1!important;transform:none!important}
+#view-workflow #workflowSteps .combined-step.current::before{display:none!important}
+#view-workflow #workflowSteps .combined-step.current .combined-step-heading{background:transparent!important}
+#view-workflow #workflowSteps .combined-step.current .combined-step-index{background:#263d57!important;color:#fff!important}
+#view-workflow #workflowSteps .combined-step.current .combined-step-name b{color:#263d57!important;font-size:13px!important}
+#view-workflow #workflowSteps .combined-step.current .combined-step-state{background:#e4ebf2!important;color:#263d57!important;border-radius:20px!important;padding:5px 9px!important;font-size:10px!important;white-space:nowrap!important}
+#view-workflow #workflowSteps .combined-step:not(.current){opacity:1!important}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
