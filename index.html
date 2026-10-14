@@ -2976,11 +2976,9 @@ const rolePanel=document.createElement('section');rolePanel.id='taskRoleBriefPan
 function step(){try{return state.processStep||'brief'}catch(e){return'brief'}}
 function view(){try{return state.view||'overview'}catch(e){return'overview'}}
 function taskFor(){
- const v=view(),st=step();
- if(v==='george')return ['brief','locked'].includes(st)?'brief':'talent';
- if(['brief','locked'].includes(st))return 'brief';
- if(['feedback1','feedback2','evidence','production','cal1','cal2','market'].includes(st))return 'talent';
- return v==='talent'?'brief':'george';
+ // George is the default contextual assistant across the application.
+ // On the full George Chat page, display Talent instead of a duplicate chat.
+ return view()==='george'?'talent':'george';
 }
 function resolvedTool(){const v=view();const suggested=taskFor();let selected=override||suggested;if(v==='george'&&selected==='george')selected='talent';if(v==='talent'&&selected==='talent')selected='george';return selected;}
 function roleBrief(){const b=state.liveBrief||{};const fields=[['role','Target role'],['companies','Target companies'],['locations','Locations'],['focus','Skills / focus']];const missing=fields.filter(([k])=>!String(b[k]||'').trim());rolePanel.innerHTML='<h3>Role Brief</h3><p>'+missing.length+' of '+fields.length+' requirements still missing</p>'+fields.map(([key,label])=>'<div class="task-role-field"><b>'+escapeHTML(label)+'</b><span>'+escapeHTML(Array.isArray(b[key])?b[key].join(', '):b[key]||'Not defined')+'</span></div>').join('');}
