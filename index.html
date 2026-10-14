@@ -1609,6 +1609,16 @@ body.task-rail-context-evidence #talentRailList,body.task-rail-context-evidence 
 .task-rail-assessment{font-size:10px;margin:7px 0}.task-rail-assessment p{padding:5px 0;line-height:1.5}
 .task-feedback-note{display:block;width:100%;font-size:11px;border:1px solid #dfe5ed;border-radius:8px;padding:7px;margin:7px 0;resize:vertical}
 .task-shortlist-button{background:#1c2d4a;color:white;border:0;padding:8px;border-radius:8px}
+</style><style id="task-right-sidebar-four-tools-20261014">
+body.task-rail-show-brief #talentExplorerRail{display:flex!important}
+body.task-rail-show-brief #talentExplorerRail .talent-rail-head,body.task-rail-show-brief #talentExplorerRail .talent-rail-search,body.task-rail-show-brief #talentRailList,body.task-rail-show-brief #taskRailDescription,body.task-rail-show-brief #evidenceWorkbench{display:none!important}
+#taskRoleBriefPanel{display:none;padding:14px 17px;overflow:auto;flex:1;min-height:0}
+body.task-rail-show-brief #taskRoleBriefPanel{display:block}
+#taskRoleBriefPanel h3{font-size:15px;color:#1c2d4a;margin:0 0 6px}
+#taskRoleBriefPanel p{font-size:11px;color:#71808e;margin-bottom:13px}
+.task-role-field{padding:10px 0;border-bottom:1px solid #e5e9ef;display:flex;flex-direction:column;gap:4px;font-size:11px}
+.task-role-field b{color:#1c2d4a}.task-role-field span{color:#627284;overflow-wrap:anywhere}
+#taskRailControls [data-task-tool][hidden],#taskRailGeorgeControls [data-task-tool][hidden]{display:none!important}
 </style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -2915,20 +2925,24 @@ document.addEventListener('click',function(e){if(e.target.closest('#talentInline
 (function(){
 const talent=document.getElementById('talentExplorerRail'),george=document.getElementById('georgePanel'),list=document.getElementById('talentRailList');if(!talent||!george||!list)return;
 const bar=document.createElement('div');bar.id='taskRailControls';
-bar.innerHTML='<button type="button" data-task-tool="auto">Auto</button><button type="button" data-task-tool="talent">Candidates</button><button type="button" data-task-tool="george">George Chat</button><button type="button" class="task-rail-collapse" data-task-collapse="1" aria-label="Collapse sidebar">‹</button>';
+bar.innerHTML='<button type="button" data-task-tool="auto">Auto</button><button type="button" data-task-tool="george">George</button><button type="button" data-task-tool="talent">Talent</button><button type="button" data-task-tool="brief">Role Brief</button><button type="button" class="task-rail-collapse" data-task-collapse="1" aria-label="Collapse sidebar">‹</button>';
 talent.prepend(bar);
 const geobar=bar.cloneNode(true);geobar.id='taskRailGeorgeControls';george.prepend(geobar);
 const desc=document.createElement('div');desc.id='taskRailDescription';talent.insertBefore(desc,talent.querySelector('.talent-rail-search'));
 const restore=document.createElement('button');restore.id='taskRailRestore';restore.textContent='Open sidebar ›';document.body.appendChild(restore);
 let override='auto',priorStep='',currentTool='';
+const rolePanel=document.createElement('section');rolePanel.id='taskRoleBriefPanel';talent.appendChild(rolePanel);
 function step(){try{return state.processStep||'brief'}catch(e){return'brief'}}
 function view(){try{return state.view||'overview'}catch(e){return'overview'}}
 function taskFor(){
  const v=view(),st=step();
- if(v==='george')return 'talent';
- if(['feedback1','feedback2','brief','locked','market','evidence','production','cal1','cal2'].includes(st))return 'talent';
- return 'george';
+ if(v==='george')return ['brief','locked'].includes(st)?'brief':'talent';
+ if(['brief','locked'].includes(st))return 'brief';
+ if(['feedback1','feedback2','evidence','production','cal1','cal2','market'].includes(st))return 'talent';
+ return v==='talent'?'brief':'george';
 }
+function resolvedTool(){let selected=override==='auto'?taskFor():override;const v=view();if(v==='george'&&selected==='george')selected='talent';if(v==='talent'&&selected==='talent'&&override!=='auto')selected='brief';return selected;}
+function roleBrief(){const b=state.liveBrief||{};const fields=[['role','Target role'],['companies','Target companies'],['locations','Locations'],['focus','Skills / focus']];const missing=fields.filter(([k])=>!String(b[k]||'').trim());rolePanel.innerHTML='<h3>Role Brief</h3><p>'+missing.length+' of '+fields.length+' requirements still missing</p>'+fields.map(([key,label])=>'<div class="task-role-field"><b>'+escapeHTML(label)+'</b><span>'+escapeHTML(Array.isArray(b[key])?b[key].join(', '):b[key]||'Not defined')+'</span></div>').join('');}
 function projectCandidates(){
  return state.liveMode?state.live:ALL_CANDIDATES;
 }
@@ -2987,16 +3001,18 @@ function paintCandidates(){
 
 function update(force=false){
  const st=step();if(priorStep!==st){priorStep=st;document.body.classList.remove('task-rail-collapsed');}
- const tool=override==='auto'?taskFor():override;
+ const tool=resolvedTool();
  currentTool=tool;
- document.body.classList.toggle('task-rail-show-talent',tool==='talent');
+ document.body.classList.toggle('task-rail-show-talent',tool==='talent'||tool==='brief');
  document.body.classList.toggle('task-rail-show-george',tool==='george');
- talent.setAttribute('aria-hidden',String(tool!=='talent'));
+ talent.setAttribute('aria-hidden',String(tool!=='talent'&&tool!=='brief'));
+ document.body.classList.toggle('task-rail-show-brief',tool==='brief');
+ if(tool==='brief')roleBrief();
  george.setAttribute('aria-hidden',String(tool!=='george'));
  document.querySelectorAll('[data-task-tool]').forEach(b=>{
   b.classList.toggle('active',b.dataset.taskTool===override);
   // Auto owns its active tool: avoid a duplicate George Chat or Candidates tab.
-  b.hidden=override==='auto'&&b.dataset.taskTool===tool;
+  b.hidden=(view()==='george'&&b.dataset.taskTool==='george')||(view()==='talent'&&b.dataset.taskTool==='talent')||(override==='auto'&&b.dataset.taskTool===tool);
  });
  document.body.classList.toggle('task-rail-context-feedback',tool==='talent'&&/feedback/.test(st));
  document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
@@ -3006,7 +3022,7 @@ function update(force=false){
 }
 document.addEventListener('click',e=>{
  const choice=e.target.closest('[data-task-tool]');
- if(choice){override=choice.dataset.taskTool;document.body.classList.remove('task-rail-collapsed');update(true);return;}
+ if(choice){if(choice.hidden)return;override=choice.dataset.taskTool;document.body.classList.remove('task-rail-collapsed');update(true);return;}
  if(e.target.closest('[data-task-collapse]')){document.body.classList.add('task-rail-collapsed');return;}
  if(e.target.closest('#taskRailRestore')){document.body.classList.remove('task-rail-collapsed');update(true);return;}
  const open=e.target.closest('[data-task-open]');
@@ -3028,7 +3044,7 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintCandidates());
 window.addEventListener('studio-step-changed',()=>update(true));
-window.setInterval(()=>{if(currentTool!== (override==='auto'?taskFor():override))update(true)},700);
+window.setInterval(()=>{if(currentTool!==resolvedTool())update(true)},700);
 update(true);
 })();
 </script><script id="evidence-workbench-controller-20261014">
