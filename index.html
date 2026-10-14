@@ -1521,7 +1521,32 @@ body.task-rail-collapsed #georgePanel,body.task-rail-collapsed #talentExplorerRa
 #georgePanel #georgeSpeak,#georgePanel #georgeExecute{background:#1C2D4A!important;color:#fff!important;border-color:#1C2D4A!important}
 #georgePanel .george-live-note{color:#89939d!important;font-size:9px!important;line-height:1.5!important;margin-top:8px!important}
 </style>
-</head>
+<style id="sourcing-progress-stepper-20261014">
+.topbar{min-height:112px!important;height:auto!important;max-height:none!important;padding:8px 15px!important;position:sticky!important;top:0!important;z-index:110!important}
+.topbar #recruiterGuide{height:auto!important;min-height:96px!important;padding:10px 14px!important;display:block!important;overflow:visible!important}
+.sourcing-stepper-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.sourcing-stepper-head strong{font-size:11px;letter-spacing:.02em;color:#1c2d4a}
+.sourcing-stepper-head small{color:#71808e;font-size:10px}
+.sourcing-stepper-track{display:flex;gap:6px;width:100%;overflow-x:auto;scrollbar-width:thin;padding:3px 0 9px;scroll-snap-type:x proximity}
+.topbar #recruiterGuide .sourcing-step{display:flex!important;flex:1 0 112px;flex-direction:column;gap:5px;text-align:left;border:1px solid #e3e8ee;background:#f7f8fa;color:#596775;border-radius:10px;padding:8px 10px;min-width:112px;max-width:210px;scroll-snap-align:center;cursor:pointer;transition:background .15s}
+.sourcing-step:focus-visible{outline:3px solid #b94d3a;outline-offset:2px}
+.topbar #recruiterGuide .sourcing-step.current{background:#edf2f8;border-color:#1c2d4a;box-shadow:inset 0 0 0 1px #1c2d4a;color:#1c2d4a}
+.topbar #recruiterGuide .sourcing-step.done{background:#f1f7f5;border-color:#b9d6c9;color:#32634b}
+.topbar #recruiterGuide .sourcing-step.blocked{border-color:#e6c1a7;color:#975334}
+.sourcing-step-line{display:flex;gap:6px;align-items:center;font-size:10px;font-weight:700}
+.sourcing-step-line .mark{font-size:12px;flex-shrink:0}
+.sourcing-step-title{font-size:10px;line-height:1.25;font-weight:550;white-space:normal;overflow-wrap:anywhere}
+.sourcing-step-meter{height:3px;background:#dfe5eb;border-radius:4px;overflow:hidden}
+.sourcing-step-meter i{display:block;height:100%;background:#1c2d4a}
+.sourcing-step-detail{border-top:1px solid #edf0f4;padding:8px 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sourcing-step-detail .step-copy{flex:1 1 240px;min-width:0}
+.sourcing-step-detail b{font-size:12px;color:#1c2d4a}
+.sourcing-step-detail p{font-size:10px;color:#687786;margin:3px 0;line-height:1.35}
+.sourcing-step-detail button{background:#1c2d4a;color:white;border:0;border-radius:8px;padding:9px 12px;font-size:11px;cursor:pointer}
+.sourcing-step-detail .step-progress{font-weight:650;color:#b94d3a}
+.topbar #recruiterGuide .recruiter-journey-slider,.topbar #recruiterGuide .recruiter-guide-grid,.topbar #recruiterGuide .recruiter-guide-top{display:none!important}
+@media(max-width:850px){.topbar{padding:7px!important}.topbar #recruiterGuide{padding:8px!important}.topbar #recruiterGuide .sourcing-step{flex-basis:122px!important;min-width:122px!important}.sourcing-step-detail{align-items:flex-start}}
+</style></head>
 <body>
 <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
@@ -2864,6 +2889,78 @@ document.getElementById('talentRailSearch')?.addEventListener('input',()=>paintC
 window.addEventListener('studio-step-changed',()=>update(true));
 window.setInterval(()=>{if(currentTool!== (override==='auto'?taskFor():override))update(true)},700);
 update(true);
+})();
+</script><script id="sourcing-progress-stepper-controller-20261014">
+(function(){
+'use strict';
+if(typeof PROCESS_STEPS==='undefined'||typeof renderRecruiterGuide!=='function')return;
+const ESC=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let inspected=null,raf=0;
+const feedbackIds=new Set(['feedback1','feedback2']);
+function dataFor(x){
+ const ids=x.ids||[],all=typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[],people=ids.map(id=>all.find(c=>c.id===id)).filter(Boolean);
+ if(feedbackIds.has(x.id)){
+ const reviewed=people.filter(c=>{const record=stageReview?.[x.id]?.[c.profileUrl];const base=typeof stageDefaultReview==='function'?stageDefaultReview(c,x.id):{};const r=record?{...base,...record}:base;return !!r.feedbackGiven&&['approved','hold','excluded'].includes(r.status);}).length;
+ return {done:reviewed,total:people.length,remaining:people.length-reviewed,unit:'reviewed',known:true};
+ }
+ if(x.id==='cal1'||x.id==='cal2'){
+ const nextId=x.id==='cal1'?'feedback1':'feedback2';
+ const set=stageReview?.[nextId]||{};
+ const touched=people.filter(c=>!!set[c.profileUrl]?.feedbackGiven).length;
+ return {done:touched,total:people.length,remaining:people.length-touched,unit:'assessed',known:true};
+ }
+ if(x.id==='brief'){
+ const b=state.liveBrief||{};
+ const fields=['role','companies','locations','focus'];const n=fields.filter(k=>String(b[k]||'').trim()).length;
+ return {done:n,total:fields.length,remaining:fields.length-n,unit:'defined',known:true};
+ }
+ if(x.id==='locked'){const b=state.liveBrief||{};return{known:false,unit:'Confirm locked search profile',done:0,total:0,remaining:null};}
+ if(x.id==='market'){return{known:false,unit:'Review market sizing and cluster evidence',done:0,total:0,remaining:null};}
+ if(x.id==='evidence'){
+ const completed=people.filter(c=>Array.isArray(c.sources)&&c.sources.length&&Number(c.evidence)>0).length;
+ return {known:true,done:completed,total:people.length,remaining:people.length-completed,unit:'evidence records'};
+ }
+ return {known:false,unit:'Review production and shortlist gates',done:0,total:0,remaining:null};
+}
+function draw(){
+ const host=document.getElementById('recruiterGuide');if(!host)return;
+ const selected=PROCESS_STEPS.find(x=>x.id===inspected)||PROCESS_STEPS.find(x=>x.id===state.processStep)||PROCESS_STEPS[0];
+ const activeIndex=PROCESS_STEPS.findIndex(x=>x.id===state.processStep);
+ const entries=PROCESS_STEPS.map((x,i)=>{const d=dataFor(x),active=x.id===state.processStep;const complete=d.known&&d.total>0&&d.done===d.total;
+ const status=active?'current':complete?'done':i<active?'blocked':'pending';
+ const short=d.known?(d.done+'/'+d.total+' '+d.unit):'Pending verification';
+ const pc=d.known&&d.total>0?Math.round(100*d.done/d.total):0;
+ return '<button type="button" class="sourcing-step '+status+'" data-sourcing-step="'+ESC(x.id)+'" aria-current="'+(active?'step':'false')+'" aria-label="'+ESC(x.title)+' — '+ESC(short)+'"><span class="sourcing-step-line"><span class="mark">'+(complete?'✓':status==='blocked'?'!':i+1)+'</span><span>'+ESC(short)+'</span></span><span class="sourcing-step-title">'+ESC(x.title)+'</span><span class="sourcing-step-meter"><i style="width:'+pc+'%"></i></span></button>';
+ }).join('');
+ const d=dataFor(selected),isFeedback=feedbackIds.has(selected.id),action=isFeedback?'Continue Feedback':selected.id==='brief'?'Review Role Brief':selected.id==='evidence'?'Continue Evidence Check':'Open Step';
+ const message=isFeedback?d.remaining+' candidate feedback decisions remaining':d.known?d.remaining+' of '+d.total+' tasks remaining':selected.description;
+ host.innerHTML='<div class="sourcing-stepper-head"><strong>Sourcing Journey</strong><small>Step '+(activeIndex+1)+' of '+PROCESS_STEPS.length+' · '+ESC(PROCESS_STEPS[activeIndex]?.title)+'</small></div>'+
+ '<div class="sourcing-stepper-track" role="group" aria-label="Sourcing steps">'+entries+'</div>'+
+ '<div class="sourcing-step-detail"><div class="step-copy"><b>'+ESC(selected.title)+'</b><p class="step-progress">'+ESC(message)+'</p><p>Suggested next action: '+ESC(isFeedback?'Review the next candidate without a decision':selected.description)+'</p></div><button type="button" data-sourcing-continue="'+ESC(selected.id)+'">'+action+'</button></div>';
+ host.querySelector('.sourcing-step.current')?.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+renderRecruiterGuide=draw;
+window.refreshRecruiterGuide=()=>{draw();if(typeof renderRecruiterPlaybook==='function')renderRecruiterPlaybook();};
+document.addEventListener('click',e=>{
+ const stepBtn=e.target.closest('[data-sourcing-step]');
+ if(stepBtn){inspected=stepBtn.dataset.sourcingStep;draw();return;}
+ const next=e.target.closest('[data-sourcing-continue]');if(!next)return;
+ const id=next.dataset.sourcingContinue,x=PROCESS_STEPS.find(s=>s.id===id);if(!x)return;
+ if(state.processStep!==id&&typeof setProcessStep==='function')setProcessStep(id,false);
+ if(typeof window.switchView==='function')window.switchView(id==='brief'?'workflow':x.targetView||'workflow');
+ if(feedbackIds.has(id)){
+ const d=dataFor(x),pending=x.ids.map(cid=>ALL_CANDIDATES.find(c=>c.id===cid)).find(c=>{const r=stageReview?.[id]?.[c.profileUrl]||stageDefaultReview(c,id);return !r.feedbackGiven;});
+ document.querySelector('[data-task-tool="auto"]')?.click();
+ if(pending&&typeof window.openCandidate==='function')window.openCandidate(pending.id,true,true);
+ }
+ inspected=id;draw();
+});
+const originalSetReview=setReview;
+setReview=function(c,patch){const result=originalSetReview(c,patch);schedule();return result;};
+function schedule(){if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{raf=0;draw();});}
+window.addEventListener('studio-step-changed',()=>{inspected=null;schedule();});
+document.addEventListener('click',e=>{if(e.target.closest('[data-task-decision],[data-decision],[data-action="confirmFeedback"]'))setTimeout(schedule,60);});
+draw();
 })();
 </script></body>
 </html>
