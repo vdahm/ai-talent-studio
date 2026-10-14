@@ -2554,9 +2554,8 @@ renderGeorge();renderAttachments();updateGeorgeContext();
     if(!c)return;
     const name=typeof displayName==='function'?displayName(c):(c.name||'Candidate');
     const safe=typeof esc==='function'?esc:(value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-    railDetail.innerHTML='<div class="talent-rail-detail-nav"><button type="button" data-rail-detail-back="1">← All candidates</button><span>Candidate profile</span></div>'+
-      '<h3>'+safe(name)+'</h3><p class="talent-rail-detail-sub">'+safe(c.title||'')+' · '+safe(c.company||'')+'</p>'+
-      (typeof candidatePanelHtml==='function'?'<div class="talent-rail-detail-body">'+candidatePanelHtml(c,true)+fullCandidateRecordHtml(c)+'</div>':'<p>'+safe(c.location||'')+'</p>');
+    railDetail.innerHTML='<div class="talent-rail-detail-nav"><button type="button" data-rail-detail-back="1">← All candidates</button><span>Talent Explorer · Candidate profile</span></div>'+
+      '<div class="talent-rail-detail-body">'+candidatePanelHtml(c,true)+fullCandidateRecordHtml(c)+'</div>';
     search.closest('label').classList.add('hidden');
     list.classList.add('hidden');
     railRoot.querySelector('.talent-rail-actions')?.classList.add('hidden');
@@ -3484,23 +3483,7 @@ render();
   },true);
 })();
 </script>
-<style id="talent-rail-full-profile-20261014">
-/* Single scrollable sidebar profile: no details clipped by desktop two-column rules. */
-#talentRailCandidateDetail .candidate-profile-shell{display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important;min-width:0!important}
-#talentRailCandidateDetail .candidate-profile-main,
-#talentRailCandidateDetail .candidate-profile-side{display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important;min-width:0!important;max-width:100%!important;position:static!important}
-#talentRailCandidateDetail .candidate-section-card,
-#talentRailCandidateDetail .candidate-profile-hero{display:block!important;width:100%!important;min-width:0!important;margin:0!important;padding:14px!important;overflow-wrap:anywhere!important;white-space:normal!important}
-#talentRailCandidateDetail .candidate-profile-hero h1{font-size:20px!important;line-height:1.25!important}
-#talentRailCandidateDetail .candidate-facts{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
-#talentRailCandidateDetail .candidate-profile-url,
-#talentRailCandidateDetail .source-link{overflow-wrap:anywhere!important;word-break:break-word!important}
-#talentRailCandidateDetail .candidate-profile-main > *,
-#talentRailCandidateDetail .candidate-profile-side > *{flex:0 0 auto!important}
-#talentRailCandidateDetail .decision-btns{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
-#talentRailCandidateDetail .decision-btns button{flex:1 1 74px}
-#talentRailCandidateDetail .rail-george-chat{flex:0 0 auto!important}
-</style>
+
 <script id="studio-routing-guard-20261014">
 (function(){
  'use strict';
@@ -3527,20 +3510,7 @@ render();
 </script>
 
 
-<style id="talent-rail-morning-compact-20261014">
-/* Morning-style contextual rail, full information scrolls INSIDE the normal rail. */
-body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(470px,40vw,650px)!important}
-body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;max-width:100%!important;background:#fff!important}
-#talentRailCandidateDetail{min-width:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:12px 15px 22px!important;background:#fff!important}
-#talentRailCandidateDetail .candidate-profile-shell{display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important}
-#talentRailCandidateDetail .candidate-profile-main,#talentRailCandidateDetail .candidate-profile-side{display:flex!important;flex-direction:column!important;gap:12px!important;width:100%!important;min-width:0!important}
-#talentRailCandidateDetail .candidate-section-card,#talentRailCandidateDetail .candidate-profile-hero{width:100%!important;min-width:0!important;padding:14px!important;white-space:normal!important;overflow-wrap:anywhere!important}
-#talentRailCandidateDetail .candidate-profile-hero{border-left:3px solid #b94d3a!important}
-#talentRailCandidateDetail .candidate-section-card{border-top:2px solid #b94d3a!important}
-#talentRailCandidateDetail .candidate-profile-hero h1{font-size:20px!important}
-#talentRailCandidateDetail .rail-george-chat{position:sticky!important;bottom:-22px!important;margin:15px -15px -22px!important;padding:10px 14px 15px!important;border-top:2px solid #b94d3a!important;background:#fff!important}
-@media(max-width:1100px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(66vw,600px)!important}}@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
-</style><style id="talent-rail-all-fields-style">
+<style id="talent-rail-all-fields-style">
 #talentRailCandidateDetail .talent-rail-all-fields dl{margin:0;display:grid;gap:10px}
 #talentRailCandidateDetail .talent-rail-data-row{padding:10px 0;border-bottom:1px solid #edf0f3;min-width:0}
 #talentRailCandidateDetail .talent-rail-data-row dt{font-size:11px;font-weight:700;color:#a4483a;margin-bottom:4px}
@@ -3662,5 +3632,20 @@ function render(){
 host.addEventListener('click',e=>{const b=e.target.closest('[data-profile-id]');if(b)window.openTalentRailCandidate?.(b.dataset.profileId)});
 ['studio:changed','studio-step-changed','studio:evidence-updated'].forEach(name=>window.addEventListener(name,render));render();
 })();
-</script></body>
+</script><style id="talent-rail-match-main-explorer-20261014">
+/* Reuse Talent Explorer's profile markup, typography and native card styling. */
+body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(500px,42vw,720px)!important}
+body.talent-profile-expanded #talentExplorerRail{width:var(--ui-rail)!important;max-width:calc(100vw - var(--ui-sidebar))!important}
+#talentRailCandidateDetail{background:#f5f6f8!important;overflow-y:auto!important;overflow-x:hidden!important;padding:14px 16px 28px!important}
+#talentRailCandidateDetail .talent-rail-detail-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0 15px;position:sticky;top:-14px;z-index:4;background:#f5f6f8}
+#talentRailCandidateDetail .talent-rail-detail-body{display:block;min-width:0}
+#talentRailCandidateDetail .candidate-profile-shell{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;width:100%!important;max-width:100%!important}
+#talentRailCandidateDetail .candidate-profile-main,#talentRailCandidateDetail .candidate-profile-side{min-width:0!important;width:100%!important;max-width:100%!important;display:flex!important;flex-direction:column!important;gap:14px!important}
+#talentRailCandidateDetail .candidate-profile-hero,#talentRailCandidateDetail .candidate-section-card{width:100%!important;min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}
+#talentRailCandidateDetail .candidate-profile-hero h1{font-size:clamp(22px,2vw,29px)!important}
+#talentRailCandidateDetail .candidate-profile-url,#talentRailCandidateDetail .source-link{overflow-wrap:anywhere;word-break:break-word}
+#talentRailCandidateDetail .rail-george-chat{position:sticky!important;bottom:-28px!important;margin:18px -16px -28px!important;padding:11px 16px 16px!important;background:#fff!important;border-top:1px solid #e4e7eb!important;z-index:5}
+@media(max-width:900px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(78vw,640px)!important}}
+@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
+</style></body>
 </html>
