@@ -3768,7 +3768,13 @@ document.addEventListener('change',schedule);refresh();
 </script><style id="mandate-styles">
 .search-card.mandate-card{cursor:pointer;transition:border-color .15s,box-shadow .15s}.search-card.mandate-card:hover,.search-card.mandate-card:focus-visible{border-color:var(--accent);box-shadow:0 6px 18px rgba(28,45,74,.08);outline:none}
 .mandate-card .mandate-switch{font-size:9px;color:var(--accent);font-weight:650;white-space:nowrap;flex:none}.mandate-card h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mandate-card p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mandate-card .mandate-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}.mandate-card .mandate-step{font-size:9px;color:#91859e;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body.view-mandates #recruiterGuide{display:none!important}
+body.view-mandates #recruiterGuide,body.view-mandates #mandateBar{display:none!important}
+body.view-mandates .sidebar nav .navbtn[data-view]:not([data-view="mandates"]),body.view-mandates .search-card.mandate-card{display:none!important}
+.topbar{flex-wrap:wrap!important}#mandateBar{flex:0 0 100%;order:-1;display:flex;align-items:center;gap:10px;min-width:0;padding:2px 4px 6px;border-bottom:1px solid #E2E5E8;margin-bottom:2px}
+#mandateBar .mb-back{border:1px solid #DCE1E6;background:#fff;border-radius:8px;padding:4px 9px;font:inherit;font-size:10px;color:#4d5963;cursor:pointer;white-space:nowrap}#mandateBar .mb-back:hover{border-color:var(--accent);color:var(--accent)}
+#mandateBar .mb-kicker{font-size:8px;letter-spacing:1.2px;font-weight:700;color:var(--accent);white-space:nowrap}#mandateBar .mb-title{font-size:13px;font-weight:700;color:var(--brand-primary,#1C2D4A);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}#mandateBar .mb-meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.navbtn[data-view="mandates"] .md-nav-sub{display:block;font-size:9px;font-weight:500;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;line-height:1.3;margin-top:1px}.navbtn[data-view="mandates"]>span{min-width:0}
+@media(max-width:700px){#mandateBar .mb-meta{display:none}}
 .md-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;margin-bottom:24px}
 .md-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .md-card.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft,rgba(185,77,58,.08))}
@@ -3823,9 +3829,13 @@ body.view-mandates #recruiterGuide{display:none!important}
   <div class="md-grid">${list.map(cardHtml).join('')}<button class="md-new" type="button" data-mandate-new="1">${icon('plus')}<span>New mandate</span></button></div>`;}
  /* switchView only knows the original views: extend it */
  const baseSwitch=window.switchView;
- window.switchView=function(v){if(v==='mandates'){state.view='mandates';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-mandates');x.classList.remove('print-target');});$$('.navbtn[data-view]').forEach(x=>{x.classList.toggle('active',x.dataset.view==='mandates');x.setAttribute('aria-current',x.dataset.view==='mandates'?'page':'false');});$('sidebar')?.classList.remove('open');$('navOverlay')?.classList.remove('on');document.body.classList.add('view-mandates');renderDashboard();window.scrollTo({top:0,behavior:'instant'});return;}document.body.classList.remove('view-mandates');return baseSwitch(v);};
+ window.switchView=function(v){if(v==='mandates'){state.view='mandates';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-mandates');x.classList.remove('print-target');});$$('.navbtn[data-view]').forEach(x=>{x.classList.toggle('active',x.dataset.view==='mandates');x.setAttribute('aria-current',x.dataset.view==='mandates'?'page':'false');});$('sidebar')?.classList.remove('open');$('navOverlay')?.classList.remove('on');document.body.classList.add('view-mandates');renderNav();renderDashboard();window.scrollTo({top:0,behavior:'instant'});return;}document.body.classList.remove('view-mandates');const res=baseSwitch(v);renderNav();renderBar();return res;};
  /* nav entry as the first workspace item */
  const nav=document.querySelector('.sidebar nav')||document.querySelector('nav');if(nav&&!nav.querySelector('[data-view="mandates"]')){const b=document.createElement('button');b.className='navbtn';b.dataset.view='mandates';b.innerHTML=`${icon('folder')}<span>Mandates</span>`;nav.prepend(b);}
+ /* nav label shows the mandate you are in; clicking returns to the dashboard */
+ function renderNav(){const b=nav?.querySelector('[data-view="mandates"]');if(!b)return;const inDash=state.view==='mandates';b.title=inDash?'All mandates':'Back to all mandates';b.innerHTML=`${icon('folder')}<span>${inDash?'Mandates':'‹ Mandates'}${inDash?'':`<small class="md-nav-sub">${e(M.active().title)}</small>`}</span>`;}
+ /* active-mandate bar above the sourcing journey */
+ function renderBar(){const top=document.querySelector('.topbar');if(!top)return;let bar=document.getElementById('mandateBar');if(!bar){bar=document.createElement('div');bar.id='mandateBar';top.prepend(bar);}const m=M.active(),st=stepOf(m);bar.innerHTML=`<button class="mb-back" type="button" data-view="mandates" title="Back to all mandates">‹ All mandates</button><span class="mb-kicker">ACTIVE MANDATE</span><span class="mb-title">${e(m.title)}</span><span class="mb-meta">${e([m.client,m.code].filter(Boolean).join(' · '))} · Step ${st.i+1}/${N} · ${e(st.title)}</span>`;}
  /* ---------- new mandate form ---------- */
  function showForm(){$('modal').classList.add('wide');$('modal').innerHTML=modalHead('New mandate')+`<p class="intro">The new mandate starts at step 1 (Role brief) with an empty candidate pool. The current mandate is saved as it is.</p><form class="mandate-form" id="mandateForm" autocomplete="off"><div class="field"><label for="mandateTitle">Title *</label><input id="mandateTitle" required maxlength="80" placeholder="e.g. CFO · DACH Industrials"></div><div class="field"><label for="mandateClient">Client / sector</label><input id="mandateClient" maxlength="120" placeholder="e.g. Confidential client · Industrial automation"></div><div class="field"><label for="mandateFirms">Target firms</label><textarea id="mandateFirms" maxlength="600" placeholder="Companies to source from, comma-separated"></textarea></div><div class="field"><label for="mandateNotes">Notes</label><textarea id="mandateNotes" maxlength="1500" placeholder="Exclusions, context, timing"></textarea></div><div class="modal-foot"><button class="btn" type="button" data-action="close">Cancel</button><button class="btn primary" type="submit">Create and open</button></div></form>`;showLayer('modal');setTimeout(()=>$('mandateTitle')?.focus(),30);}
  document.addEventListener('click',ev=>{const t=ev.target;
@@ -3845,8 +3855,9 @@ body.view-mandates #recruiterGuide{display:none!important}
   document.querySelectorAll('.view-head .pill').forEach(x=>{if(/Calibrated mandate/.test(x.textContent))x.lastChild.textContent='New mandate';});
  }
  renderCard();syncMetrics();
- ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>{requestAnimationFrame(renderCard);syncMetrics();if(state.view==='mandates')renderDashboard();}));
+ ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>{requestAnimationFrame(()=>{renderCard();renderBar();});syncMetrics();if(state.view==='mandates')renderDashboard();}));
  /* entry point: the dashboard, unless a mandate was just opened */
+ renderBar();renderNav();
  if(!M.justSwitched())window.switchView('mandates');
 })();
 </script>
