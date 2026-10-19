@@ -12,6 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
 });
 
 window.talentStudioSupabase = supabase;
+window.talentStudioSaveWorkspace = () => saveWorkspaceState();
 
 const STATE_KEYS = [
   'vd.studio.brand',
@@ -19,7 +20,8 @@ const STATE_KEYS = [
   'vd.studio.george.conversation',
   'vd.studio.processStep',
   'vd.studio.review',
-  'vd.studio.stageReview.v2'
+  'vd.studio.stageReview.v2',
+  'vd.studio.mandates.v1'
 ];
 
 let currentUser = null;
