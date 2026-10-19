@@ -2467,6 +2467,7 @@ const RECRUITER_GUIDE_STEPS=[
   }
 ];
 
+window.RECRUITER_GUIDE_STEPS=RECRUITER_GUIDE_STEPS;
 function guideIndex(){
   const id=state?.processStep||'brief';
   const i=RECRUITER_GUIDE_STEPS.findIndex(x=>x.id===id);
@@ -2626,10 +2627,10 @@ refreshRecruiterGuide();
  const roleAction=()=>document.querySelector('[data-recruiter-guide-action="rolebrief"]');
  document.addEventListener('input',e=>{
    if(e.target!==slider())return;
-   const range=e.target;const steps=['Define the role brief','Calibration Round 1','Structured feedback','Calibration Round 2','Final calibration feedback','Lock sourcing profile','Candidate market map','Production sourcing','Evidence review','Recruiter decision','Shortlist and outreach'];
+   const range=e.target;
    const v=Number(range.value);
    const title=byId('recruiterJourneyTitle'),count=byId('recruiterJourneyStep');
-   if(title)title.textContent=v===0?'Define the role brief':(window.RECRUITER_GUIDE_STEPS?.[v]?.title||steps[v]||'Workflow stage '+(v+1));
+   if(title)title.textContent=window.RECRUITER_GUIDE_STEPS?.[v]?.title||'Workflow stage '+(v+1);
    if(count)count.textContent='Step '+(v+1)+' / '+(Number(range.max)+1);
    const b=roleAction();if(b)b.textContent='View Search Criteria';
  });
