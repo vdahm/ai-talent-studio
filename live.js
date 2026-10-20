@@ -21,7 +21,8 @@ const STATE_KEYS = [
   'vd.studio.processStep',
   'vd.studio.review',
   'vd.studio.stageReview.v2',
-  'vd.studio.mandates.v1'
+  'vd.studio.mandates.v1',
+  'vd.studio.uploads.v1'
 ];
 
 let currentUser = null;
