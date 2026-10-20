@@ -3996,7 +3996,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
 <script id="step-layout">
 (function(){
  if(typeof PROCESS_STEPS==='undefined')return;
- const GT=['cal1','feedback1','cal2'];
+ const GT=['cal1','feedback1','cal2','feedback2'];
  const NEXT={cal1:'feedback1',cal2:'feedback2',feedback1:'feedback1',feedback2:'feedback2'};
  const railTool=()=>{const c=document.body.classList;return c.contains('task-rail-show-brief')?'brief':c.contains('task-rail-show-george')?'george':'talent';};
  function setTool(t,delay){setTimeout(()=>{if(railTool()===t)return;[...document.querySelectorAll('[data-task-tool="'+t+'"]')].find(x=>!x.hidden)?.click();},delay??120);}
@@ -4004,7 +4004,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  function layoutFor(step){
   if(step==='brief'){if(state.view!=='george')window.switchView('george');setTool('brief');return;}
   if(GT.includes(step)){if(state.view!=='george')window.switchView('george');setTool('talent');return;}
-  if((step==='feedback2'||step==='locked')&&window.studioShowLockPrep){window.studioShowLockPrep();setTool('george');return;}
+  if(step==='locked'&&window.studioShowLockPrep){window.studioShowLockPrep();setTool('george');return;}
   const s=PROCESS_STEPS.find(x=>x.id===step);if(s?.targetView&&state.view!==s.targetView)window.switchView(s.targetView);
  }
  window.studioLayoutForStep=layoutFor;
@@ -4073,7 +4073,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  const ORIG=Object.fromEntries(PROCESS_STEPS.map(s=>[s.id,s.title]));
  function applyTitles(){for(const s of PROCESS_STEPS){if(s.id==='cal1')s.title='Calibration round '+curVer(1);else if(s.id==='feedback1')s.title='Feedback round '+curVer(1);else if(s.id==='cal2')s.title='Calibration round '+curVer(2);else if(s.id==='feedback2')s.title='Feedback round '+curVer(2);}}
  const nextRound=()=>state.processStep==='feedback1'?2:state.processStep==='brief'?1:null;
- function labelButtons(){const k=nextRound();const label=k?'Calibration round '+nextVer(k):'New search';const rb=document.getElementById('taskRailContextNewSearch');if(rb)rb.textContent=label;const nb=document.querySelector('.sidebar [data-action="newsearch"] span');if(nb)nb.textContent=label;}
+ function labelButtons(){const k=nextRound();const label=k?'Calibration round '+nextVer(k):'New search';const rb=document.getElementById('taskRailContextNewSearch');if(rb)rb.textContent=label;const nb=document.querySelector('.sidebar [data-action="newsearch"] span');if(nb)nb.textContent=label;let lg=document.getElementById('taskRailLockGo');const acts=document.querySelector('#talentExplorerRail .talent-rail-actions');if(!lg&&acts){lg=document.createElement('button');lg.type='button';lg.id='taskRailLockGo';lg.className='btn primary';lg.dataset.lockGo='1';lg.textContent='Go to locked profile';acts.appendChild(lg);}if(lg)lg.hidden=state.processStep!=='feedback2';}
  const _sns=window.showNewSearch;
  if(typeof _sns==='function')window.showNewSearch=function(){const r=_sns.apply(this,arguments);const k=nextRound();if(k){const h=document.querySelector('#modal .modal-head h2');if(h)h.textContent='Calibration round '+nextVer(k);const b=document.getElementById('runLiveBtn');if(b)b.innerHTML='Start calibration round '+nextVer(k)+' '+icon('arrow');}return r;};
  const _run=window.runLive;
