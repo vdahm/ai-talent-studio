@@ -4124,5 +4124,121 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  if(['feedback2','locked'].includes(state.processStep)&&state.view==='lockprep')render();
 })();
 </script>
+<style id="upload-flow-styles">
+.upl-tabs{display:flex;gap:6px;margin:4px 0 14px}.upl-tabs button{border:1px solid #DCE1E6;background:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:11px;cursor:pointer;color:#4d5963}.upl-tabs button.active{background:var(--brand-primary,#1C2D4A);border-color:var(--brand-primary,#1C2D4A);color:#fff}
+.upl-pane{display:none}.upl-pane.active{display:block}
+.upl-drop{border:1.5px dashed #CFD5DB;border-radius:14px;padding:18px;text-align:center;font-size:12px;color:var(--muted);background:#FAFBFC}
+.upl-drop input{margin-top:10px}
+.upl-hint{font-size:10px;color:var(--muted);line-height:1.55;margin-top:8px}
+.upl-preview{font-size:11px;margin-top:10px;max-height:160px;overflow:auto;border:1px solid #E6E9EC;border-radius:10px;padding:8px 10px;background:#fff}
+#uploadReview{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin:0 0 18px}
+#uploadReview .ur-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}#uploadReview h2{font-size:15px;margin:0;color:var(--brand-primary,#1C2D4A)}#uploadReview .ur-head p{margin:2px 0 0;font-size:11px;color:var(--muted)}
+.ur-list{display:grid;gap:10px}
+.ur-item{border:1px solid #E6E9EC;border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.ur-item.done{background:#F8FAF9}
+.ur-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.ur-top b{font-size:13px;color:#1C2D4A}.ur-top small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.ur-badges{display:flex;gap:6px;flex-wrap:wrap}.ur-badge{font-size:9px;font-weight:650;border-radius:999px;padding:3px 8px;background:#EEF1F4;color:#4d5963;white-space:nowrap}.ur-badge.wait{background:#FFF3C4;color:#7A5B00}.ur-badge.ok{background:#E3F2E8;color:#2F6B45}.ur-badge.no{background:#FBEAE6;color:#9A4536}
+.ur-whw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:11px;line-height:1.5}.ur-whw div{background:#F7F8F9;border-radius:10px;padding:7px 9px}.ur-whw b{display:block;font-size:9px;letter-spacing:.6px;color:var(--accent);margin-bottom:2px}
+.ur-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.ur-actions textarea{flex:1 1 100%;border:1px solid #E1E5E9;border-radius:10px;padding:7px 9px;font:inherit;font-size:11px;min-height:34px;resize:vertical}
+.ur-actions button{font-size:11px;padding:6px 11px}
+#railUploadBanner{margin:0 0 8px;background:#FFF3C4;border:1px solid #F1D98A;border-radius:10px;padding:8px 10px;font-size:10px;color:#6B4F00;display:flex;justify-content:space-between;gap:8px;align-items:center}
+#railUploadBanner button{font-size:10px;padding:4px 9px;border-radius:8px}
+.talent-rail-title [data-upload-open]{font-size:10px;padding:5px 9px;border-radius:8px;margin-left:8px;white-space:nowrap}
+@media(max-width:700px){.ur-whw{grid-template-columns:1fr}}
+</style>
+<script id="upload-flow">
+(function(){
+ if(typeof ALL_CANDIDATES==='undefined'||!window.StudioMandates)return;
+ const M=window.StudioMandates,e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const KEY='vd.studio.uploads.v1',BUCKET='candidate-uploads';
+ const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}},save=l=>{try{localStorage.setItem(KEY,JSON.stringify(l))}catch{toast('Browser storage is unavailable.')}};
+ const nextId=l=>'U'+String(l.reduce((n,u)=>Math.max(n,Number(String(u.id).slice(1))||0),0)+1).padStart(2,'0');
+ /* ---------- parsing ---------- */
+ function parseCsv(text){const first=String(text).split(/\r?\n/)[0]||'';const D=(first.split(';').length>first.split(',').length)?';':',';const rows=[];let row=[],cell='',q=false;for(let i=0;i<text.length;i++){const ch=text[i];if(q){if(ch==='"'){if(text[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=ch;}else if(ch==='"')q=true;else if(ch===D){row.push(cell);cell='';}else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell='';}else cell+=ch;}if(cell||row.length){row.push(cell);rows.push(row);}return rows.filter(r=>r.some(x=>String(x).trim()));}
+ const pick=(h,re)=>h.findIndex(x=>re.test(x));
+ function csvCandidates(text){const rows=parseCsv(text);if(rows.length<2)return [];const h=rows[0].map(x=>String(x).trim().toLowerCase());
+  const iN=pick(h,/^(name|full ?name|kandidat|candidate)$/),iF=pick(h,/^(first ?name|vorname)$/),iL=pick(h,/^(last ?name|nachname|surname)$/),iT=pick(h,/(title|position|role|funktion|titel)/),iC=pick(h,/(company|firm|employer|unternehmen|firma|organi[sz]ation)/),iLo=pick(h,/(location|city|country|ort|standort|land)/),iU=pick(h,/(linkedin|profile ?url|url|link)/);
+  return rows.slice(1).map(r=>{const g=i=>i>=0?String(r[i]||'').trim():'';const name=g(iN)||[g(iF),g(iL)].filter(Boolean).join(' ');return {source:'csv',name,title:g(iT),company:g(iC),location:g(iLo),profileUrl:g(iU)};}).filter(c=>c.name||c.profileUrl);}
+ function linkedinCandidates(text){return String(text||'').split(/[\s,;]+/).map(s=>s.trim()).filter(s=>/linkedin\.com\/in\//i.test(s)).map(u=>{const url=/^https?:/i.test(u)?u:'https://'+u;const slug=(url.match(/\/in\/([^/?#]+)/i)||[])[1]||'';const name=decodeURIComponent(slug).replace(/-[0-9a-f]{5,}$/i,'').split('-').filter(w=>!/^\d+$/.test(w)).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');return {source:'linkedin',name:name||'LinkedIn profile',title:'',company:'',location:'',profileUrl:url};});}
+ function cvName(file){return file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').replace(/\b(cv|lebenslauf|resume|curriculum vitae)\b/ig,'').replace(/\s+/g,' ').trim()||'CV upload';}
+ /* ---------- candidate records for the pool ---------- */
+ function asCandidate(u){const parts=String(u.name||'Uploaded profile').trim().split(/\s+/);return {id:u.id,name:u.name||'Uploaded profile',firstName:parts[0]||'',lastName:parts.slice(1).join(' '),profileUrl:u.profileUrl||('upload://'+u.id),title:u.title||'Uploaded profile',company:u.company||'',firm:u.company||'',location:u.location||'',country:u.location||'',cluster:'Uploaded profile',clusterShort:'Uploaded',secondary:'',areas:u.check?.how||'',summary:u.check?.why||'Uploaded via '+u.source+'.',researchNote:u.check?.why||'',evidenceType:u.check?.what||'',projects:[],sources:u.profileUrl?[u.profileUrl]:[],fit:u.check?.fit??null,match:u.check?.match??null,evidence:u.check?.evidence??0,tier:u.check?.tier||'—',status:'approved',uploaded:true,uploadSource:u.source,raw:{Why:u.check?.why||'',How:u.check?.how||'',What:u.check?.what||''}};}
+ function syncPool(){const list=load();for(let i=ALL_CANDIDATES.length-1;i>=0;i--)if(ALL_CANDIDATES[i].uploaded)ALL_CANDIDATES.splice(i,1);for(const u of list)if(u.decision==='approved')ALL_CANDIDATES.push(asCandidate(u));}
+ /* ---------- research service: Why / How / What check ---------- */
+ const connected=()=>engineStatus.available&&engineStatus.configured&&!!sessionToken;
+ async function runCheck(ids,mode){
+  const list=load(),items=list.filter(u=>ids.includes(u.id));if(!items.length)return;
+  if(!connected()){for(const u of items)if(mode==='upload_check')u.status='pending-check';else u.evidenceStatus='pending';save(list);render();return;}
+  for(const u of items){if(mode==='upload_check')u.status='checking';else u.evidenceStatus='running';}save(list);render();
+  try{const p=window.getStudioSourcingProfile?.()||{};
+   const r=await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+sessionToken},body:JSON.stringify({mode,searchId:state.liveSearchId,profile:{role:p.role,companies:p.companies,locations:p.locations,focus:p.focus,exclusions:p.exclusions},candidates:items.map(u=>({id:u.id,name:u.name,title:u.title,company:u.company,location:u.location,profileUrl:u.profileUrl,file:u.file||null}))}),signal:AbortSignal.timeout(15000)});
+   const j=await r.json();if(!r.ok)throw Error(j.detail||'The research service rejected the upload check.');
+   for(let i=0;i<360;i++){await new Promise(x=>setTimeout(x,3000));const q=await fetch('/api/jobs/'+encodeURIComponent(j.id),{headers:{'Authorization':'Bearer '+sessionToken},signal:AbortSignal.timeout(15000)});if(!q.ok)throw Error('The check could not be retrieved.');const s=await q.json();if(s.status==='failed')throw Error(s.message||'The check failed.');
+    if(s.status==='complete'){const res=Array.isArray(s.candidates)?s.candidates:[];const l2=load();for(const u of l2){if(!ids.includes(u.id))continue;const m=res.find(x=>x.id===u.id||(x.profileUrl&&x.profileUrl===u.profileUrl))||{};if(mode==='upload_check'){u.status='checked';u.check={why:m.why||m.Why||m.summary||'',how:m.how||m.How||m.areas||'',what:m.what||m.What||m.evidenceType||'',fit:m.fit??null,match:m.match??null,evidence:m.evidence??0,tier:m.tier||'—'};for(const k of ['name','title','company','location','profileUrl'])if(m[k]&&!u[k])u[k]=m[k];}else{u.evidenceStatus='done';if(u.check)u.check.evidence=m.evidence??u.check.evidence;}}save(l2);syncPool();render();toast(mode==='upload_check'?'Why / How / What check complete. The evidence check starts now.':'Evidence check complete.');if(mode==='upload_check')runCheck(ids,'evidence');return;}}
+   throw Error('The check is still running (job '+j.id+').');
+  }catch(err){const l3=load();for(const u of l3)if(ids.includes(u.id)){if(mode==='upload_check')u.status='pending-check';else u.evidenceStatus='pending';u.error=err.message;}save(l3);render();toast(err.message||'Research service unavailable.');}
+ }
+ /* ---------- CV storage (private Supabase bucket, scoped by user id) ---------- */
+ async function storeCv(file,id){const sb=window.talentStudioSupabase;if(!sb)return {name:file.name,size:file.size,stored:false,error:'Supabase is not available.'};try{const {data:{user}}=await sb.auth.getUser();if(!user)return {name:file.name,size:file.size,stored:false,error:'Sign in to store CVs.'};const path=`${user.id}/${M.active().id}/${id}-${Date.now()}-${file.name.replace(/[^\w.\-]+/g,'_')}`;const {error}=await sb.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});if(error)return {name:file.name,size:file.size,stored:false,error:error.message};return {name:file.name,size:file.size,stored:true,bucket:BUCKET,path};}catch(err){return {name:file.name,size:file.size,stored:false,error:err.message||'Upload failed.'};}}
+ /* ---------- upload dialog ---------- */
+ let csvRows=[];
+ function showUpload(){$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Upload candidates')+`<p class="intro">Add candidates by CSV, CV or LinkedIn profile. Every uploaded profile goes through the full Why / How / What check; once that research is done, the evidence check starts automatically. Then the profiles are rated in their own feedback round.</p>
+  <div class="upl-tabs" role="tablist"><button type="button" class="active" data-upl-tab="csv">CSV file</button><button type="button" data-upl-tab="cv">CVs (PDF / Word)</button><button type="button" data-upl-tab="li">LinkedIn profiles</button></div>
+  <div class="upl-pane active" data-upl-pane="csv"><div class="upl-drop">Choose a CSV file<br><input type="file" id="uplCsv" accept=".csv,text/csv"></div><p class="upl-hint">Recognised columns: name (or first/last name), title, company, location, LinkedIn / profile URL. Comma or semicolon separated.</p><div id="uplCsvPreview" class="upl-preview" hidden></div></div>
+  <div class="upl-pane" data-upl-pane="cv"><div class="upl-drop">Choose one or more CVs<br><input type="file" id="uplCv" multiple accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"></div><p class="upl-hint">CVs are stored privately in your Supabase workspace (bucket “${BUCKET}”, only visible to you) and read by the research service during the check.</p></div>
+  <div class="upl-pane" data-upl-pane="li"><textarea id="uplLinkedin" rows="5" style="width:100%;box-sizing:border-box;border:1px solid #DCE1E6;border-radius:12px;padding:10px;font:inherit;font-size:12px" placeholder="One LinkedIn profile URL per line, e.g. https://www.linkedin.com/in/firstname-lastname"></textarea></div>
+  <div class="status-box" style="margin-top:12px">${connected()?'Research service connected: the Why / How / What check starts right after the upload.':'<b>Live research is not connected.</b> Uploads are saved and wait for the Why / How / What check, which starts as soon as the service is connected.'}</div>
+  <div class="modal-foot"><button class="btn" type="button" data-action="close">Cancel</button><button class="btn primary" type="button" data-upload-submit="1">Upload & start check ${icon('arrow')}</button></div>`;showLayer('modal');csvRows=[];}
+ document.addEventListener('change',async ev=>{if(ev.target.id!=='uplCsv')return;const f=ev.target.files?.[0];if(!f)return;csvRows=csvCandidates(await f.text());const pv=$('uplCsvPreview');pv.hidden=false;pv.innerHTML=csvRows.length?`<b>${csvRows.length} candidates found</b><br>`+csvRows.slice(0,8).map(c=>e([c.name,c.title,c.company].filter(Boolean).join(' · '))).join('<br>')+(csvRows.length>8?'<br>…':''):'No candidates recognised. Check the header row.';});
+ async function submit(btn){
+  const items=[];const tab=document.querySelector('[data-upl-tab].active')?.dataset.uplTab;
+  if(tab==='csv')items.push(...csvRows);if(tab==='li')items.push(...linkedinCandidates($('uplLinkedin')?.value));
+  const cvs=tab==='cv'?[...($('uplCv')?.files||[])]:[];
+  if(!items.length&&!cvs.length){toast('Nothing to upload yet.');return;}
+  btn.disabled=true;btn.textContent='Uploading…';
+  const list=load(),ids=[],known=new Set(ALL_CANDIDATES.map(c=>String(c.profileUrl||'').toLowerCase()).concat(list.map(u=>String(u.profileUrl||'').toLowerCase())).filter(Boolean));let dup=0;
+  for(const c of items){if(c.profileUrl&&known.has(c.profileUrl.toLowerCase())){dup++;continue;}const id=nextId(list);list.push({id,...c,status:'pending-check',decision:null,note:'',createdAt:new Date().toISOString()});ids.push(id);if(c.profileUrl)known.add(c.profileUrl.toLowerCase());}
+  for(const f of cvs){const id=nextId(list);const file=await storeCv(f,id);list.push({id,source:'cv',name:cvName(f),title:'',company:'',location:'',profileUrl:'',file,status:'pending-check',decision:null,note:'',createdAt:new Date().toISOString()});ids.push(id);}
+  save(list);closeLayers();
+  const failed=list.filter(u=>ids.includes(u.id)&&u.file&&!u.file.stored);
+  toast(`${ids.length} profile${ids.length===1?'':'s'} uploaded${dup?` · ${dup} already in the pool skipped`:''}${failed.length?` · ${failed.length} CV${failed.length===1?'':'s'} not stored: ${failed[0].file.error}`:''}.`);
+  if(state.view!=='talent')window.switchView('talent');render();setTimeout(()=>$('uploadReview')?.scrollIntoView({behavior:'smooth',block:'start'}),120);
+  runCheck(ids,'upload_check');
+ }
+ /* ---------- upload feedback round (Talent Explorer) ---------- */
+ const LABEL={approved:'Kept',excluded:'Rejected',hold:'Review later'};
+ function itemHtml(u){const c=u.check;const status=u.status==='checked'?'<span class="ur-badge ok">Check complete</span>':u.status==='checking'?'<span class="ur-badge wait">Check running…</span>':'<span class="ur-badge wait">Check pending</span>';
+  const dec=u.decision?`<span class="ur-badge ${u.decision==='excluded'?'no':'ok'}">${e(LABEL[u.decision]||u.decision)}</span>`:'';const ev=(u.evidenceStatus||'queued')?`<span class="ur-badge ${u.evidenceStatus==='done'?'ok':'wait'}">Evidence ${u.evidenceStatus==='done'?'checked':u.evidenceStatus==='running'?'running…':u.evidenceStatus==='pending'?'pending':'after Why / How'}</span>`:'';
+  const src={csv:'CSV',cv:'CV',linkedin:'LinkedIn'}[u.source]||u.source;
+  const sub=[u.title,u.company,u.location].filter(Boolean).join(' · ')||(u.file?e(u.file.name)+(u.file.stored?' · stored privately':' · not stored'+(u.file.error?': '+u.file.error:'')):'Details follow from the check');
+  return `<div class="ur-item ${u.decision?'done':''}" data-upload-id="${e(u.id)}"><div class="ur-top"><div><b>${e(u.name)}</b><small>${typeof sub==='string'&&sub.includes('<')?sub:e(sub)}${u.profileUrl?` · <a href="${e(safeUrl(u.profileUrl))}" target="_blank" rel="noopener">profile ↗</a>`:''}</small></div><div class="ur-badges"><span class="ur-badge">${e(src)}</span>${status}${dec}${ev}</div></div>
+  ${c?`<div class="ur-whw"><div><b>WHY</b>${e(c.why||'—')}</div><div><b>HOW</b>${e(c.how||'—')}</div><div><b>WHAT</b>${e(c.what||'—')}</div></div>`:`<div class="upl-hint" style="margin:0">${u.error?e(u.error)+' · ':''}The Why / How / What check ${connected()?'is running':'starts as soon as the research service is connected'}; the evidence check follows automatically. You can already give feedback.</div>`}
+  <div class="ur-actions"><textarea data-upload-note="${e(u.id)}" placeholder="Qualitative feedback (optional)">${e(u.note||'')}</textarea>${[['approved','Keep'],['excluded','Reject'],['hold','Review later']].map(([v,l])=>`<button type="button" class="btn ${u.decision===v?'primary':''}" data-upload-decision="${v}">${l}</button>`).join('')}</div></div>`;}
+ function render(){
+  const list=load(),open=list.filter(u=>!u.decision||u.decision==='hold').length;
+  const host=document.getElementById('view-talent');if(host){let box=$('uploadReview');if(!list.length){box?.remove();}else{if(!box){box=document.createElement('section');box.id='uploadReview';const anchor=$('talentInlineProfile');anchor?anchor.before(box):host.querySelector('.view-head')?.after(box);}
+   box.innerHTML=`<div class="ur-head"><div><h2>Uploaded profiles · feedback round</h2><p>${list.length} uploaded · ${list.filter(u=>u.status==='checked').length} checked · ${open} open decision${open===1?'':'s'}</p></div><button class="btn" type="button" data-upload-open="1">${icon('plus')} Upload</button></div><div class="ur-list">${list.slice().reverse().map(itemHtml).join('')}</div>`;}}
+  let banner=$('railUploadBanner');const acts=document.querySelector('#talentExplorerRail .talent-rail-actions');
+  if(open&&acts){if(!banner){banner=document.createElement('div');banner.id='railUploadBanner';acts.after(banner);}banner.innerHTML=`<span><b>${open}</b> uploaded profile${open===1?'':'s'} to review</span><button type="button" class="btn" data-upload-review="1">Review</button>`;}else banner?.remove();
+ }
+ document.addEventListener('click',ev=>{const t=ev.target;
+  if(t.closest('[data-upload-open]')){ev.preventDefault();showUpload();return;}
+  const tab=t.closest('[data-upl-tab]');if(tab){document.querySelectorAll('[data-upl-tab]').forEach(b=>b.classList.toggle('active',b===tab));document.querySelectorAll('[data-upl-pane]').forEach(p=>p.classList.toggle('active',p.dataset.uplPane===tab.dataset.uplTab));return;}
+  const sb=t.closest('[data-upload-submit]');if(sb){submit(sb);return;}
+  if(t.closest('[data-upload-review]')){window.switchView('talent');render();setTimeout(()=>$('uploadReview')?.scrollIntoView({behavior:'smooth',block:'start'}),120);return;}
+  const d=t.closest('[data-upload-decision]');if(d){const item=d.closest('[data-upload-id]'),id=item.dataset.uploadId,list=load(),u=list.find(x=>x.id===id);if(!u)return;u.decision=d.dataset.uploadDecision;u.note=item.querySelector('[data-upload-note]')?.value||u.note||'';u.decidedAt=new Date().toISOString();save(list);syncPool();
+   if(u.decision==='approved'){try{setReview(asCandidate(u),{status:'approved',feedbackGiven:true,feedbackProcessed:true,feedbackSource:'upload',note:u.note,lifecycle:'reviewed'});}catch{}}
+   render();try{renderTalent();}catch{}toast(`${u.name}: ${LABEL[u.decision]}.`);return;}
+ },true);
+ document.addEventListener('change',ev=>{const n=ev.target.closest?.('[data-upload-note]');if(!n)return;const list=load(),u=list.find(x=>x.id===n.dataset.uploadNote);if(u){u.note=n.value;save(list);}});
+ /* entry points: Talent Explorer page and sidebar */
+ const head=document.querySelector('#view-talent .view-head .row');if(head&&!head.querySelector('[data-upload-open]')){const b=document.createElement('button');b.className='btn';b.type='button';b.dataset.uploadOpen='1';b.innerHTML=`${icon('plus')}Upload candidates`;head.prepend(b);}
+ const rt=document.querySelector('#talentExplorerRail .talent-rail-title');if(rt&&!rt.querySelector('[data-upload-open]')){const b=document.createElement('button');b.className='btn';b.type='button';b.dataset.uploadOpen='1';b.textContent='Upload';b.title='Upload candidates (CSV, CV, LinkedIn)';rt.querySelector('.talent-rail-count')?.before(b);}
+ syncPool();render();
+ ['studio:changed','studio-step-changed'].forEach(n=>window.addEventListener(n,()=>setTimeout(render,0)));
+ /* re-check waiting uploads once the service is connected */
+ setTimeout(()=>{if(connected()){const ids=load().filter(u=>u.status==='pending-check').map(u=>u.id);if(ids.length)runCheck(ids,'upload_check');}},4000);
+})();
+</script>
 </body>
 </html>
