@@ -22,7 +22,10 @@ const STATE_KEYS = [
   'vd.studio.review',
   'vd.studio.stageReview.v2',
   'vd.studio.mandates.v1',
-  'vd.studio.uploads.v1'
+  'vd.studio.uploads.v1',
+  'vd.studio.campaigns.v2',
+  'vd.studio.pipeline.v1',
+  'vd.ui.campaignSenders'
 ];
 
 let currentUser = null;
