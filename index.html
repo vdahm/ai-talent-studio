@@ -4291,21 +4291,41 @@ body.talent-list-mode #candidateList{display:block}
 .cr-nav{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px;position:sticky;top:0;z-index:5}
 .cr-nav .cr-who{flex:1;min-width:0}.cr-nav .cr-who b{font-size:14px;color:#1C2D4A}.cr-nav .cr-who small{display:block;font-size:10px;color:var(--muted)}
 .cr-progress{height:4px;background:#E6E9EC;border-radius:4px;overflow:hidden;margin-top:6px}.cr-progress i{display:block;height:100%;background:var(--accent)}
+.cr-scope{font-size:11px;color:#4d5963;background:#F4F6F8;border-radius:10px;padding:8px 12px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
 .cr-exc{background:#FFF3C4;border:1px solid #F1D98A;color:#6B4F00;border-radius:12px;padding:10px 12px;font-size:11px;margin-bottom:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
 .cr-exc.applied{background:#E8F1FB;border-color:#B9D2EE;color:#1F4A73}
-.cr-msg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
-.cr-msg.approved{border-color:#9CCBAE;background:#F6FBF8}
-.cr-msg-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.cr-msg-head b{font-size:12px;color:#1C2D4A}.cr-msg-head small{font-size:10px;color:var(--muted)}
+.cr-msg{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}.cr-msg.is-extra{border-style:dashed}
+.cr-msg-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.cr-msg-head b{font-size:12px;color:#1C2D4A}.cr-msg-head small{font-size:10px;color:var(--muted)}
+.cr-ch{border-left:4px solid var(--st,#C5CBD1);padding:4px 0 4px 10px;margin-top:10px}
+.cr-ch-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;font-size:11px}.cr-ch-head b{font-size:11px;color:#1C2D4A}.cr-ch-head .grow{flex:1}
+.cr-ch-head label{display:flex;gap:5px;align-items:center;font-size:11px}
+.cr-msg input.cr-day{width:56px;padding:3px 6px;margin:0;font-size:11px}
+.cr-st{font-size:9px;font-weight:700;border-radius:999px;padding:2px 8px;color:#fff;background:var(--st)}
 .cr-msg input,.cr-msg textarea{width:100%;box-sizing:border-box;border:1px solid #E1E5E9;border-radius:10px;padding:8px 10px;font:inherit;font-size:12px;line-height:1.55}
-.cr-msg textarea{min-height:60px;resize:none;overflow:hidden}.cr-msg.is-extra{border-style:dashed}
-.cf-used-box{background:#FFF8E1;border:1px solid #F1D98A;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:11px;color:#5B4A12}.cf-used-box>b{display:block;font-size:11px;margin-bottom:6px;color:#1C2D4A}.cf-used-box div{display:flex;flex-wrap:wrap;gap:6px}.cf-used-box span{background:#fff;border:1px solid #F1D98A;border-radius:8px;padding:4px 8px}.cf-used-box span small{display:block;font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:#8A7533}.cf-used-box p{margin:6px 0 0;font-size:10px;color:#8A7533}
-body:has(#modal:not(.hidden) .cf-types) #modal{z-index:210}body:has(#modal:not(.hidden) .cf-types) .backdrop{z-index:205}
-mark.cf-used{background:#FFE58A;color:inherit;border-radius:3px;padding:0 2px}.cr-msg input{margin-bottom:6px}
+.cr-msg textarea{min-height:60px;resize:none;overflow:hidden}.cr-msg input[data-cr-subject]{margin-bottom:6px}
 .cr-kind{font-size:9px;font-weight:700;letter-spacing:.5px;border-radius:999px;padding:3px 8px;background:#EEF1F4;color:#4d5963}.cr-kind.voice,.cr-kind.video{background:#FFF3C4;color:#7A5B00}
 .cr-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:14px 0 30px}
+.cr-empty{background:#fff;border:1px dashed #D5DAE0;border-radius:16px;padding:40px 24px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7}
+.cf-used-box{background:#FFF8E1;border:1px solid #F1D98A;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:11px;color:#5B4A12}.cf-used-box>b{display:block;font-size:11px;margin-bottom:6px;color:#1C2D4A}.cf-used-box div{display:flex;flex-wrap:wrap;gap:6px}.cf-used-box span{background:#fff;border:1px solid #F1D98A;border-radius:8px;padding:4px 8px}.cf-used-box span small{display:block;font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:#8A7533}.cf-used-box p{margin:6px 0 0;font-size:10px;color:#8A7533}
+mark.cf-used{background:#FFE58A;color:inherit;border-radius:3px;padding:0 2px}
+#campaignRailPanel{display:none;margin:0 0 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+body.studio-campaign-review #campaignRailPanel{display:block}
+.crp-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.crp-head b{font-size:13px;color:#1C2D4A}.crp-head small{display:block;font-size:10px;color:var(--muted)}
+.crp-nav{display:flex;align-items:center;gap:6px}.crp-nav span{font-size:11px;color:#4d5963;min-width:46px;text-align:center}.crp-nav .btn{min-height:30px;padding:4px 10px}
+.crp-legend{display:flex;flex-wrap:wrap;gap:10px;font-size:9px;color:var(--muted);margin:8px 0}.crp-legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.crp-list{max-height:34vh;overflow:auto;display:flex;flex-direction:column;gap:4px;padding:2px}
+.crp-group{font-size:9px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:6px 2px 2px}
+.crp-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;text-align:left;border:1px solid #E6E9EC;background:#fff;border-radius:10px;padding:7px 10px;cursor:pointer;font:inherit;width:100%}
+.crp-row:hover{border-color:#C9D0D6}.crp-row.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft,#F8EEEC)}
+.crp-row b{font-size:12px;color:#1C2D4A}.crp-row small{font-size:10px;color:var(--muted);grid-column:1}
+.crp-stage{font-size:9px;font-weight:700;border-radius:999px;padding:2px 7px;color:#fff;grid-row:1;grid-column:2;white-space:nowrap}
+.crp-bar{grid-column:1/-1;display:flex;gap:4px;margin-top:4px}.crp-seg{flex:1;display:flex;gap:1px}.crp-bar i{flex:1;height:6px;border-radius:2px}
+.crp-foot{margin-top:8px;font-size:10px}
+body:has(#modal:not(.hidden) .cf-types) #modal{z-index:210}body:has(#modal:not(.hidden) .cf-types) .backdrop{z-index:205}
+.sidebar{overflow-y:auto}.sidebar>*{flex-shrink:0}
 .talent-rail-detail-nav [data-campaign-one]{font-size:11px;padding:6px 10px;border-radius:9px}
 @media(max-width:800px){.cf-types,.cf-row{grid-template-columns:1fr}}
-body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-campaign-review #studioRailContext,body.studio-campaign-review #taskRailDescription,body.studio-campaign-review #atsTask89Sidebar{display:none!important}
+body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-campaign-review #studioRailContext,body.studio-campaign-review #taskRailDescription,body.studio-campaign-review #atsTask89Sidebar,body.studio-campaign-review #talentRailList,body.studio-campaign-review #talentExplorerRail .talent-rail-search,body.studio-campaign-review #talentExplorerRail .talent-rail-actions{display:none!important}
 </style>
 <script id="campaign-flow">
 (function(){
@@ -4315,15 +4335,19 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return []}},save=l=>{try{localStorage.setItem(KEY,JSON.stringify(l))}catch{toast('Browser storage is unavailable.')}};
  const senders=()=>{let s=[];try{s=JSON.parse(localStorage.getItem(SKEY))||[]}catch{}return [...new Set(['Volker Dahm',...s])];};
  /* ---------- campaign structures (UI only; delivery is defined later) ---------- */
- const TYPES={executive:{label:'Executive',desc:'Partner, C-level · discreet, peer-level',touches:4,days:[0,4,9,15],media:{voice:6,video:11}},professional:{label:'Professional',desc:'Manager, senior professional · role-focused',touches:7,days:[0,2,5,8,12,16,21],media:{voice:6,video:13}}};
- const SCOPES={linkedin:'LinkedIn only',email:'Email only',all:'All channels'};
- const SEQ={
-  executive:{all:[['email','Personal email'],['linkedin','LinkedIn message'],['email','Follow-up email'],['email','Closing email']],linkedin:[['linkedin','Connection note'],['linkedin','LinkedIn message'],['linkedin','Follow-up message'],['linkedin','Closing message']],email:[['email','Personal email'],['email','Follow-up email'],['email','Context email'],['email','Closing email']]},
-  professional:{all:[['email','Intro email'],['linkedin','Connection note'],['email','Follow-up email'],['linkedin','LinkedIn message'],['email','Context email'],['email','Reminder email'],['email','Closing email']],linkedin:[['linkedin','Connection note'],['linkedin','LinkedIn message'],['linkedin','Follow-up message'],['linkedin','Context message'],['linkedin','Second follow-up'],['linkedin','Reminder message'],['linkedin','Closing message']],email:[['email','Intro email'],['email','Follow-up email'],['email','Context email'],['email','Second follow-up'],['email','Reminder email'],['email','Value email'],['email','Closing email']]}
- };
- const MEDIA={all:[['voice','Voice note'],['video','Video script']],linkedin:[['voice','LinkedIn voice note'],['video','LinkedIn video script']],email:[['voice','Voice note (link in email)'],['video','Video email script']]};
- const seqFor=(type,scope)=>{const t=TYPES[type];const base=SEQ[type][scope].map(([kind,label],i)=>({kind,label,day:t.days[i],extra:false}));const media=MEDIA[scope].map(([kind,label])=>({kind,label,day:t.media[kind],extra:true}));return [...base,...media].sort((a,b)=>a.day-b.day||(a.extra?1:-1));};
- const typeLabel=t=>`${TYPES[t].touches} touch points + voice note + video script`;
+ const TYPES={executive:{label:'Executive',desc:'Partner, C-level · discreet, peer-level',touches:['Intro','Follow-up','Context','Closing'],days:[0,4,9,15],media:{voice:6,video:11}},professional:{label:'Professional',desc:'Manager, senior professional · role-focused',touches:['Intro','Follow-up','Context','Second follow-up','Reminder','Value','Closing'],days:[0,2,5,8,12,16,21],media:{voice:6,video:13}}};
+ const SCOPES={linkedin:'LinkedIn only',email:'Email only',all:'Email + LinkedIn in parallel'};
+ const LI_OFFSET=1;
+ const STATUS={draft:{label:'Draft',color:'#AEB6BE'},approved:{label:'Approved',color:'#3F9C6E'},scheduled:{label:'Scheduled',color:'#4A7FC1'},sent:{label:'Sent',color:'#1C2D4A'},replied:{label:'Replied',color:'#B94D3A'}};
+ const RANK=['draft','approved','scheduled','sent','replied'];
+ const statusOf=x=>['scheduled','sent','replied'].includes(x.status)?x.status:(x.approved?'approved':'draft');
+ function seqFor(type,scope){const t=TYPES[type],out=[];const chans=scope==='all'?['email','linkedin']:[scope];
+  t.touches.forEach((label,i)=>chans.forEach(ch=>out.push({touch:i+1,kind:ch,label,channel:ch==='email'?'Email':'LinkedIn',day:t.days[i]+(ch==='linkedin'&&scope==='all'?LI_OFFSET:0),extra:false})));
+  out.push({touch:null,kind:'voice',label:'Voice note',channel:scope==='email'?'Voice note · link in email':'LinkedIn voice note',day:t.media.voice,extra:true});
+  out.push({touch:null,kind:'video',label:'Video script',channel:scope==='email'?'Video · link in email':scope==='linkedin'?'LinkedIn video':'Video · email + LinkedIn',day:t.media.video,extra:true});
+  return out;}
+ function chLabel(x,type){if(x.extra||x.touch==null)return x.label;if(x.touch===1)return x.kind==='linkedin'?'Connection note':(type==='executive'?'Personal email':'Intro email');return `${x.label} ${x.kind==='email'?'email':'message'}`;}
+ const typeLabel=t=>`${TYPES[t].touches.length} touch points + voice note + video script`;
  /* ---------- message generation (EN / DE templates, personalised from the profile) ---------- */
  function facts(c,camp){const m=M.active()||{};const first=c.firstName||String(c.name||'').split(' ')[0]||'';const topic=c.clusterShort||c.cluster||c.areas||'';const why='';return {first,last:c.lastName||'',name:displayName(c),company:c.company||c.firm||'',title:String(c.title||'').split('|')[0].trim(),topic,why,location:c.location||c.country||'',mandate:m.client||m.title||'',sender:camp.sender||'Volker Dahm',senderFirst:(camp.sender||'Volker Dahm').split(' ')[0]};}
  function textFor(kind,label,i,n,f,lang,type){
@@ -4343,11 +4367,11 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
   if(/value/i.test(label))return {subject:isLi?'':(de?'Was Sie erwarten können':'What you can expect'),body:de?`${hi},\n\nkurz, was ein Gespräch für Sie bringt: ein offenes Bild vom Mandat, eine ehrliche Einschätzung des Marktes in ${tp} und keinerlei Verpflichtung. Diskretion ist selbstverständlich.${isLi?'':sign}`:`${hi},\n\nbriefly, what a conversation would give you: an open picture of the mandate, an honest view of the market in ${tp} and no obligation at all. Discretion goes without saying.${isLi?'':sign}`};
   return {subject:isLi?'':(de?'Kurze Rückfrage':'Quick follow-up'),body:de?`${hi},\n\nkurz zur Erinnerung an meine Nachricht. Was mich an Ihrem Profil überzeugt, ist die Verbindung von ${tp} mit ${f.company?`Ihrer Rolle${co}`:'Ihrer aktuellen Rolle'}. Ein kurzes Signal reicht mir völlig – auch ein „aktuell nicht“ ist hilfreich.${isLi?'':sign}`:`${hi},\n\na short follow-up on my note. What keeps your profile on my radar is the combination of ${tp} and ${f.company?`your role${co}`:'your current role'}. A brief signal is all I need – even "not right now" is helpful.${isLi?'':sign}`};
  }
- function generate(c,camp,lang){const f=facts(c,camp),seq=seqFor(camp.type,camp.scope);return seq.map((s,i)=>({...s,channel:s.kind==='voice'?'Voice note':s.kind==='video'?'Video':s.kind==='linkedin'?'LinkedIn':'Email',...textFor(s.kind,s.label,i,seq.length,f,lang,camp.type),approved:false}));}
+ function generate(c,camp,lang){const f=facts(c,camp);return seqFor(camp.type,camp.scope).map(x=>({...x,label:chLabel(x,camp.type),...textFor(x.kind,chLabel(x,camp.type),x.touch?x.touch-1:0,0,f,lang,camp.type),status:'draft',approved:false}));}
  /* ---------- exception suggestion: location or George conversation ---------- */
  const DACH=/(deutschland|germany|österreich|austria|schweiz|switzerland|berlin|münchen|munich|hamburg|frankfurt|stuttgart|köln|cologne|düsseldorf|wien|vienna|zürich|zurich|basel|bern|böblingen|leipzig|dresden|hannover)/i;
  function suggestLang(c,campLang){let conv=[];try{conv=JSON.parse(localStorage.getItem('vd.studio.george.conversation'))||[]}catch{}const txt=conv.filter(m=>m.page==='candidate:'+c.id||String(m.context||'').startsWith(displayName(c))).map(m=>m.text).join(' ');
-  const deTalk=/\b(und|nicht|ich|wir|bitte|danke|gerne|mit|für)\b/i.test(txt)&&txt.split(/\s+/).filter(w=>/^(und|nicht|ich|wir|bitte|danke|gerne|mit|für|ist|sie)$/i.test(w)).length>=3;
+  const deTalk=txt.split(/\s+/).filter(w=>/^(und|nicht|ich|wir|bitte|danke|gerne|mit|für|ist|sie)$/i.test(w)).length>=3;
   const loc=String(c.location||c.country||'');
   if(campLang==='en'&&deTalk)return {lang:'de',reason:'German in the conversation history'};
   if(campLang==='en'&&DACH.test(loc))return {lang:'de',reason:`location “${loc}”`};
@@ -4356,39 +4380,61 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
  /* ---------- assign dialog ---------- */
  let draft={type:'executive',scope:'all',language:'en'};
  function selectedIds(){return (state.selected||[]).filter(id=>getCandidate(id));}
- function seqChips(){return seqFor(draft.type,draft.scope).map(s=>`<span class="${s.extra?'media':''}">Day ${s.day} · ${e(s.label)}${s.extra?' +':''}</span>`).join('');}
+ function chips(type,scope){const seq=seqFor(type,scope);const seen=new Set();return seq.filter(x=>{const k=x.touch?('t'+x.touch):x.kind;if(seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>a.day-b.day).map(x=>x.extra?`<span class="media">Day ${x.day} · ${e(x.label)} +</span>`:`<span>Day ${x.day}${scope==='all'?'/'+(x.day+LI_OFFSET):''} · ${e(x.label)}</span>`).join('');}
  function showAssign(ids){ids=(ids||selectedIds());if(!ids.length){toast('Select one or more profiles first.');return;}draft.ids=ids;
   const camps=load(),snd=senders();
   $('modal').classList.add('wide');$('modal').innerHTML=modalHead('Assign to campaign')+`<p class="intro"><b>${ids.length}</b> profile${ids.length===1?'':'s'} selected. Choose the campaign type, channels, language and sender. Personalised messages are generated for every profile and then presented for approval – nothing is sent.</p>
   <div class="field"><label for="cfCampaign">Campaign</label><select id="cfCampaign"><option value="__new">New campaign</option>${camps.map(c=>`<option value="${e(c.id)}">${e(c.name)} · ${e(TYPES[c.type].label)} · ${e(SCOPES[c.scope])}</option>`).join('')}</select><input id="cfName" style="margin-top:8px;width:100%;box-sizing:border-box" placeholder="Campaign name" value="${e('Campaign '+(camps.length+1))}"></div>
-  <div class="cf-types" id="cfTypes">${Object.entries(TYPES).map(([k,t])=>`<button type="button" class="cf-type ${draft.type===k?'active':''}" data-cf-type="${k}"><b>${t.label} · ${t.touches} touch points</b><small>${t.desc} · plus voice note and video script</small><div class="cf-seq" data-cf-seq="${k}"></div></button>`).join('')}</div>
-  <div class="cf-row"><div class="field"><label>Channels</label><div class="cf-seg">${Object.entries(SCOPES).map(([k,l])=>`<button type="button" data-cf-scope="${k}" class="${draft.scope===k?'active':''}">${l}</button>`).join('')}</div></div>
+  <div class="cf-types" id="cfTypes">${Object.entries(TYPES).map(([k,t])=>`<button type="button" class="cf-type ${draft.type===k?'active':''}" data-cf-type="${k}"><b>${t.label} · ${t.touches.length} touch points</b><small>${t.desc} · plus voice note and video script</small><div class="cf-seq" data-cf-seq="${k}"></div></button>`).join('')}</div>
+  <div class="cf-row"><div class="field"><label>Channels</label><div class="cf-seg">${Object.entries({linkedin:'LinkedIn only',email:'Email only',all:'Email + LinkedIn'}).map(([k,l])=>`<button type="button" data-cf-scope="${k}" class="${draft.scope===k?'active':''}">${l}</button>`).join('')}</div></div>
   <div class="field"><label>Language</label><div class="cf-seg"><button type="button" data-cf-lang="en" class="${draft.language==='en'?'active':''}">English</button><button type="button" data-cf-lang="de" class="${draft.language==='de'?'active':''}">Deutsch</button></div></div>
   <div class="field"><label for="cfSender">Sender</label><select id="cfSender">${snd.map(s=>`<option>${e(s)}</option>`).join('')}<option value="__other">Other sender…</option></select><input id="cfSenderOther" hidden style="margin-top:6px;width:100%;box-sizing:border-box" placeholder="Sender name"></div></div>
+  <p class="upl-hint" id="cfScopeHint"></p>
   <p class="upl-hint">Exceptions (e.g. a different language for a single profile) are suggested and marked in the message approval, based on location or the conversation history.</p>
   <div class="modal-foot"><button class="btn" type="button" data-action="close">Cancel</button><button class="btn primary" type="button" data-cf-generate="1">Generate messages ${icon('arrow')}</button></div>`;showLayer('modal');paintSeq();}
- function paintSeq(){for(const k of Object.keys(TYPES)){const el=document.querySelector(`[data-cf-seq="${k}"]`);if(el)el.innerHTML=seqFor(k,draft.scope).map(s=>`<span class="${s.extra?'media':''}">Day ${s.day} · ${e(s.label)}${s.extra?' +':''}</span>`).join('');}}
+ function paintSeq(){for(const k of Object.keys(TYPES)){const el=document.querySelector(`[data-cf-seq="${k}"]`);if(el)el.innerHTML=chips(k,draft.scope);}const h=$('cfScopeHint');if(h)h.textContent=draft.scope==='all'?`Email + LinkedIn: every touch point is sent on both channels in parallel – the LinkedIn version goes out ${LI_OFFSET} day after the email by default (Day email/LinkedIn). Delivery days can be changed per message.`:'';}
  function syncExisting(){const sel=$('cfCampaign')?.value;const c=load().find(x=>x.id===sel);const lock=!!c;$('cfName').hidden=lock;if(c){draft.type=c.type;draft.scope=c.scope;draft.language=c.language;}document.querySelectorAll('[data-cf-type]').forEach(b=>{b.classList.toggle('active',b.dataset.cfType===draft.type);b.disabled=lock;});document.querySelectorAll('[data-cf-scope]').forEach(b=>{b.classList.toggle('active',b.dataset.cfScope===draft.scope);b.disabled=lock;});document.querySelectorAll('[data-cf-lang]').forEach(b=>{b.classList.toggle('active',b.dataset.cfLang===draft.language);b.disabled=lock;});if(c&&$('cfSender'))$('cfSender').value=c.sender;paintSeq();}
  function generateCampaign(){
   const list=load();let sel=$('cfCampaign').value,camp=list.find(x=>x.id===sel);
   let sender=$('cfSender').value;if(sender==='__other'){sender=$('cfSenderOther').value.trim()||'Volker Dahm';try{localStorage.setItem(SKEY,JSON.stringify([...senders().filter(s=>s!=='Volker Dahm'),sender]))}catch{}}
   if(!camp){camp={id:'cmp-'+Date.now().toString(36),name:$('cfName').value.trim()||('Campaign '+(list.length+1)),type:draft.type,scope:draft.scope,language:draft.language,sender,createdAt:new Date().toISOString(),members:[]};list.push(camp);}else camp.sender=sender;
   for(const id of draft.ids){const c=getCandidate(id);if(!c||camp.members.some(m=>m.candidateId===id))continue;const sug=suggestLang(c,camp.language);camp.members.push({candidateId:id,profileUrl:c.profileUrl,language:camp.language,exception:sug?{...sug,applied:false}:null,messages:generate(c,camp,camp.language),status:'review'});}
-  save(list);closeLayers();openReview(camp.id,camp.members.findIndex(m=>draft.ids.includes(m.candidateId)));toast(`Messages generated for ${draft.ids.length} profile${draft.ids.length===1?'':'s'}. Please review and approve.`);
+  save(list);closeLayers();openReview({mode:'batch',campId:camp.id,ids:[...draft.ids]});toast(`Messages generated for ${draft.ids.length} profile${draft.ids.length===1?'':'s'}. Please review and approve.`);
  }
- /* ---------- approval view: messages in the middle, profile in the sidebar ---------- */
+ /* ---------- campaigns workspace: list in the sidebar, messages in the middle ---------- */
  const view=document.createElement('section');view.className='view hidden';view.id='view-campaignreview';document.getElementById('view-overview')?.parentNode.insertBefore(view,document.getElementById('view-overview'));
- let cur={id:null,idx:0};
- function openReview(id,idx){cur={id,idx:Math.max(0,idx||0)};window.switchView('campaignreview');}
- function member(){const camp=load().find(c=>c.id===cur.id);return {camp,m:camp?.members[cur.idx]};}
- function render(){const {camp,m}=member();if(!camp||!m){view.innerHTML='<div class="view-head"><div><h1>Message approval</h1><p>No campaign selected.</p></div></div>';return;}
-  const c=getCandidate(m.candidateId)||{name:'Unknown profile'};const n=camp.members.length,done=camp.members.filter(x=>x.status==='approved').length;
+ let scope={mode:'all'},cur={campId:null,idx:0},pendingScope=null;
+ function entries(){const camps=load();if(scope.mode==='batch'){const c=camps.find(x=>x.id===scope.campId);return c?c.members.map((m,idx)=>({campId:c.id,idx,m,camp:c})).filter(x=>scope.ids.includes(x.m.candidateId)):[];}
+  return camps.slice().reverse().flatMap(c=>c.members.map((m,idx)=>({campId:c.id,idx,m,camp:c})));}
+ function pos(list){return list.findIndex(x=>x.campId===cur.campId&&x.idx===cur.idx);}
+ function member(){const camp=load().find(c=>c.id===cur.campId);return {camp,m:camp?.members[cur.idx]};}
+ function openReview(sc,start){pendingScope=sc||{mode:'all'};if(start)cur=start;window.switchView('campaignreview');}
+ function groupsOf(m){let n=0;const map=new Map();m.messages.forEach((x,i)=>{const extra=x.extra??(x.kind==='voice'||x.kind==='video');let t=x.touch;if(!extra&&t==null)t=++n;else if(t!=null)n=Math.max(n,t);const k=extra?'x'+i:'t'+t;if(!map.has(k))map.set(k,{touch:extra?null:t,extra,items:[]});map.get(k).items.push({x,i});});
+  return [...map.values()].sort((a,b)=>Math.min(...a.items.map(o=>o.x.day))-Math.min(...b.items.map(o=>o.x.day)));}
+ const groupStatus=g=>RANK[Math.min(...g.items.map(o=>RANK.indexOf(statusOf(o.x))))];
+ function memberStage(m){const st=m.messages.map(statusOf);for(const s of ['replied','sent','scheduled'])if(st.includes(s))return s;return st.every(s=>s==='approved')?'approved':'draft';}
+ const stageText=(m)=>{const s=memberStage(m);if(s==='draft'){const a=m.messages.filter(x=>statusOf(x)!=='draft').length;return a?`In review · ${a}/${m.messages.length}`:'In review';}return STATUS[s].label;};
+ function bar(m){return `<span class="crp-bar">${groupsOf(m).map(g=>`<span class="crp-seg">${g.items.map(({x})=>`<i style="background:${STATUS[statusOf(x)].color}" title="${g.extra?e(x.label):'Touch '+g.touch+' · '+e(x.kind==='email'?'Email':'LinkedIn')} · Day ${e(x.day)}: ${STATUS[statusOf(x)].label}"></i>`).join('')}</span>`).join('')}</span>`;}
+ function legend(){return `<div class="crp-legend">${Object.values(STATUS).map(s=>`<span><i style="background:${s.color}"></i>${s.label}</span>`).join('')}</div>`;}
+ function railPanel(list){const rail=document.getElementById('talentExplorerRail');if(!rail)return;let p=document.getElementById('campaignRailPanel');if(!p){p=document.createElement('section');p.id='campaignRailPanel';const det=document.getElementById('talentRailCandidateDetail');det?det.before(p):rail.appendChild(p);}
+  const k=pos(list),camps=new Set(list.map(x=>x.campId)).size;const title=scope.mode==='batch'?(list[0]?.camp.name||'Campaign'):'All campaign profiles';
+  let last='';const rows=list.map((x,i)=>{const c=getCandidate(x.m.candidateId)||{name:'Unknown profile'};const st=memberStage(x.m);let head='';if(scope.mode==='all'&&x.campId!==last){last=x.campId;head=`<div class="crp-group">${e(x.camp.name)} · ${e(TYPES[x.camp.type].label)} · ${e(SCOPES[x.camp.scope])}</div>`;}
+   return head+`<button type="button" class="crp-row ${i===k?'active':''}" data-cr-open="${i}"><b>${e(displayName(c))}</b><span class="crp-stage" style="background:${STATUS[st].color}">${e(stageText(x.m))}</span><small>${e([c.company||c.firm,c.location].filter(Boolean).join(' · '))}${x.m.language!==x.camp.language?' · Exception '+(x.m.language==='de'?'DE':'EN'):''}</small>${bar(x.m)}</button>`;}).join('');
+  p.innerHTML=`<div class="crp-head"><div><b>${e(title)}</b><small>${list.length} profile${list.length===1?'':'s'}${scope.mode==='all'?` · ${camps} campaign${camps===1?'':'s'}`:' · just assigned'}</small></div><div class="crp-nav"><button class="btn" type="button" data-cr-step="-1" ${k<=0?'disabled':''} aria-label="Previous profile">‹</button><span>${list.length?(k+1)+' / '+list.length:'–'}</span><button class="btn" type="button" data-cr-step="1" ${k<0||k>=list.length-1?'disabled':''} aria-label="Next profile">›</button></div></div>${legend()}<div class="crp-list">${rows||'<p style="font-size:11px;color:var(--muted);margin:6px 0">No profiles with messages yet.</p>'}</div>${scope.mode==='batch'?'<div class="crp-foot"><button class="textbtn" type="button" data-cr-all="1">Show all campaign profiles ›</button></div>':''}`;
+  p.querySelector('.crp-row.active')?.scrollIntoView({block:'nearest'});}
+ function render(){const list=entries();if(list.length&&pos(list)<0){const first=list.find(x=>memberStage(x.m)==='draft')||list[0];cur={campId:first.campId,idx:first.idx};}
+  railPanel(list);const {camp,m}=member();
+  if(!list.length||!camp||!m){view.innerHTML=`<div class="view-head"><div><div class="eyebrow">CAMPAIGNS</div><h1>Campaigns</h1><p>Personalised messages and their approval status for every profile assigned to a campaign.</p></div></div><div class="cr-empty"><b>No campaign messages yet.</b><br>Select profiles in Talent Explorer and choose “Assign to campaign”.<br><br><button class="btn primary" type="button" data-view="talent">Open Talent Explorer</button></div>`;return;}
+  const c=getCandidate(m.candidateId)||{name:'Unknown profile'};const k=pos(list),n=list.length,done=list.filter(x=>memberStage(x.m)!=='draft').length;
   const exc=m.exception?`<div class="cr-exc ${m.exception.applied?'applied':''}"><span><b>${m.exception.applied?'Exception applied':'Exception suggested'}:</b> ${m.exception.lang==='de'?'German':'English'} instead of ${camp.language==='de'?'German':'English'} · based on ${e(m.exception.reason)}.</span>${m.exception.applied?'<button class="btn" type="button" data-cr-exc="undo">Back to campaign language</button>':'<button class="btn primary" type="button" data-cr-exc="apply">Apply exception</button>'}</div>`:'';
-  view.innerHTML=`<div class="cr-head"><div><div class="eyebrow">MESSAGE APPROVAL · ${e(TYPES[camp.type].label.toUpperCase())}</div><h1 style="margin:6px 0 4px">${e(camp.name)}</h1><div class="cr-pills"><span>${typeLabel(camp.type)}</span><span>${e(SCOPES[camp.scope])}</span><span>Language: ${camp.language==='de'?'Deutsch':'English'}</span><span>Sender: ${e(camp.sender)}</span><span>${done}/${n} profiles approved</span></div></div><button class="btn" type="button" data-cr-close="1">Close</button></div>
-  <div class="cr-nav"><button class="btn" type="button" data-cr-step="-1" ${cur.idx===0?'disabled':''}>‹ Previous</button><div class="cr-who"><b>${e(displayName(c))}</b>${m.status==='approved'?' <span class="ur-badge ok">Approved</span>':''}${m.language!==camp.language?' <span class="ur-badge wait">Exception · '+(m.language==='de'?'DE':'EN')+'</span>':''}<small>${e([String(c.title||'').split('|')[0],c.company||c.firm,c.location].filter(Boolean).join(' · '))} · profile ${cur.idx+1} of ${n}</small><div class="cr-progress"><i style="width:${Math.round(100*done/n)}%"></i></div></div><button class="btn" type="button" data-cr-step="1" ${cur.idx>=n-1?'disabled':''}>Next ›</button></div>
-  ${exc}
-  ${(()=>{let tn=0;return m.messages.map((x,i)=>{const extra=x.extra??(x.kind==='voice'||x.kind==='video');const head=extra?'Additional':'Touch '+(++tn);return `<div class="cr-msg ${x.approved?'approved':''} ${extra?'is-extra':''}"><div class="cr-msg-head"><div><b>${head} · ${e(x.label)}</b> <small>Day ${x.day} · ${e(x.channel)}</small></div><div style="display:flex;gap:6px;align-items:center"><span class="cr-kind ${x.kind}">${e(x.kind.toUpperCase())}</span><label style="font-size:11px;display:flex;gap:5px;align-items:center"><input type="checkbox" data-cr-ok="${i}" ${x.approved?'checked':''}>Approved</label></div></div>${x.subject!==''||x.kind==='email'?`<input data-cr-subject="${i}" value="${e(x.subject)}" placeholder="Subject">`:''}<textarea data-cr-body="${i}" rows="3">${e(x.body)}</textarea></div>`;}).join('');})()}
-  <div class="cr-foot"><button class="btn" type="button" data-cr-regen="1">Regenerate messages</button><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-cr-approve="this">Approve this profile</button><button class="btn primary" type="button" data-cr-approve="next">${cur.idx>=n-1?'Approve & finish':'Approve & next ›'}</button></div></div>`;
+  const card=g=>{const head=g.extra?`Additional · ${e(g.items[0].x.label)}`:`Touch ${g.touch} · ${e(TYPES[camp.type].touches[g.touch-1]||g.items[0].x.label)}`;const days=[...new Set(g.items.map(o=>o.x.day))];
+   return `<div class="cr-msg ${g.extra?'is-extra':''}"><div class="cr-msg-head"><b>${head}</b><small>${g.items.length>1?'Parallel on '+g.items.map(o=>o.x.kind==='email'?'email':'LinkedIn').join(' + ')+' · ':''}Day ${days.join(' / ')}</small></div>${g.items.map(({x,i})=>{const st=statusOf(x);const hasSub=x.kind==='email'||(x.subject&&x.subject!=='');
+    return `<div class="cr-ch" style="--st:${STATUS[st].color}"><div class="cr-ch-head"><span class="cr-kind ${x.kind}">${e(x.kind==='linkedin'?'LINKEDIN':x.kind.toUpperCase())}</span><b>${e(x.label)}</b><small style="color:var(--muted)">${e(x.channel)}</small><span class="grow"></span><label>Day <input class="cr-day" type="number" min="0" max="90" data-cr-day="${i}" value="${e(x.day)}"></label><span class="cr-st" style="--st:${STATUS[st].color}">${STATUS[st].label}</span><label><input type="checkbox" data-cr-ok="${i}" ${x.approved?'checked':''}>Approved</label></div>${hasSub?`<input data-cr-subject="${i}" value="${e(x.subject)}" placeholder="Subject">`:''}<textarea data-cr-body="${i}" rows="3">${e(x.body)}</textarea></div>`;}).join('')}</div>`;};
+  view.innerHTML=`<div class="cr-head"><div><div class="eyebrow">CAMPAIGNS · MESSAGE APPROVAL · ${e(TYPES[camp.type].label.toUpperCase())}</div><h1 style="margin:6px 0 4px">${e(camp.name)}</h1><div class="cr-pills"><span>${typeLabel(camp.type)}</span><span>${e(SCOPES[camp.scope])}</span><span>Language: ${camp.language==='de'?'Deutsch':'English'}</span><span>Sender: ${e(camp.sender)}</span></div></div><button class="btn" type="button" data-cr-close="1">Close</button></div>
+  <div class="cr-scope"><span>${scope.mode==='batch'?`Showing the ${n} profile${n===1?'':'s'} you just assigned · ${done}/${n} approved`:`All campaign profiles · ${done}/${n} approved`}</span>${scope.mode==='batch'?'<button class="textbtn" type="button" data-cr-all="1">Show all campaign profiles ›</button>':''}</div>
+  <div class="cr-nav"><button class="btn" type="button" data-cr-step="-1" ${k<=0?'disabled':''}>‹ Previous</button><div class="cr-who"><b>${e(displayName(c))}</b> <span class="crp-stage" style="background:${STATUS[memberStage(m)].color};font-size:9px;font-weight:700;color:#fff;border-radius:999px;padding:2px 7px">${e(stageText(m))}</span>${m.language!==camp.language?' <span class="ur-badge wait">Exception · '+(m.language==='de'?'DE':'EN')+'</span>':''}<small>${e([String(c.title||'').split('|')[0],c.company||c.firm,c.location].filter(Boolean).join(' · '))} · profile ${k+1} of ${n}</small><div class="cr-progress"><i style="width:${Math.round(100*done/n)}%"></i></div></div><button class="btn" type="button" data-cr-step="1" ${k>=n-1?'disabled':''}>Next ›</button></div>
+  ${exc}${groupsOf(m).map(card).join('')}
+  <div class="cr-foot"><button class="btn" type="button" data-cr-regen="1">Regenerate messages</button><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" data-cr-approve="this">Approve this profile</button><button class="btn primary" type="button" data-cr-approve="next">${k>=n-1?'Approve & finish':'Approve & next ›'}</button></div></div>`;
  }
  function usedFacts(c,camp,m){const f=facts(c,camp);const txt=m.messages.map(x=>x.subject+' '+x.body).join('\n');const out=[];
   const add=(label,val)=>{val=String(val||'').trim();if(val&&txt.includes(val)&&!out.some(o=>o.value===val))out.push({label,value:val});};
@@ -4396,7 +4442,8 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
   if(m.exception?.applied&&f.location)out.push({label:'Location (language exception)',value:f.location});return out;}
  function autosize(root){(root||view).querySelectorAll('textarea[data-cr-body]').forEach(t=>{t.style.height='auto';t.style.height=(t.scrollHeight+2)+'px';});}
  const esc2=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
- function markProfile(){if(state.view!=='campaignreview')return;const {camp,m}=member();if(!m)return;const c=getCandidate(m.candidateId);const body=document.querySelector('#talentRailCandidateDetail .talent-rail-detail-body');if(!c||!body)return;
+ function markProfile(){if(state.view!=='campaignreview')return;const {camp,m}=member();if(!m)return;const c=getCandidate(m.candidateId);const det=document.getElementById('talentRailCandidateDetail');const body=det?.querySelector('.talent-rail-detail-body');if(!c||!body)return;
+  [...det.querySelectorAll('.talent-rail-detail-nav button')].forEach(b=>{if(/All candidates/i.test(b.textContent))b.style.display='none';});
   const used=usedFacts(c,camp,m);body.querySelector('.cf-used-box')?.remove();body.querySelectorAll('mark.cf-used').forEach(x=>x.replaceWith(document.createTextNode(x.textContent)));body.normalize();
   const box=document.createElement('div');box.className='cf-used-box';box.innerHTML=`<b>Used in the messages</b><div>${used.map(u=>`<span><small>${e(u.label)}</small>${e(u.value)}</span>`).join('')||'<em>No profile details used.</em>'}</div><p>Highlighted below where it appears in the profile.</p>`;body.prepend(box);
   const vals=used.map(u=>u.value).filter(v=>v.length>1).sort((a,b)=>b.length-a.length);if(!vals.length)return;const re=new RegExp('(?<![\\p{L}\\p{N}])('+vals.map(esc2).join('|')+')(?![\\p{L}\\p{N}])','gu');const seen=new Set();
@@ -4404,14 +4451,22 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
   const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
   nodes.forEach(n=>{re.lastIndex=0;const frag=document.createDocumentFragment();let last=0,mt;const v=n.nodeValue;while((mt=re.exec(v))){if(seen.has(mt[0]))continue;seen.add(mt[0]);frag.append(v.slice(last,mt.index));const mk=document.createElement('mark');mk.className='cf-used';mk.title='Used in the messages';mk.textContent=mt[0];frag.append(mk);last=mt.index+mt[0].length;}frag.append(v.slice(last));n.replaceWith(frag);});}
  window.addEventListener('studio:rail-profile',ev=>{if(ev.detail?.open&&state.view==='campaignreview')[80,300].forEach(t=>setTimeout(markProfile,t));});
- const _render=render;render=function(){_render();setTimeout(()=>{autosize();markProfile();},0);};
- function showProfile(){const {m}=member();if(!m)return;setTimeout(()=>{const t=[...document.querySelectorAll('[data-task-tool="talent"]')].find(x=>!x.hidden);if(t&&!document.body.classList.contains('task-rail-show-talent'))t.click();setTimeout(()=>window.openTalentRailCandidate?.(m.candidateId),120);},60);}
+ let shownId=null;
+ function paint(){render();setTimeout(()=>{autosize();markProfile();},0);}
+ function showProfile(force){const {m}=member();if(!m)return;if(!force&&shownId===m.candidateId&&document.querySelector('#talentRailCandidateDetail:not(.hidden) .talent-rail-detail-body'))return;shownId=m.candidateId;setTimeout(()=>{const t=[...document.querySelectorAll('[data-task-tool="talent"]')].find(x=>!x.hidden);if(t&&!document.body.classList.contains('task-rail-show-talent'))t.click();setTimeout(()=>{window.openTalentRailCandidate?.(m.candidateId);},120);},60);}
  const base=window.switchView;
- window.switchView=function(v){if(v!=='campaignreview'){const was=state.view==='campaignreview';document.body.classList.remove('studio-campaign-review');const r=base(v);if(was){const back=[...document.querySelectorAll('#talentRailCandidateDetail .talent-rail-detail-nav button')].find(x=>/All candidates/i.test(x.textContent));back?.click();}return r;}document.body.classList.remove('view-mandates');document.body.classList.add('studio-campaign-review');state.view='campaignreview';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-campaignreview');x.classList.remove('print-target');});render();window.scrollTo({top:0,behavior:'instant'});showProfile();window.talentStudioGeorge?.refreshContext?.();return;};
- function mutate(fn){const list=load(),camp=list.find(c=>c.id===cur.id),m=camp?.members[cur.idx];if(!m)return;fn(m,camp);save(list);}
- function step(d){const {camp}=member();if(!camp)return;cur.idx=Math.min(camp.members.length-1,Math.max(0,cur.idx+d));render();showProfile();}
- document.addEventListener('input',ev=>{const b=ev.target.closest?.('[data-cr-body],[data-cr-subject]');if(!b)return;const i=Number(b.dataset.crBody??b.dataset.crSubject);mutate(m=>{if(b.dataset.crBody!=null)m.messages[i].body=b.value;else m.messages[i].subject=b.value;m.messages[i].approved=false;m.status='review';});if(b.matches('textarea'))autosize(b.parentElement);const box=b.closest('.cr-msg');box?.classList.remove('approved');const ok=box?.querySelector('[data-cr-ok]');if(ok)ok.checked=false;});
- document.addEventListener('change',ev=>{const t=ev.target;if(t.matches?.('[data-cr-ok]')){mutate(m=>{m.messages[Number(t.dataset.crOk)].approved=t.checked;m.status=m.messages.every(x=>x.approved)?'approved':'review';});render();}
+ window.switchView=function(v){if(v!=='campaignreview'){const was=state.view==='campaignreview';document.body.classList.remove('studio-campaign-review');const r=base(v);if(was){shownId=null;const back=[...document.querySelectorAll('#talentRailCandidateDetail .talent-rail-detail-nav button')].find(x=>/All candidates/i.test(x.textContent));if(back){back.style.display='';back.click();}}return r;}
+  scope=pendingScope||{mode:'all'};pendingScope=null;
+  document.body.classList.remove('view-mandates');document.body.classList.add('studio-campaign-review');state.view='campaignreview';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-campaignreview');x.classList.remove('print-target');});
+  $$('.navbtn[data-view]').forEach(x=>{x.classList.toggle('active',x.dataset.view==='campaignreview');x.setAttribute('aria-current',x.dataset.view==='campaignreview'?'page':'false');});$('sidebar')?.classList.remove('open');
+  paint();window.scrollTo({top:0,behavior:'instant'});showProfile(true);window.talentStudioGeorge?.refreshContext?.();return;};
+ function mutate(fn){const list=load(),camp=list.find(c=>c.id===cur.campId),m=camp?.members[cur.idx];if(!m)return;fn(m,camp);save(list);}
+ function goTo(i){const list=entries();const x=list[Math.max(0,Math.min(list.length-1,i))];if(!x)return;cur={campId:x.campId,idx:x.idx};paint();showProfile();view.scrollIntoView?.({block:'start'});window.scrollTo({top:0,behavior:'instant'});}
+ function step(d){goTo(pos(entries())+d);}
+ document.addEventListener('input',ev=>{const b=ev.target.closest?.('[data-cr-body],[data-cr-subject]');if(!b)return;const i=Number(b.dataset.crBody??b.dataset.crSubject);mutate(m=>{if(b.dataset.crBody!=null)m.messages[i].body=b.value;else m.messages[i].subject=b.value;m.messages[i].approved=false;if(!['scheduled','sent','replied'].includes(m.messages[i].status))m.messages[i].status='draft';m.status='review';});if(b.matches('textarea'))autosize(b.parentElement);const box=b.closest('.cr-ch');const ok=box?.querySelector('[data-cr-ok]');if(ok&&ok.checked){ok.checked=false;box.style.setProperty('--st',STATUS.draft.color);const st=box.querySelector('.cr-st');if(st){st.textContent=STATUS.draft.label;st.style.setProperty('--st',STATUS.draft.color);}railPanel(entries());}});
+ document.addEventListener('change',ev=>{const t=ev.target;
+  if(t.matches?.('[data-cr-ok]')){mutate(m=>{const x=m.messages[Number(t.dataset.crOk)];x.approved=t.checked;if(!['scheduled','sent','replied'].includes(x.status))x.status=t.checked?'approved':'draft';m.status=m.messages.every(y=>y.approved)?'approved':'review';});paint();return;}
+  if(t.matches?.('[data-cr-day]')){mutate(m=>{m.messages[Number(t.dataset.crDay)].day=Math.max(0,Math.min(90,Number(t.value)||0));});paint();return;}
   if(t.id==='cfCampaign')syncExisting();if(t.id==='cfSender'){$('cfSenderOther').hidden=t.value!=='__other';}});
  document.addEventListener('click',ev=>{const t=ev.target;
   if(t.closest('#campaignSelectedBtn')||t.closest('[data-campaign-assign]')){ev.preventDefault();ev.stopImmediatePropagation();showAssign();return;}
@@ -4420,25 +4475,30 @@ body.studio-campaign-review #talentExplorerRail .talent-rail-head,body.studio-ca
   const sc=t.closest('[data-cf-scope]');if(sc&&!sc.disabled){draft.scope=sc.dataset.cfScope;document.querySelectorAll('[data-cf-scope]').forEach(b=>b.classList.toggle('active',b===sc));paintSeq();return;}
   const lg=t.closest('[data-cf-lang]');if(lg&&!lg.disabled){draft.language=lg.dataset.cfLang;document.querySelectorAll('[data-cf-lang]').forEach(b=>b.classList.toggle('active',b===lg));return;}
   if(t.closest('[data-cf-generate]')){generateCampaign();return;}
-  const st=t.closest('[data-cr-step]');if(st){step(Number(st.dataset.crStep));return;}
+  const op=t.closest('[data-cr-open]');if(op){ev.preventDefault();ev.stopImmediatePropagation();goTo(Number(op.dataset.crOpen));return;}
+  const st=t.closest('[data-cr-step]');if(st){ev.preventDefault();ev.stopImmediatePropagation();step(Number(st.dataset.crStep));return;}
+  if(t.closest('[data-cr-all]')){scope={mode:'all'};paint();return;}
   if(t.closest('[data-cr-close]')){window.switchView('talent');return;}
-  const ap=t.closest('[data-cr-approve]');if(ap){mutate(m=>{m.messages.forEach(x=>x.approved=true);m.status='approved';});const {camp}=member();if(ap.dataset.crApprove==='next'&&cur.idx<camp.members.length-1){step(1);}else{render();if(camp.members.every(x=>x.status==='approved'))toast(`All ${camp.members.length} profiles in “${camp.name}” are approved. Delivery will be configured later.`);}return;}
-  if(t.closest('[data-cr-regen]')){mutate((m,camp)=>{const c=getCandidate(m.candidateId);if(c){m.messages=generate(c,camp,m.language);m.status='review';}});render();toast('Messages regenerated.');return;}
-  const ex=t.closest('[data-cr-exc]');if(ex){mutate((m,camp)=>{const c=getCandidate(m.candidateId);if(!m.exception||!c)return;const apply=ex.dataset.crExc==='apply';m.exception.applied=apply;m.language=apply?m.exception.lang:camp.language;m.messages=generate(c,camp,m.language);m.status='review';});render();return;}
-  const open=t.closest('[data-campaign-review]');if(open){const camps=load().filter(c=>c.members.some(m=>m.status!=='approved'));const c=camps[0]||load().slice(-1)[0];if(c){openReview(c.id,Math.max(0,c.members.findIndex(m=>m.status!=='approved')));}return;}
+  const ap=t.closest('[data-cr-approve]');if(ap){mutate(m=>{m.messages.forEach(x=>{x.approved=true;if(!['scheduled','sent','replied'].includes(x.status))x.status='approved';});m.status='approved';});const list=entries(),k=pos(list);if(ap.dataset.crApprove==='next'&&k<list.length-1){goTo(k+1);}else{paint();if(list.every(x=>memberStage(x.m)!=='draft'))toast(`All ${list.length} profiles are approved. Delivery will be configured later.`);}return;}
+  if(t.closest('[data-cr-regen]')){mutate((m,camp)=>{const c=getCandidate(m.candidateId);if(c){m.messages=generate(c,camp,m.language);m.status='review';}});paint();toast('Messages regenerated.');return;}
+  const ex=t.closest('[data-cr-exc]');if(ex){mutate((m,camp)=>{const c=getCandidate(m.candidateId);if(!m.exception||!c)return;const apply=ex.dataset.crExc==='apply';m.exception.applied=apply;m.language=apply?m.exception.lang:camp.language;m.messages=generate(c,camp,m.language);m.status='review';});paint();return;}
+  if(t.closest('[data-campaign-review]')){openReview({mode:'all'});return;}
  },true);
- /* ---------- entry points in the talent overviews ---------- */
+ /* ---------- entry points: Campaigns workspace in the navigation, Talent Explorer selection bar ---------- */
+ const tn=document.querySelector('.navbtn[data-view="talent"]');
+ if(tn&&!document.querySelector('.navbtn[data-view="campaignreview"]')){const b=document.createElement('button');b.className='navbtn';b.dataset.view='campaignreview';b.innerHTML='<svg class="icon"><use href="#i-message"/></svg><span>Campaigns</span><span class="count" id="campaignNavCount" hidden></span>';tn.after(b);}
  function entryPoints(){
   const sb=document.querySelector('#view-talent .selected-bar');
   if(sb&&!sb.querySelector('[data-campaign-assign]')){const b=document.createElement('button');b.type='button';b.className='btn tiny primary';b.dataset.campaignAssign='1';sb.querySelector('#selectedCount')?.after(b);}
   const n=selectedIds().length;sb?.querySelector('[data-campaign-assign]')?.replaceChildren(document.createTextNode(n?`Assign to campaign (${n})`:'Assign to campaign'));const ab=sb?.querySelector('[data-campaign-assign]');if(ab)ab.disabled=!n;
-  const pend=load().reduce((s,c)=>s+c.members.filter(m=>m.status!=='approved').length,0);let rv=sb?.querySelector('[data-campaign-review]');
+  const camps=load(),total=camps.reduce((s,c)=>s+c.members.length,0),pend=camps.reduce((s,c)=>s+c.members.filter(m=>memberStage(m)==='draft').length,0);let rv=sb?.querySelector('[data-campaign-review]');
   if(sb&&pend&&!rv){rv=document.createElement('button');rv.type='button';rv.className='btn tiny';rv.dataset.campaignReview='1';ab?.after(rv);}if(rv){if(pend)rv.textContent=`Message approval (${pend})`;else rv.remove();}
+  const nc=$('campaignNavCount');if(nc){nc.hidden=!total;nc.textContent=total;nc.title=`${total} profile${total===1?'':'s'} with messages · ${pend} awaiting approval`;}
   const cb=$('campaignSelectedBtn');if(cb){cb.disabled=false;cb.title='Assign the selected profiles to a campaign';}
  }
  window.addEventListener('studio:rail-profile',ev=>{if(!ev.detail?.open)return;setTimeout(()=>{const nav=document.querySelector('#talentRailCandidateDetail .talent-rail-detail-nav');if(!nav||nav.querySelector('[data-campaign-one]')||state.view==='campaignreview')return;const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.campaignOne=ev.detail.candidateId||'';b.textContent='Add to campaign';nav.appendChild(b);},10);});
  const prevRT=window.renderTalent;window.renderTalent=function(){const r=prevRT.apply(this,arguments);entryPoints();return r;};
- ['studio:changed','studio-step-changed'].forEach(n=>window.addEventListener(n,()=>setTimeout(()=>{entryPoints();if(state.view==='campaignreview'&&!document.activeElement?.closest?.('#view-campaignreview'))render();},0)));
+ ['studio:changed','studio-step-changed'].forEach(n=>window.addEventListener(n,ev=>setTimeout(()=>{entryPoints();if(ev.detail?.view==='campaignreview')return;if(state.view==='campaignreview'&&!document.activeElement?.closest?.('#view-campaignreview'))paint();},0)));
  entryPoints();
 })();
 </script>
