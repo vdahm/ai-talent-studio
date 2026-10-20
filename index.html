@@ -2334,7 +2334,7 @@ phone:[
 'use strict';
 const george={candidateId:null,attachments:[],pendingAction:null,listening:null,conversation:readStore('vd.studio.george.conversation',[])};
 if(!Array.isArray(george.conversation))george.conversation=[];
-const viewNames={overview:'Overview',george:'George · Your Copilot',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
+const viewNames={lockprep:'Sourcing profile',mandates:'Mandates',overview:'Overview',george:'George · Your Copilot',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
 const processTitle=()=>{const s=PROCESS_STEPS.find(x=>x.id===state.processStep);return s?s.title:'Current sourcing step';};
 function candidateContext(){return george.candidateId?getCandidate(george.candidateId):null;}
 function modalTitle(){const m=$('modal');if(!m||m.classList.contains('hidden'))return'';return m.querySelector('.modal-head h2,h2')?.textContent?.trim()||'Open submenu';}
@@ -3867,7 +3867,7 @@ body.view-mandates .sidebar nav .navbtn[data-view]:not([data-view="mandates"]),b
  function setRailTool(t,delay){setTimeout(()=>{if(railTool()===t)return;const b=[...document.querySelectorAll('[data-task-tool="'+t+'"]')].find(x=>!x.hidden);b?.click();},delay||150);}
  document.addEventListener('click',ev=>{if(ev.target.closest('[data-task-tool]'))setTimeout(remember,200);});
  /* Opening a workspace: role brief step -> George in the centre with the Role Brief in the sidebar; otherwise the last view and sidebar tab. */
- function openWorkspace(delay){if(state.processStep==='brief'){window.switchView('george');setRailTool('brief',delay);return;}let v='overview',t=null;try{v=JSON.parse(localStorage.getItem('vd.studio.lastView'))||'overview';t=JSON.parse(localStorage.getItem('vd.studio.lastTool'));}catch{}if(!['overview','george','talent','market','evidence','workflow'].includes(v))v='overview';window.switchView(v);if(t)setRailTool(t,delay);}
+ function openWorkspace(delay){if(state.processStep==='brief'){window.switchView('george');setRailTool('brief',delay);return;}let v='overview',t=null;try{v=JSON.parse(localStorage.getItem('vd.studio.lastView'))||'overview';t=JSON.parse(localStorage.getItem('vd.studio.lastTool'));}catch{}if(!['overview','george','talent','market','evidence','workflow','lockprep'].includes(v))v='overview';window.switchView(v);if(t)setRailTool(t,delay);}
 
  /* nav entry as the first workspace item */
  const nav=document.querySelector('.sidebar nav')||document.querySelector('nav');if(nav&&!nav.querySelector('[data-view="mandates"]')){const b=document.createElement('button');b.className='navbtn';b.dataset.view='mandates';b.innerHTML=`${icon('folder')}<span>Mandates</span>`;nav.prepend(b);}
@@ -3996,7 +3996,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
 <script id="step-layout">
 (function(){
  if(typeof PROCESS_STEPS==='undefined')return;
- const GT=['cal1','feedback1','cal2','feedback2'];
+ const GT=['cal1','feedback1','cal2'];
  const NEXT={cal1:'feedback1',cal2:'feedback2',feedback1:'feedback1',feedback2:'feedback2'};
  const railTool=()=>{const c=document.body.classList;return c.contains('task-rail-show-brief')?'brief':c.contains('task-rail-show-george')?'george':'talent';};
  function setTool(t,delay){setTimeout(()=>{if(railTool()===t)return;[...document.querySelectorAll('[data-task-tool="'+t+'"]')].find(x=>!x.hidden)?.click();},delay??120);}
@@ -4004,6 +4004,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  function layoutFor(step){
   if(step==='brief'){if(state.view!=='george')window.switchView('george');setTool('brief');return;}
   if(GT.includes(step)){if(state.view!=='george')window.switchView('george');setTool('talent');return;}
+  if((step==='feedback2'||step==='locked')&&window.studioShowLockPrep){window.studioShowLockPrep();setTool('george');return;}
   const s=PROCESS_STEPS.find(x=>x.id===step);if(s?.targetView&&state.view!==s.targetView)window.switchView(s.targetView);
  }
  window.studioLayoutForStep=layoutFor;
@@ -4046,6 +4047,81 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
   window.talentStudioGeorge?.addMessage('user',text);input.value='';input.dispatchEvent(new Event('input'));
   giveFeedback(window.talentStudioGeorge?.contextSnapshot?.()?.candidate?.id||null);
  },true);
+})();
+</script>
+<style id="lock-flow-styles">
+.lp-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;margin-bottom:20px}
+.lp-panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.lp-panel h2{font-size:15px;margin:0 0 12px;color:var(--brand-primary,#1C2D4A)}
+.lp-dl{display:grid;grid-template-columns:150px 1fr;gap:9px 14px;font-size:12px;line-height:1.5}.lp-dl dt{color:var(--muted);font-weight:600}.lp-dl dd{margin:0;color:#1C2D4A}
+.lp-notes{display:grid;gap:8px;font-size:11px;line-height:1.5}.lp-note{border-left:3px solid #DCE1E6;padding:2px 0 2px 10px}.lp-note.keep{border-color:#3C8D5A}.lp-note.reject{border-color:var(--accent)}.lp-note b{color:#1C2D4A}
+.lp-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--accent-soft,#FBF1EE);border:1px solid #EBC9C0;border-radius:18px;padding:18px 20px;margin-bottom:22px}
+.lp-cta p{margin:0;font-size:12px;color:#5b5560;line-height:1.55}.lp-cta .btn{white-space:nowrap;font-size:13px;padding:11px 18px}
+@media(max-width:1000px){.lp-grid{grid-template-columns:1fr}.lp-cta{flex-direction:column;align-items:flex-start}}
+</style>
+<script id="lock-flow">
+(function(){
+ if(typeof PROCESS_STEPS==='undefined'||!window.StudioMandates)return;
+ const M=window.StudioMandates,e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const jget=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??f}catch{return f}},jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+ const seed=!!M.active()?.seed;
+ /* ---------- calibration round versions: 1.0, 1.1 … / 2.0, 2.1 … (runs started per round) ---------- */
+ const RKEY='vd.studio.roundRuns';
+ const runs=()=>({cal1:seed?1:0,cal2:seed?1:0,...jget(RKEY,{})});
+ const curVer=k=>{const n=runs()['cal'+k]||0;return k+'.'+Math.max(0,n-1);};
+ const nextVer=k=>k+'.'+(runs()['cal'+k]||0);
+ const ORIG=Object.fromEntries(PROCESS_STEPS.map(s=>[s.id,s.title]));
+ function applyTitles(){for(const s of PROCESS_STEPS){if(s.id==='cal1')s.title='Calibration round '+curVer(1);else if(s.id==='feedback1')s.title='Feedback round '+curVer(1);else if(s.id==='cal2')s.title='Calibration round '+curVer(2);else if(s.id==='feedback2')s.title='Feedback round '+curVer(2);}}
+ const nextRound=()=>state.processStep==='feedback1'?2:state.processStep==='brief'?1:null;
+ function labelButtons(){const k=nextRound();const label=k?'Calibration round '+nextVer(k):'New search';const rb=document.getElementById('taskRailContextNewSearch');if(rb)rb.textContent=label;const nb=document.querySelector('.sidebar [data-action="newsearch"] span');if(nb)nb.textContent=label;}
+ const _sns=window.showNewSearch;
+ if(typeof _sns==='function')window.showNewSearch=function(){const r=_sns.apply(this,arguments);const k=nextRound();if(k){const h=document.querySelector('#modal .modal-head h2');if(h)h.textContent='Calibration round '+nextVer(k);const b=document.getElementById('runLiveBtn');if(b)b.innerHTML='Start calibration round '+nextVer(k)+' '+icon('arrow');}return r;};
+ const _run=window.runLive;
+ if(typeof _run==='function')window.runLive=async function(){const k=nextRound(),before=jobId;const r=await _run.apply(this,arguments);if(k&&jobId&&jobId!==before){const n=runs();n['cal'+k]=(n['cal'+k]||0)+1;jset(RKEY,n);try{localStorage.removeItem('vd.studio.approval.locked.v1')}catch{}applyTitles();const target='cal'+k;setProcessStep(target,false);window.studioLayoutForStep?.(target);}return r;};
+ /* ---------- Feedback round 2 / locked: profile preview in the middle, George + Talent in the sidebar ---------- */
+ const view=document.createElement('section');view.className='view hidden';view.id='view-lockprep';
+ document.getElementById('view-overview')?.parentNode.insertBefore(view,document.getElementById('view-overview'));
+ const AKEY='vd.studio.lockApprovals';const approvals=()=>jget(AKEY,seed?1:0);
+ function learnings(){const out=[];for(const st of ['feedback1','feedback2']){const step=PROCESS_STEPS.find(s=>s.id===st);for(const id of step?.ids||[]){const c=ALL_CANDIDATES.find(x=>x.id===id);if(!c)continue;const r={...stageDefaultReview(c,st),...(stageReview[st]?.[c.profileUrl]||{})};if(r.feedbackGiven&&r.note&&!out.some(o=>o.id===c.id))out.push({id:c.id,name:displayName(c),status:r.status,note:r.note,round:step.title});}}return out;}
+ function render(){
+  const st=state.processStep,locked=st==='locked',p=window.getStudioSourcingProfile?.()||{},fb=window.getStudioJourneyProgress?.('feedback2')||{},approvedN=(fb.prefix||'').match(/\d+/)?.[0]||'0';
+  const notes=learnings().sort((x,y)=>(x.status==='excluded'?0:1)-(y.status==='excluded'?0:1)),isApproved=localStorage.getItem('vd.studio.approval.locked.v1')==='approved';
+  const cta=locked?`<div class="lp-cta"><p><b>Approve the locked sourcing profile.</b><br>${approvals()?`Approved ${approvals()} time${approvals()===1?'':'s'} before. A new approval lets you redo the market map and evidence check or go straight to the next production run.`:'The first approval starts the candidate market map and the evidence check together.'}${isApproved?'<br><i>The current version is already approved.</i>':''}</p><button class="btn primary" type="button" data-lock-approve="1">${isApproved?'Approve again':'Approve locked profile'} ${icon('arrow')}</button></div>`
+   :`<div class="lp-cta"><p><b>${e((PROCESS_STEPS.find(s=>s.id==='feedback2')||{}).title)} · ${e(approvedN)} approved · ${fb.done??0}/${fb.total??0} reviewed · ${fb.remaining??0} remaining.</b><br>Review the sourcing profile below. When it reflects both feedback rounds, continue to the locked profile.</p><button class="btn primary" type="button" data-lock-go="1">Go to locked profile ${icon('arrow')}</button></div>`;
+  view.innerHTML=`<div class="view-head"><div><div class="eyebrow">${locked?'SOURCING PROFILE LOCKED':'FEEDBACK ROUND '+e(curVer(2))+' · READY TO LOCK'}</div><h1>Sourcing profile</h1><p>The role brief as it will be locked for the market map, the evidence check and production.<br>George and the Talent tab are in the sidebar.</p></div></div>${cta}
+  <div class="lp-grid"><section class="lp-panel"><h2>Profile to lock</h2><dl class="lp-dl"><dt>Target role / seniority</dt><dd>${e(p.role||'Not defined')}</dd><dt>Target companies</dt><dd>${e(p.companies||'Not defined')}</dd><dt>Geography</dt><dd>${e(p.locations||'Not defined')}</dd><dt>Experience & focus</dt><dd>${e(p.focus||'Not defined')}</dd><dt>Exclusions</dt><dd>${e(p.exclusions||'None recorded')}</dd><dt>Calibration</dt><dd>Round ${e(curVer(1))} and ${e(curVer(2))} · ${e(approvedN)} approved profiles</dd></dl></section>
+  <section class="lp-panel"><h2>What the feedback rounds taught</h2><div class="lp-notes">${notes.length?notes.slice(0,8).map(n=>`<div class="lp-note ${n.status==='approved'?'keep':n.status==='excluded'?'reject':''}"><b>${e(n.name)}</b> · ${n.status==='approved'?'kept':n.status==='excluded'?'rejected':e(n.status)} (${e(n.round)})<br>${e(n.note)}</div>`).join(''):'<p style="font-size:11px;color:var(--muted)">No written recruiter feedback recorded yet.</p>'}</div></section></div>`;
+ }
+ window.studioShowLockPrep=function(){window.switchView('lockprep');};
+ const base=window.switchView;
+ window.switchView=function(v){if(v!=='lockprep')return base(v);document.body.classList.remove('view-mandates');state.view='lockprep';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-lockprep');x.classList.remove('print-target');});$$('.navbtn[data-view]').forEach(x=>{if(x.dataset.view!=='mandates'){x.classList.remove('active');x.setAttribute('aria-current','false');}});render();window.scrollTo({top:0,behavior:'instant'});window.talentStudioGeorge?.refreshContext?.();window.dispatchEvent(new CustomEvent('studio:changed',{detail:{type:'view',view:'lockprep'}}));return;};
+ /* ---------- approval flow ---------- */
+ async function combinedRun(){
+  const p=window.getStudioSourcingProfile?.()||{},approved=ALL_CANDIDATES.filter(c=>reviewOf(c).status==='approved').map(c=>c.profileUrl).filter(Boolean);
+  setProcessStep('market',true);
+  if(!engineStatus.available||!engineStatus.configured||!sessionToken){$('modal').innerHTML=modalHead('Market map & Evidence check')+`<p class="intro">The locked profile is approved. The candidate market map and the evidence check for the ${approved.length} approved profiles run together as one research run.</p><div class="status-box"><b>Live research is not connected.</b><br>The combined run starts as soon as the research service is connected.</div><div class="modal-foot"><button class="btn" data-action="close">Close</button><button class="btn primary" data-action="engine">Connection</button></div>`;showLayer('modal');return;}
+  try{const r=await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+sessionToken},body:JSON.stringify({mode:'market_evidence',role:p.role,companies:p.companies,locations:p.locations,focus:p.focus,exclusions:p.exclusions,profiles:approved,searchId:state.liveSearchId}),signal:AbortSignal.timeout(15000)});const j=await r.json();if(!r.ok)throw Error(j.detail||'The request was rejected.');toast('Market map and evidence check started together.');
+   for(let i=0;i<360;i++){await new Promise(x=>setTimeout(x,3000));const q=await fetch('/api/jobs/'+encodeURIComponent(j.id),{headers:{'Authorization':'Bearer '+sessionToken},signal:AbortSignal.timeout(15000)});if(!q.ok)break;const s=await q.json();if(s.status==='failed'){toast(s.message||'Market map / evidence run failed.');return;}if(s.status==='complete'){if(Array.isArray(s.candidates)){state.live=s.candidates;state.liveMode=true;}renderMarket();renderEvidence();toast('Market map and evidence check are ready.');return;}}
+  }catch(err){toast(err.message||'Research service unavailable.');}
+ }
+ function approve(){
+  const brief=window.getStudioSourcingProfile?.()||{};if(!['role','companies','locations','focus'].every(k=>String(brief[k]||'').trim())){toast('Complete the locked sourcing criteria before approval.');return;}
+  if(state.processStep!=='locked')setProcessStep('locked',false);
+  const before=approvals();try{localStorage.setItem('vd.studio.approval.locked.v1','approved')}catch{}jset(AKEY,before+1);M.lockDraft?.();
+  if(before===0){combinedRun();return;}
+  $('modal').innerHTML=modalHead('Locked profile approved again')+`<p class="intro">This is approval ${before+1} of the sourcing profile. Do you want to redo the candidate market map and the evidence check with the updated profile, or go directly to the next production run?</p><div class="modal-foot"><button class="btn" type="button" data-lock-redo="1">Redo market map & evidence check</button><button class="btn primary" type="button" data-lock-production="1">Go to production run ${icon('arrow')}</button></div>`;showLayer('modal');
+ }
+ document.addEventListener('click',ev=>{const t=ev.target;
+  if(t.closest('[data-lock-go]')){const jb=document.querySelector('[data-journey-step="locked"]');if(jb)jb.click();else{setProcessStep('locked',false);window.studioShowLockPrep();}return;}
+  if(t.closest('[data-lock-approve]')||t.closest('[data-stage-approve="locked"]')){ev.preventDefault();ev.stopImmediatePropagation();approve();return;}
+  if(t.closest('[data-lock-redo]')){closeLayers();combinedRun();return;}
+  if(t.closest('[data-lock-production]')){closeLayers();setProcessStep('production',true);return;}
+ },true);
+ /* keep titles, buttons and the preview current */
+ function sync(){applyTitles();labelButtons();if(state.view==='lockprep'&&!['feedback2','locked'].includes(state.processStep)){}else if(state.view==='lockprep')render();}
+ ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>requestAnimationFrame(sync)));
+ applyTitles();try{window.refreshRecruiterGuide?.()}catch{}labelButtons();
+ if(['feedback2','locked'].includes(state.processStep)&&state.view==='lockprep')render();
 })();
 </script>
 </body>
