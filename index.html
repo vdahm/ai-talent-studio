@@ -4573,6 +4573,7 @@ body.studio-pipeline.pl-no-profile #talentRailCandidateDetail{display:none!impor
   return `<div class="md-client-box"><b>Client:</b> ${e(o.company||'—')}${o.domain?' · '+e(o.domain):''} · ${(o.contacts||[]).length} contact${(o.contacts||[]).length===1?'':'s'}${p?`<br><b>Primary:</b> ${e(p.name)}${p.role?' · '+e(p.role):''}${p.email?' · '+e(p.email):''}`:''}</div>`;}
  function editClient(id){const m=mandateById(id);if(!m)return;$('modal').classList.add('wide');$('modal').innerHTML=modalHead('Client · '+m.title)+`<form id="clientForm" data-mandate="${e(id)}" autocomplete="off">${fields(m.clientOrg)}<div class="modal-foot"><button class="btn" type="button" data-action="close">Cancel</button><button class="btn primary" type="submit">Save client</button></div></form>`;showLayer('modal');}
  window.StudioClient={fields,read,summary,edit:editClient,contacts:()=>activeMandate().clientOrg?.contacts||[],org:()=>activeMandate().clientOrg||null};
+ setTimeout(()=>{if(state.view==='mandates')window.dispatchEvent(new CustomEvent('studio:changed',{detail:{type:'client'}}));},0);
  document.addEventListener('click',ev=>{const t=ev.target;
   if(t.closest('[data-cl-add]')){const rows=t.closest('[data-client-fields]')?.querySelector('.cl-rows');rows?.insertAdjacentHTML('beforeend',contactRow({}));rows?.lastElementChild?.querySelector('input')?.focus();return;}
   if(t.closest('[data-cl-del]')){t.closest('.cl-row')?.remove();return;}
