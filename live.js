@@ -25,7 +25,8 @@ const STATE_KEYS = [
   'vd.studio.uploads.v1',
   'vd.studio.campaigns.v2',
   'vd.studio.pipeline.v1',
-  'vd.ui.campaignSenders'
+  'vd.ui.campaignSenders',
+  'vd.studio.production.v1'
 ];
 
 let currentUser = null;
