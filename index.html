@@ -4240,5 +4240,43 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  setTimeout(()=>{if(connected()){const ids=load().filter(u=>u.status==='pending-check').map(u=>u.id);if(ids.length)runCheck(ids,'upload_check');}},4000);
 })();
 </script>
+<style id="talent-layout-styles">
+.tl-toggle{display:inline-flex;border:1px solid #DCE1E6;border-radius:9px;overflow:hidden;margin-right:6px}.tl-toggle button{border:0;background:#fff;font:inherit;font-size:10px;padding:5px 10px;cursor:pointer;color:#4d5963}.tl-toggle button.active{background:var(--brand-primary,#1C2D4A);color:#fff}
+body.talent-list-mode #view-talent #candidateGrid{display:none!important}
+#candidateList{display:none;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:auto;margin-bottom:18px}
+body.talent-list-mode #candidateList{display:block}
+#candidateList table{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}
+#candidateList th{text-align:left;font-size:10px;font-weight:650;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:#FAFBFC;position:sticky;top:0}
+#candidateList td{padding:9px 12px;border-bottom:1px solid #EEF0F2;vertical-align:middle}
+#candidateList tr.is-selected td{background:var(--accent-soft,#FBF1EE)}#candidateList tr.is-excluded td{opacity:.55}
+#candidateList td b{color:#1C2D4A}#candidateList td small{display:block;color:var(--muted);font-size:10px}
+#candidateList .tl-num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+#candidateList .star{background:none;border:0;cursor:pointer;font-size:14px;color:#C5CBD1}#candidateList .star.on{color:#E0A800}
+#candidateList .tl-open{font-size:11px;white-space:nowrap}
+</style>
+<script id="talent-layout">
+(function(){
+ if(typeof renderTalent!=='function')return;
+ const K='vd.ui.talentLayout';let mode='tiles';try{mode=localStorage.getItem(K)||'tiles'}catch{}
+ const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const bar=document.querySelector('#view-talent .selected-bar');
+ if(bar&&!bar.querySelector('.tl-toggle')){const t=document.createElement('div');t.className='tl-toggle';t.setAttribute('role','group');t.setAttribute('aria-label','Layout');t.innerHTML='<button type="button" data-tl-mode="tiles">Tiles</button><button type="button" data-tl-mode="list">List</button>';bar.prepend(t);}
+ const grid=document.getElementById('candidateGrid');let box=document.getElementById('candidateList');
+ if(grid&&!box){box=document.createElement('div');box.id='candidateList';grid.before(box);}
+ const DEC={approved:'Approved',excluded:'Excluded',hold:'Review later',pending:'Pending'};
+ function renderList(){if(!box)return;let list=[];try{list=filtered();}catch{}
+  if(!list.length){box.innerHTML='<p style="padding:18px;font-size:12px;color:var(--muted)">No profiles in this view.</p>';return;}
+  const ev=typeof stageHasEvidence==='function'&&stageHasEvidence();let camp={};try{camp=JSON.parse(localStorage.getItem('vd.studio.campaignState.v1'))||{}}catch{}
+  box.innerHTML=`<table><thead><tr><th><input type="checkbox" data-tl-all aria-label="Select all"></th><th>Name</th><th>Company</th><th>Location</th><th class="tl-num">Fit</th><th class="tl-num">${ev?'Evidence':'Match'}</th><th>Decision</th><th>Campaign</th><th></th><th></th></tr></thead><tbody>${list.map(c=>{const r=reviewOf(c);const o=camp[c.profileUrl]||{};const chs=[].concat(o.channels||o.plannedChannels||[]).filter(Boolean);const cp=[o.campaignId||o.plannedCampaignId||'',chs.join(' + ')].filter(Boolean).join(' · ');const sel=state.selected.includes(c.id);
+   return `<tr class="${sel?'is-selected':''} ${r.status==='excluded'?'is-excluded':''}"><td><input type="checkbox" data-select="${e(c.id)}" ${sel?'checked':''} aria-label="Select ${e(displayName(c))}"></td><td><b>${e(displayName(c))}</b><small>${e(String(c.title||'').split('|')[0])}</small></td><td>${e(c.company||c.firm||'')}</td><td>${e(c.location||c.country||'')}</td><td class="tl-num">${e(c.fit??'—')}</td><td class="tl-num">${e(ev?(c.evidence??'—'):(c.match??'—'))}</td><td>${e(DEC[r.status]||r.status||'')}${r.shortlisted?' · ★':''}</td><td><small style="font-size:10px">${e(cp||'—')}</small></td><td><button class="star ${r.shortlisted?'on':''}" data-star="${e(c.id)}" aria-label="${r.shortlisted?'Remove from':'Add to'} shortlist">★</button></td><td><button class="textbtn tl-open" data-candidate="${e(c.id)}">Open ›</button></td></tr>`;}).join('')}</tbody></table>`;
+  const all=box.querySelector('[data-tl-all]');if(all)all.checked=list.length>0&&list.every(c=>state.selected.includes(c.id));}
+ function apply(){document.body.classList.toggle('talent-list-mode',mode==='list');document.querySelectorAll('[data-tl-mode]').forEach(b=>b.classList.toggle('active',b.dataset.tlMode===mode));if(mode==='list')renderList();}
+ const prev=window.renderTalent;
+ window.renderTalent=function(){const r=prev.apply(this,arguments);if(mode==='list')renderList();return r;};
+ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-tl-mode]');if(!b)return;mode=b.dataset.tlMode;try{localStorage.setItem(K,mode)}catch{}apply();});
+ document.addEventListener('change',ev=>{if(!ev.target.matches?.('[data-tl-all]'))return;let list=[];try{list=filtered();}catch{}const ids=list.map(c=>c.id);if(ev.target.checked)state.selected=[...new Set([...state.selected,...ids])];else state.selected=state.selected.filter(id=>!ids.includes(id));renderTalent();});
+ apply();
+})();
+</script>
 </body>
 </html>
