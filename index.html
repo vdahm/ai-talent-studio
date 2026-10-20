@@ -3979,7 +3979,7 @@ body.brief-change-mode #candidateGrid::before{content:"Change mode: these profil
  },true);
  /* body class, rail button label, max-step tracking */
  function sync(){const m=mode();document.body.classList.toggle('brief-change-mode',m==='change');const b=document.getElementById('talentRailOpenFull');if(b){b.textContent=m==='change'?'Apply to current search':'Open full explorer';b.classList.toggle('primary',m==='change');}M.noteStep();}
- ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>requestAnimationFrame(sync)));
+ ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>setTimeout(sync,0)));
  sync();
 })();
 </script>
@@ -4013,7 +4013,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  let stepSeen=state.processStep;
  window.addEventListener('studio-step-changed',()=>{if(state.processStep!==stepSeen){stepSeen=state.processStep;if(!window.__keepRailProfile)closeProfile();}});
  function syncView(){document.body.classList.toggle('studio-view-george',state.view==='george');}
- window.addEventListener('studio:changed',()=>requestAnimationFrame(syncView));syncView();
+ window.addEventListener('studio:changed',()=>setTimeout(syncView,0));syncView();
  document.addEventListener('click',ev=>{const b=ev.target.closest('[data-rail-width]');if(!b)return;ev.preventDefault();ev.stopPropagation();const narrow=document.body.classList.toggle('rail-narrow');b.textContent=narrow?'⇤ Wider':'⇥ Narrower';b.title=narrow?'Make the sidebar wider':'Make the sidebar narrower';},true);
  document.addEventListener('click',ev=>{const b=ev.target.closest('[data-journey-step]');if(!b)return;const id=b.dataset.journeyStep;setTimeout(()=>{if(state.processStep===id)layoutFor(id);},80);});
  let last=state.processStep;
@@ -4119,7 +4119,7 @@ body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-too
  },true);
  /* keep titles, buttons and the preview current */
  function sync(){applyTitles();labelButtons();if(state.view==='lockprep'&&!['feedback2','locked'].includes(state.processStep)){}else if(state.view==='lockprep')render();}
- ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>requestAnimationFrame(sync)));
+ ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>setTimeout(sync,0)));
  applyTitles();try{window.refreshRecruiterGuide?.()}catch{}labelButtons();
  if(['feedback2','locked'].includes(state.processStep)&&state.view==='lockprep')render();
 })();
