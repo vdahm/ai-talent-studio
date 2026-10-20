@@ -3984,8 +3984,12 @@ body.brief-change-mode #candidateGrid::before{content:"Change mode: these profil
 })();
 </script>
 <style id="step-layout-styles">
-body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(520px,48vw,780px)!important}
-@media(max-width:1100px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(78vw,640px)!important}}
+body.talent-profile-expanded:not(.task-rail-collapsed):not(.rail-narrow){--ui-rail:clamp(400px,36vw,585px)!important}
+body.talent-profile-expanded.rail-narrow:not(.task-rail-collapsed){--ui-rail:clamp(340px,30vw,480px)!important}
+body.studio-view-george .rail-george-chat,body.studio-view-george [data-task-tool="george"]{display:none!important}
+.talent-rail-detail-nav [data-rail-width]{border:1px solid #DCE1E6;background:#fff;border-radius:8px;padding:5px 9px;font-size:11px;color:#4d5963;cursor:pointer;margin-left:6px}
+.talent-rail-detail-nav [data-rail-width]:hover{border-color:var(--accent);color:var(--accent)}
+@media(max-width:1100px){body.talent-profile-expanded:not(.task-rail-collapsed):not(.rail-narrow){--ui-rail:min(60vw,480px)!important}}
 @media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
 .talent-rail-detail-nav [data-give-feedback]{margin-left:auto;font-size:11px;font-weight:650;padding:7px 13px;border-radius:9px;background:var(--accent)!important;color:#fff!important;border:0!important;min-width:0!important;width:auto!important;height:auto!important;cursor:pointer}
 </style>
@@ -4003,13 +4007,20 @@ body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(520px,48v
   const s=PROCESS_STEPS.find(x=>x.id===step);if(s?.targetView&&state.view!==s.targetView)window.switchView(s.targetView);
  }
  window.studioLayoutForStep=layoutFor;
+ /* Sidebar profile: shrink automatically on step change, or manually via the width toggle */
+ function closeProfile(){document.body.classList.remove('rail-narrow');const back=document.querySelector('#talentRailCandidateDetail:not(.hidden) [data-rail-detail-back]');if(back)back.click();else document.body.classList.remove('talent-profile-expanded');}
+ let stepSeen=state.processStep;
+ window.addEventListener('studio-step-changed',()=>{if(state.processStep!==stepSeen){stepSeen=state.processStep;if(!window.__keepRailProfile)closeProfile();}});
+ function syncView(){document.body.classList.toggle('studio-view-george',state.view==='george');}
+ window.addEventListener('studio:changed',()=>requestAnimationFrame(syncView));syncView();
+ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-rail-width]');if(!b)return;ev.preventDefault();ev.stopPropagation();const narrow=document.body.classList.toggle('rail-narrow');b.textContent=narrow?'⇤ Wider':'⇥ Narrower';b.title=narrow?'Make the sidebar wider':'Make the sidebar narrower';},true);
  document.addEventListener('click',ev=>{const b=ev.target.closest('[data-journey-step]');if(!b)return;const id=b.dataset.journeyStep;setTimeout(()=>{if(state.processStep===id)layoutFor(id);},80);});
  let last=state.processStep;
  window.addEventListener('studio-step-changed',()=>{const s=state.processStep;if(s!==last&&s==='brief')setTimeout(()=>layoutFor('brief'),80);last=s;});
  /* Give feedback from an opened profile (or via George) -> feedback round of this calibration */
  function giveFeedback(id){
   const target=NEXT[state.processStep];if(!target)return false;
-  if(state.processStep!==target){const jb=document.querySelector('[data-journey-step="'+target+'"]');if(jb)jb.click();else setProcessStep(target,false);}
+  window.__keepRailProfile=true;setTimeout(()=>{window.__keepRailProfile=false;},400);if(state.processStep!==target){const jb=document.querySelector('[data-journey-step="'+target+'"]');if(jb)jb.click();else setProcessStep(target,false);}
   if(state.view!=='george')window.switchView('george');
   setTool('talent',0);
   setTimeout(()=>{
@@ -4020,9 +4031,10 @@ body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(520px,48v
   return true;
  }
  window.addEventListener('studio:rail-profile',ev=>{
-  if(!ev.detail?.open||!NEXT[state.processStep])return;
-  setTimeout(()=>{const nav=document.querySelector('#talentRailCandidateDetail .talent-rail-detail-nav');if(!nav||nav.querySelector('[data-give-feedback]'))return;
-   const b=document.createElement('button');b.type='button';b.className='btn primary';b.dataset.giveFeedback=ev.detail.candidateId||'';b.textContent='Give feedback';nav.appendChild(b);},0);
+  if(!ev.detail?.open)return;
+  setTimeout(()=>{const nav=document.querySelector('#talentRailCandidateDetail .talent-rail-detail-nav');if(!nav||nav.querySelector('[data-give-feedback],[data-rail-width]'))return;
+   if(!nav.querySelector('[data-rail-width]')){const w=document.createElement('button');w.type='button';w.dataset.railWidth='1';const narrow=document.body.classList.contains('rail-narrow');w.textContent=narrow?'⇤ Wider':'⇥ Narrower';w.title=narrow?'Make the sidebar wider':'Make the sidebar narrower';nav.appendChild(w);}
+   if(NEXT[state.processStep]){const b=document.createElement('button');b.type='button';b.className='btn primary';b.dataset.giveFeedback=ev.detail.candidateId||'';b.textContent='Give feedback';nav.appendChild(b);}},0);
  });
  document.addEventListener('click',ev=>{const b=ev.target.closest('[data-give-feedback]');if(!b)return;ev.preventDefault();ev.stopImmediatePropagation();giveFeedback(b.dataset.giveFeedback);},true);
  document.addEventListener('click',ev=>{
