@@ -2334,7 +2334,7 @@ phone:[
 'use strict';
 const george={candidateId:null,attachments:[],pendingAction:null,listening:null,conversation:readStore('vd.studio.george.conversation',[])};
 if(!Array.isArray(george.conversation))george.conversation=[];
-const viewNames={lockprep:'Sourcing profile',mandates:'Mandates',campaignreview:'Campaigns',pipeline:'Pipeline',overview:'Overview',george:'George · Your Copilot',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
+const viewNames={lockprep:'Sourcing profile',mandates:'Mandates',campaignreview:'Campaigns',pipeline:'Pipeline',prodgates:'Production gates',overview:'Overview',george:'George · Your Copilot',talent:'Talent Explorer',market:'Candidate Market Map',evidence:'Evidence Check',workflow:'3D Sourcing'};
 const processTitle=()=>{const s=PROCESS_STEPS.find(x=>x.id===state.processStep);return s?s.title:'Current sourcing step';};
 function candidateContext(){return george.candidateId?getCandidate(george.candidateId):null;}
 function modalTitle(){const m=$('modal');if(!m||m.classList.contains('hidden'))return'';return m.querySelector('.modal-head h2,h2')?.textContent?.trim()||'Open submenu';}
@@ -3867,7 +3867,7 @@ body.view-mandates .sidebar nav .navbtn[data-view]:not([data-view="mandates"]),b
  function setRailTool(t,delay){setTimeout(()=>{if(railTool()===t)return;const b=[...document.querySelectorAll('[data-task-tool="'+t+'"]')].find(x=>!x.hidden);b?.click();},delay||150);}
  document.addEventListener('click',ev=>{if(ev.target.closest('[data-task-tool]'))setTimeout(remember,200);});
  /* Opening a workspace: role brief step -> George in the centre with the Role Brief in the sidebar; otherwise the last view and sidebar tab. */
- function openWorkspace(delay){if(state.processStep==='brief'){window.switchView('george');setRailTool('brief',delay);return;}let v='overview',t=null;try{v=JSON.parse(localStorage.getItem('vd.studio.lastView'))||'overview';t=JSON.parse(localStorage.getItem('vd.studio.lastTool'));}catch{}if(!['overview','george','talent','market','evidence','workflow','lockprep','campaignreview','pipeline'].includes(v))v='overview';window.switchView(v);if(t)setRailTool(t,delay);}
+ function openWorkspace(delay){if(state.processStep==='brief'){window.switchView('george');setRailTool('brief',delay);return;}let v='overview',t=null;try{v=JSON.parse(localStorage.getItem('vd.studio.lastView'))||'overview';t=JSON.parse(localStorage.getItem('vd.studio.lastTool'));}catch{}if(!['overview','george','talent','market','evidence','workflow','lockprep','campaignreview','pipeline','prodgates'].includes(v))v='overview';window.switchView(v);if(t)setRailTool(t,delay);}
 
  /* nav entry as the first workspace item */
  const nav=document.querySelector('.sidebar nav')||document.querySelector('nav');if(nav&&!nav.querySelector('[data-view="mandates"]')){const b=document.createElement('button');b.className='navbtn';b.dataset.view='mandates';b.innerHTML=`${icon('folder')}<span>Mandates</span>`;nav.prepend(b);}
@@ -4733,6 +4733,130 @@ body.studio-pipeline.pl-no-profile #talentRailCandidateDetail{display:none!impor
  const prevRT=window.renderTalent;window.renderTalent=function(){const r=prevRT.apply(this,arguments);refreshEntry();return r;};
  window.StudioPipeline={add:addEntries,list,refresh:()=>{refreshEntry();if(state.view==='pipeline')paint();},stages:STAGES};
  refreshEntry();
+})();
+</script>
+<style id="production-gates-styles">
+.sourcing-step.prod-gate{border-style:dashed}
+.sourcing-step.prod-gate.done{border-style:solid}
+#view-prodgates .pg-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.pg-run{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.pg-run.active{border-color:#1C2D4A;box-shadow:inset 0 0 0 1px #1C2D4A}
+.pg-run-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:#FAFBFC;border:0;width:100%;text-align:left;font:inherit}
+.pg-run-head b{font-size:14px;color:#1C2D4A}.pg-run-head small{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.pg-phases{display:flex;gap:6px;flex-wrap:wrap}
+.pg-chip{font-size:9px;font-weight:700;border-radius:999px;padding:3px 9px;background:#E3E7EA;color:#4d5963;white-space:nowrap}
+.pg-chip.cur{background:#1C2D4A;color:#fff}.pg-chip.done{background:#DCEFE4;color:#2F6B4A}.pg-chip.wait{background:#FFF3C4;color:#7A5B00}
+.pg-body{padding:12px 14px;border-top:1px solid var(--line)}
+.pg-sec{margin-bottom:14px}.pg-sec h4{font-size:12px;color:#1C2D4A;margin:0 0 6px}.pg-sec p{font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.6}
+.pg-form{display:grid;grid-template-columns:120px 1fr;gap:10px}.pg-form .full{grid-column:1/-1}.pg-form .field{margin:0}
+.pg-form input,.pg-form textarea,.pg-form select{width:100%;box-sizing:border-box}
+.pg-carry{background:#F4F6F8;border-radius:10px;padding:8px 10px;font-size:11px;color:#4d5963;line-height:1.6;margin-bottom:8px;white-space:pre-wrap}
+.pg-status{font-size:11px;border-radius:10px;padding:8px 10px;margin:8px 0;line-height:1.6}.pg-status.wait{background:#FFF3C4;color:#6B4F00}.pg-status.ok{background:#E8F4EC;color:#2F6B4A}.pg-status.info{background:#EEF2F6;color:#1F4A73}
+.pg-table{width:100%;border-collapse:collapse;font-size:12px}
+.pg-table th{text-align:left;font-size:10px;color:var(--muted);font-weight:650;padding:7px 8px;border-bottom:1px solid var(--line)}
+.pg-table td{padding:7px 8px;border-bottom:1px solid #EEF0F2;vertical-align:middle}
+.pg-table td b{color:#1C2D4A}.pg-table td small{display:block;font-size:10px;color:var(--muted)}
+.pg-dec{display:inline-flex;border:1px solid #DCE1E6;border-radius:9px;overflow:hidden}.pg-dec button{border:0;background:#fff;font:inherit;font-size:10px;padding:5px 9px;cursor:pointer;color:#4d5963}
+.pg-dec button.on[data-pg-dec="keep"]{background:#3F9C6E;color:#fff}.pg-dec button.on[data-pg-dec="reject"]{background:#B94D3A;color:#fff}.pg-dec button.on[data-pg-dec="later"]{background:#D49B00;color:#fff}
+.pg-note{width:100%;box-sizing:border-box;border:1px solid #E1E5E9;border-radius:8px;padding:5px 8px;font:inherit;font-size:11px}
+.pg-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.pg-empty{background:#fff;border:1px dashed #D5DAE0;border-radius:16px;padding:32px 24px;text-align:center;color:var(--muted);font-size:12px;line-height:1.7}
+#recruiterGuide .sourcing-step-detail [data-prod-new],#recruiterGuide .sourcing-step-detail [data-prod-open]{margin-left:8px}
+</style>
+<script id="production-gates">
+(function(){
+ if(typeof PROCESS_STEPS==='undefined'||!document.getElementById('recruiterGuide'))return;
+ const e=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const KEY='vd.studio.production.v1';
+ const load=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));return v&&Array.isArray(v.runs)?v:{runs:[]}}catch{return {runs:[]}}},save=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{toast('Browser storage is unavailable.')}};
+ const now=()=>new Date().toISOString();
+ const fmt=iso=>{try{return new Date(iso).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}catch{return ''}};
+ let inspect=null,openRun=null,shownActive=null,wantScroll=null;
+ const runOf=(d,n)=>d.runs.find(r=>r.n===n);
+ const activeRun=d=>d.runs.slice().reverse().find(r=>r.status!=='closed')||null;
+ const decided=r=>r.profileIds.filter(id=>r.feedback[id]?.decision).length;
+ function phases(r){const loaded=r.profileIds.length>0;return {
+  run:{label:`Production run ${r.n}`,done:loaded,cur:!loaded&&r.status!=='closed',progress:loaded?`${r.profileIds.length} profiles loaded`:(r.request?.status==='requested'?'Requested · waiting':'Waiting for profiles')},
+  fb:{label:`Production feedback ${r.n}`,done:r.status==='closed',cur:loaded&&r.status!=='closed',progress:loaded?`${decided(r)}/${r.profileIds.length} reviewed`:'Review required',pct:loaded?Math.round(100*decided(r)/r.profileIds.length):0}};}
+ /* ---------- extra steps in the Sourcing Journey bar ---------- */
+ const guideHost=document.getElementById('recruiterGuide');
+ new MutationObserver(()=>{try{decorate();}catch(err){console.warn('production gates',err);}}).observe(guideHost,{childList:true});
+ const rerender=()=>{try{window.refreshRecruiterGuide?.()}catch{}};
+ function card(id,ph,klass,num){const pct=ph.pct!=null?ph.pct:(ph.done?100:0);return `<button class="sourcing-step prod-gate ${klass}" type="button" data-prod-step="${id}" aria-current="${klass==='current'?'step':'false'}" aria-label="${e(ph.label+' '+ph.progress)}"><span class="sourcing-step-line"><span class="mark">${ph.done?'✓':num}</span>${e(ph.progress)}</span><span class="sourcing-step-title">${e(ph.label)}</span><span class="sourcing-step-meter"><i style="width:${pct}%"></i></span></button>`;}
+ function decorate(){const host=document.getElementById('recruiterGuide');const track=host?.querySelector('.sourcing-stepper-track');if(!track)return;const d=load();const inProd=state.processStep==='production';
+  const base=PROCESS_STEPS.length;let total=base,curIdx=PROCESS_STEPS.findIndex(s=>s.id===state.processStep)+1,curTitle=(PROCESS_STEPS.find(s=>s.id===state.processStep)||{}).title||'';
+  const act=activeRun(d);let html='';
+  d.runs.forEach(r=>{const p=phases(r);for(const k of ['run','fb']){total++;const ph=p[k];const isCur=inProd&&act&&act.n===r.n&&ph.cur;if(isCur){curIdx=total;curTitle=ph.label;}html+=card(k+':'+r.n,ph,isCur?'current':ph.done?'done':'pending',total);}});
+  if(html){track.insertAdjacentHTML('beforeend',html);const gate=track.querySelector('[data-journey-step="production"]');if(gate&&inProd&&act){gate.classList.remove('current');gate.classList.add('done');gate.setAttribute('aria-current','false');}if(gate&&d.runs.length&&!act&&inProd){/* all runs closed: gate is current again */}}
+  if(html&&wantScroll!=null)track.scrollLeft=wantScroll;track.addEventListener('scroll',()=>{wantScroll=track.scrollLeft;},{passive:true});
+  const head=host.querySelector('.sourcing-stepper-head small');if(head)head.textContent=`Current step ${curIdx} of ${total} · ${curTitle}`;
+  if(act&&shownActive!==act.n+':'+(act.profileIds.length?'fb':'run')){shownActive=act.n+':'+(act.profileIds.length?'fb':'run');const c=track.querySelector('.prod-gate.current');if(c)setTimeout(()=>{const tr=document.querySelector('#recruiterGuide .sourcing-stepper-track'),cc=tr?.querySelector('.prod-gate.current');if(tr&&cc)tr.scrollLeft=Math.max(0,cc.offsetLeft-tr.offsetLeft-tr.clientWidth/2+cc.clientWidth/2);},80);}
+  if(inspect){track.querySelectorAll('.sourcing-step').forEach(b=>b.classList.remove('inspected'));const [k,n]=inspect.split(':');const r=runOf(d,Number(n));const det=host.querySelector('.sourcing-step-detail');if(r&&det){const ph=phases(r)[k];det.innerHTML=`<div class="step-copy"><b>${e(ph.label)}</b><p class="step-progress">${e(k==='run'?(r.profileIds.length?`${r.profileIds.length} profiles in this run`:'No profiles yet – waiting for the research service or add profiles manually'):(r.status==='closed'?'Feedback completed':`${r.profileIds.length-decided(r)} feedback decisions remaining`))}</p></div><button type="button" data-prod-open="${r.n}">Open step</button>`;return;}}
+  if(state.processStep==='production'&&(!journeyInspectedIsOther())){const det=host.querySelector('.sourcing-step-detail');if(det&&!det.querySelector('[data-prod-new]'))det.insertAdjacentHTML('beforeend',`<button type="button" data-prod-new="1">${act?'Production gates':'Start production run '+(d.runs.length+1)}</button>`);}
+ }
+ function journeyInspectedIsOther(){const b=document.querySelector('#recruiterGuide .sourcing-step-detail [data-journey-continue]');return b&&b.dataset.journeyContinue!=='production';}
+ /* ---------- production gates view ---------- */
+ const view=document.createElement('section');view.className='view hidden';view.id='view-prodgates';document.getElementById('view-overview')?.parentNode.insertBefore(view,document.getElementById('view-overview'));
+ const cand=id=>{try{return getCandidate(id)}catch{return null}};
+ function lastFeedback(d,n){const prev=d.runs.filter(r=>r.n<n&&r.status==='closed').pop();if(!prev)return '';const kept=prev.profileIds.filter(id=>prev.feedback[id]?.decision==='keep').length,rej=prev.profileIds.filter(id=>prev.feedback[id]?.decision==='reject').length;
+  const notes=prev.profileIds.map(id=>{const f=prev.feedback[id];const c=cand(id);return f?.note?`${f.decision==='keep'?'+':f.decision==='reject'?'–':'?'} ${c?displayName(c):id}: ${f.note}`:null;}).filter(Boolean);
+  return `From production run ${prev.n}: ${kept} kept · ${rej} rejected.${prev.summary?`\nDirection: ${prev.summary}`:''}${notes.length?'\n'+notes.slice(0,8).join('\n'):''}`;}
+ function runHtml(d,r){const p=phases(r),open=openRun===r.n,act=activeRun(d)?.n===r.n;
+  const chip=(ph)=>`<span class="pg-chip ${ph.done?'done':ph.cur?'cur':''}">${e(ph.label)} · ${e(ph.progress)}</span>`;
+  let body='';if(open){const carry=lastFeedback(d,r.n);const req=r.request||{};
+   const stat=req.status==='requested'?`<div class="pg-status info">Request sent to the research service${req.jobId?' · job '+e(req.jobId):''} on ${e(fmt(req.at))}. <button class="textbtn" type="button" data-pg-check="${r.n}">Check status</button>${req.message?'<br>'+e(req.message):''}</div>`:req.status==='not_connected'?`<div class="pg-status wait"><b>Live research is not connected.</b> The run brief is saved. Connect the research service and send the request again, or add profiles to this run manually.</div>`:'';
+   const rows=r.profileIds.map(id=>{const c=cand(id);if(!c)return '';const f=r.feedback[id]||{};return `<tr><td><b><button class="candidate-name-btn" type="button" data-pg-profile="${e(id)}">${e(displayName(c))}</button></b><small>${e([String(c.title||'').split('|')[0],c.company||c.firm,c.location].filter(Boolean).join(' · '))}</small></td><td><span class="pg-dec">${[['keep','Keep'],['reject','Reject'],['later','Review later']].map(([k,l])=>`<button type="button" data-pg-dec="${k}" data-pg-id="${e(id)}" data-pg-run="${r.n}" class="${f.decision===k?'on':''}" ${r.status==='closed'?'disabled':''}>${l}</button>`).join('')}</span></td><td style="width:38%"><input class="pg-note" data-pg-note="${e(id)}" data-pg-run="${r.n}" value="${e(f.note||'')}" placeholder="Why? (feeds the next run)" ${r.status==='closed'?'disabled':''}></td><td>${r.status==='closed'?'':`<button class="textbtn" type="button" data-pg-remove="${e(id)}" data-pg-run="${r.n}" title="Remove from this run">×</button>`}</td></tr>`;}).join('');
+   body=`<div class="pg-body">
+   <div class="pg-sec"><h4>Run brief</h4>${carry?`<div class="pg-carry">${e(carry)}</div>`:''}<div class="pg-form"><div class="field"><label>Profiles</label><input type="number" min="1" max="100" data-pg-field="requested" data-pg-run="${r.n}" value="${e(r.brief.requested)}" ${r.status==='closed'?'disabled':''}></div><div class="field"><label>Focus / adjustments for this run</label><input data-pg-field="focus" data-pg-run="${r.n}" value="${e(r.brief.focus)}" placeholder="e.g. more Tier-1 suppliers, fewer pure strategy profiles" ${r.status==='closed'?'disabled':''}></div><div class="field full"><label>Notes</label><textarea rows="2" data-pg-field="notes" data-pg-run="${r.n}" ${r.status==='closed'?'disabled':''}>${e(r.brief.notes)}</textarea></div></div>
+   ${stat}<div class="pg-actions">${r.status!=='closed'?`<button class="btn" type="button" data-pg-send="${r.n}">${req.status==='requested'?'Send request again':'Send to research service'}</button><button class="btn" type="button" data-pg-add="${r.n}">+ Add profiles to this run</button>`:''}</div></div>
+   <div class="pg-sec"><h4>Production feedback ${r.n} <small style="font-weight:500;color:var(--muted)">· ${decided(r)}/${r.profileIds.length} reviewed</small></h4><p>Keep, reject or review later – with a short reason. Decisions update the candidate review; the reasons and the direction below are carried into the next production run.</p>
+   ${r.profileIds.length?`<table class="pg-table"><thead><tr><th>Profile</th><th>Decision</th><th>Reason</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="pg-status wait">No profiles in this run yet.</div>'}
+   <div class="field" style="margin-top:10px"><label>Direction for the next run</label><textarea rows="2" data-pg-field="summary" data-pg-run="${r.n}" placeholder="e.g. Keep the OEM-facing sales leaders, drop pure consultants, add Munich region" ${r.status==='closed'?'disabled':''}>${e(r.summary||'')}</textarea></div>
+   <div class="pg-actions">${r.status==='closed'?`<span class="pg-chip done">Closed ${e(fmt(r.closedAt))}</span><button class="btn" type="button" data-pg-reopen="${r.n}">Reopen feedback</button>`:`<button class="btn primary" type="button" data-pg-close="${r.n}" ${r.profileIds.length&&decided(r)===r.profileIds.length?'':'disabled'} title="All profiles need a decision">Complete feedback ${r.n}</button>`}${r.status==='closed'&&!activeRun(d)&&r.n===d.runs[d.runs.length-1].n?`<button class="btn primary" type="button" data-prod-new="1">Start production run ${r.n+1}</button>`:''}</div></div></div>`;}
+  return `<div class="pg-run ${act?'active':''}"><button class="pg-run-head" type="button" data-pg-toggle="${r.n}"><div><b>Production run ${r.n}</b><small>Started ${e(fmt(r.startedAt))}${r.brief.focus?' · '+e(r.brief.focus):''}</small></div><div class="pg-phases">${chip(p.run)}${chip(p.fb)}</div></button>${body}</div>`;}
+ function render(){const d=load();const act=activeRun(d);
+  view.innerHTML=`<div class="pg-head"><div><div class="eyebrow">STEP 9 · PRODUCTION DECISION GATE</div><h1 style="margin:6px 0 4px">Production gates</h1><p style="font-size:12px;color:var(--muted);margin:0;max-width:640px">Start as many production runs as you need. Every run adds two steps to the Sourcing Journey – the run itself and its feedback round – so you always see where the search stands.</p></div><div style="display:flex;gap:8px"><button class="btn" type="button" data-view="talent">Talent Explorer</button>${act?'':`<button class="btn primary" type="button" data-prod-new="1">Start production run ${d.runs.length+1}</button>`}</div></div>
+  ${d.runs.length?d.runs.slice().reverse().map(r=>runHtml(d,r)).join(''):`<div class="pg-empty"><b>No production run yet.</b><br>The locked sourcing profile and the evidence check are the basis. Start the first production run to request new profiles.<br><br><button class="btn primary" type="button" data-prod-new="1">Start production run 1</button></div>`}`;}
+ function show(n){if(n!=null)openRun=n;else{const d=load();openRun=(activeRun(d)||d.runs[d.runs.length-1]||{}).n??null;}if(state.processStep!=='production'){if(!setProcessStep('production',false))return;}window.switchView('prodgates');}
+ const prevSwitch=window.switchView;
+ window.switchView=function(v){if(v!=='prodgates')return prevSwitch(v);if(['campaignreview','pipeline'].includes(state.view))prevSwitch('overview');document.body.classList.remove('view-mandates');state.view='prodgates';$$('.view').forEach(x=>{x.classList.toggle('hidden',x.id!=='view-prodgates');x.classList.remove('print-target');});$$('.navbtn[data-view]').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-current','false');});render();window.scrollTo({top:0,behavior:'instant'});window.talentStudioGeorge?.refreshContext?.();rerender();};
+ function mutate(n,fn){const d=load(),r=runOf(d,n);if(!r)return;fn(r,d);save(d);}
+ function startRun(){const d=load();if(activeRun(d)){show();return;}const n=d.runs.length+1;const prev=d.runs[d.runs.length-1];d.runs.push({n,startedAt:now(),status:'open',brief:{requested:prev?.brief.requested||15,focus:'',notes:''},profileIds:[],feedback:{},summary:'',request:null});save(d);inspect=null;toast(`Production run ${n} started. Two new steps were added to the Sourcing Journey.`);show(n);}
+ async function sendRun(n){const d=load(),r=runOf(d,n);if(!r)return;let base={};try{base=typeof getBrief==='function'?getBrief():{}}catch{}const brief={...base,mode:'production',run:n,requested:Number(r.brief.requested)||15,focus:[r.brief.focus,r.brief.notes].filter(Boolean).join(' · '),feedback:lastFeedback(d,n)};
+  const ok=typeof engineStatus!=='undefined'&&engineStatus.available&&engineStatus.configured&&typeof sessionToken!=='undefined'&&sessionToken;
+  if(!ok){mutate(n,x=>{x.request={status:'not_connected',at:now()};});render();return;}
+  try{const res=await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+sessionToken},body:JSON.stringify(brief),signal:AbortSignal.timeout(15000)});const j=await res.json();if(!res.ok)throw Error(j.detail||'The research request was rejected.');mutate(n,x=>{x.request={status:'requested',at:now(),jobId:j.id};});toast('Production request sent.');}
+  catch(err){mutate(n,x=>{x.request={status:'requested',at:now(),message:err.message||'Research service unavailable.'};});}render();rerender();}
+ async function checkRun(n){const r=runOf(load(),n);const id=r?.request?.jobId;if(!id){toast('No job id yet – send the request first.');return;}try{const res=await fetch('/api/jobs/'+encodeURIComponent(id),{headers:{'Authorization':'Bearer '+sessionToken}});const j=await res.json();
+   if(j.status==='complete'&&Array.isArray(j.candidates)){let added=0;mutate(n,x=>{for(const c of j.candidates){if(!c||!c.id)continue;if(!ALL_CANDIDATES.some(a=>a.id===c.id))ALL_CANDIDATES.push(c);if(!x.profileIds.includes(c.id)){x.profileIds.push(c.id);added++;}}x.request.message=`Complete · ${added} profiles added.`;});toast(`${added} profiles added to production run ${n}.`);}
+   else mutate(n,x=>{x.request.message='Status: '+(j.status||'unknown');});}catch(err){mutate(n,x=>{x.request.message=err.message||'Status unavailable.';});}render();rerender();}
+ function pick(n){const d=load();const used=new Set(d.runs.flatMap(r=>r.profileIds));const sel=new Set(state.selected||[]);let pool=[];try{pool=ALL_CANDIDATES.filter(c=>!used.has(c.id));}catch{}
+  pool.sort((a,b)=>(sel.has(b.id)?1:0)-(sel.has(a.id)?1:0));
+  $('modal').classList.remove('wide');$('modal').innerHTML=modalHead(`Add profiles · production run ${n}`)+`<p class="intro">Profiles delivered outside the research service (uploads, referrals, own research) can be added to this run for feedback. Profiles already in a run are not listed.</p>${pool.length?`<div class="field"><input id="pgPickFilter" placeholder="Filter by name, company or location"></div><div class="check-list" id="pgPickList">${pool.map(c=>`<label class="check-row" data-pg-text="${e([displayName(c),c.company,c.firm,c.location].join(' ').toLowerCase())}"><input type="checkbox" data-pg-pick="${e(c.id)}" ${sel.has(c.id)?'checked':''}><span><b>${e(displayName(c))}</b> · ${e(c.company||c.firm||'')}<br><small style="color:var(--muted)">${e(c.location||'')}${sel.has(c.id)?' · selected in Talent Explorer':''}</small></span></label>`).join('')}</div>`:'<p class="intro">All profiles are already assigned to a run.</p>'}<div class="modal-foot"><button class="btn" type="button" data-action="close">Cancel</button>${pool.length?`<button class="btn primary" type="button" data-pg-pickok="${n}">Add to run ${n}</button>`:''}</div>`;showLayer('modal');}
+ document.addEventListener('input',ev=>{const t=ev.target;if(t.id==='pgPickFilter'){const q=t.value.toLowerCase().trim();document.querySelectorAll('#pgPickList [data-pg-text]').forEach(l=>{l.style.display=!q||l.dataset.pgText.includes(q)?'':'none';});}});
+ document.addEventListener('change',ev=>{const t=ev.target;if(!t.closest?.('#view-prodgates'))return;const n=Number(t.dataset.pgRun);
+  if(t.dataset.pgField){const k=t.dataset.pgField;mutate(n,r=>{if(k==='summary')r.summary=t.value.trim();else r.brief[k]=k==='requested'?Number(t.value)||15:t.value.trim();});return;}
+  if(t.dataset.pgNote){const id=t.dataset.pgNote;mutate(n,r=>{r.feedback[id]={...(r.feedback[id]||{}),note:t.value.trim()};});const c=cand(id),f=runOf(load(),n)?.feedback[id];if(c&&f?.decision)try{setReview(c,{note:f.note})}catch{}return;}
+ });
+ document.addEventListener('click',ev=>{const t=ev.target;
+  if(t.closest('[data-prod-new]')){ev.preventDefault();ev.stopImmediatePropagation();if(state.processStep!=='production'&&!setProcessStep('production',false))return;startRun();return;}
+  const ps=t.closest('[data-prod-step]');if(ps){ev.preventDefault();ev.stopImmediatePropagation();inspect=ps.dataset.prodStep;show(Number(inspect.split(':')[1]));return;}
+  const po=t.closest('[data-prod-open]');if(po){ev.preventDefault();ev.stopImmediatePropagation();show(Number(po.dataset.prodOpen));return;}
+  if(t.closest('[data-journey-step]')){inspect=null;}
+  const pk=t.closest('[data-pg-pickok]');if(pk){const n=Number(pk.dataset.pgPickok);const ids=[...document.querySelectorAll('[data-pg-pick]:checked')].map(x=>x.dataset.pgPick);mutate(n,r=>{for(const id of ids)if(!r.profileIds.includes(id))r.profileIds.push(id);});closeLayers();toast(`${ids.length} profile${ids.length===1?'':'s'} added to production run ${n}.`);render();rerender();return;}
+  if(!t.closest('#view-prodgates'))return;
+  const tg=t.closest('[data-pg-toggle]');if(tg){const n=Number(tg.dataset.pgToggle);openRun=openRun===n?null:n;render();return;}
+  const sd=t.closest('[data-pg-send]');if(sd){sendRun(Number(sd.dataset.pgSend));return;}
+  const ck=t.closest('[data-pg-check]');if(ck){checkRun(Number(ck.dataset.pgCheck));return;}
+  const ad=t.closest('[data-pg-add]');if(ad){pick(Number(ad.dataset.pgAdd));return;}
+  const pf=t.closest('[data-pg-profile]');if(pf){window.openTalentRailCandidate?.(pf.dataset.pgProfile);return;}
+  const rm=t.closest('[data-pg-remove]');if(rm){const n=Number(rm.dataset.pgRun),id=rm.dataset.pgRemove;mutate(n,r=>{r.profileIds=r.profileIds.filter(x=>x!==id);delete r.feedback[id];});render();rerender();return;}
+  const dc=t.closest('[data-pg-dec]');if(dc){const n=Number(dc.dataset.pgRun),id=dc.dataset.pgId,k=dc.dataset.pgDec;let f;mutate(n,r=>{r.feedback[id]={...(r.feedback[id]||{}),decision:k,at:now()};f=r.feedback[id];});const c=cand(id);if(c)try{setReview(c,{status:k==='keep'?'approved':k==='reject'?'excluded':'hold',feedbackGiven:true,note:f?.note||reviewOf(c).note||''})}catch{}render();rerender();return;}
+  const cl=t.closest('[data-pg-close]');if(cl){const n=Number(cl.dataset.pgClose);mutate(n,r=>{r.status='closed';r.closedAt=now();});inspect=null;toast(`Production feedback ${n} completed.`);render();rerender();return;}
+  const ro=t.closest('[data-pg-reopen]');if(ro){const d=load();if(activeRun(d)){toast('Another production run is still open.');return;}mutate(Number(ro.dataset.pgReopen),r=>{r.status='open';r.closedAt=null;});render();rerender();return;}
+ },true);
+ window.StudioProduction={load,start:startRun,show};
+ try{decorate()}catch{}
 })();
 </script>
 </body>
