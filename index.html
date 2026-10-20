@@ -2467,6 +2467,7 @@ window.talentStudioGeorge={
   selectCandidate:(id)=>{const candidate=getCandidate(id);if(!candidate)return false;george.candidateId=id;activeId=id;updateGeorgeContext();window.dispatchEvent(new CustomEvent('studio:changed',{detail:{type:'candidate',candidateId:id}}));return true;},
   clearCandidate:()=>{george.candidateId=null;activeId=null;updateGeorgeContext();}
 };
+window.candidatePanelHtml=candidatePanelHtml;/* used by the right-sidebar profile view */
 renderGeorge();renderAttachments();updateGeorgeContext();
 })();
 </script>
@@ -2921,10 +2922,10 @@ function journeyProgress(step){
   const valid=keys.every(k=>String(brief[k]||'').trim());return progress(valid&&localStorage.getItem('vd.studio.approval.locked.v1')==='approved'?1:0,1,'profile approval');
  }
  if(step.id==='feedback1'||step.id==='feedback2'){
-  return progress(people.filter(c=>{
-   const data=stageReview[step.id]?.[c.profileUrl];
-   return !!data&&data.feedbackGiven===true&&['approved','hold','excluded'].includes(data.status)&&data.feedbackSource!=='historical';
-  }).length,people.length,'reviewed');
+  /* reviewed = every profile with a recorded decision (incl. earlier/historical feedback); approved shown as prefix */
+  const rv=c=>({...stageDefaultReview(c,step.id),...(stageReview[step.id]?.[c.profileUrl]||{})});
+  const reviewed=people.filter(c=>{const r=rv(c);return r.feedbackGiven===true&&['approved','hold','excluded'].includes(r.status);});
+  return {...progress(reviewed.length,people.length,'reviewed'),prefix:reviewed.filter(c=>rv(c).status==='approved').length+' approved · '};
  }
  if(step.id==='cal1'||step.id==='cal2'){
   // Calibration represents sourced profiles available for recruiter review,
@@ -2969,7 +2970,7 @@ function renderRecruiterGuide(){
   const d=journeyProgress(step),complete=d.total>0&&d.done===d.total;
   const klass=step.id===active?'current':complete?'done':'pending';
   const status=complete?'✓':String(i+1);
-  const progress=d.total>0?d.done+'/'+d.total+' '+d.label:'Review required';
+  const progress=d.total>0?(d.prefix||'')+d.done+'/'+d.total+' '+d.label:'Review required';
   const width=d.total>0?Math.round(d.done/d.total*100):0;
   return '<button class="sourcing-step '+klass+'" type="button" data-journey-step="'+esc(step.id)+'" aria-current="'+(step.id===active?'step':'false')+'" aria-label="'+esc(step.title+' '+progress)+'"><span class="sourcing-step-line"><span class="mark">'+status+'</span>'+esc(progress)+'</span><span class="sourcing-step-title">'+esc(step.title)+'</span><span class="sourcing-step-meter"><i style="width:'+width+'%"></i></span></button>';
  }).join('');
@@ -3353,20 +3354,26 @@ function pending(c){
 function name(c){return String(c.name||'Candidate')}
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function paintCandidates(){
- if(currentTool!=='talent'||document.getElementById('talentRailCandidateDetail')?.classList.contains('hidden')===false)return;
+ if(currentTool!=='talent')return;
+ const detailOpen=document.getElementById('talentRailCandidateDetail')?.classList.contains('hidden')===false;
  const st=step(),assigned=relevant(),total=assigned.length,role=['brief','locked'].includes(st);
- let outstanding=role?assigned:assigned.filter(pending),completed=role?0:total-outstanding.length;
+ const fbStep=/^feedback/.test(st),calStep=/^cal/.test(st);
+ /* Talent tab shows every profile assigned to the step; feedback steps hide rejected profiles */
+ let outstanding=role?assigned:fbStep?assigned.filter(c=>taskReview(c).status!=='excluded'):assigned,completed=role?0:total-assigned.filter(pending).length;
+ const approvedN=assigned.filter(c=>taskReview(c).status==='approved').length;
  const term=(document.getElementById('talentRailSearch')?.value||'').toLowerCase();
  outstanding=outstanding.filter(c=>[c.name,c.title,c.company,c.location].join(' ').toLowerCase().includes(term));
  const count=document.getElementById('talentRailCount');if(count)count.textContent=outstanding.length;
  const feedback=/^feedback/.test(st);
  if(role){desc.innerHTML='<strong>Candidate overview</strong><div class="task-progress-counter">'+total+' profiles in current project</div>';}
- if(!role)desc.innerHTML='<strong>'+escapeHTML((PROCESS_STEPS.find(x=>x.id===st)?.title)||'Current tasks')+'</strong><div class="task-progress-counter">'+completed+'/'+total+' completed · '+(total-completed)+' remaining</div>';
- if(!outstanding.length){list.innerHTML='<p class="talent-rail-empty">'+(total===completed?'All assigned tasks complete.':'No matching pending tasks.')+'</p>';return;}
+ if(!role)desc.innerHTML='<strong>'+escapeHTML((PROCESS_STEPS.find(x=>x.id===st)?.title)||'Current tasks')+'</strong><div class="task-progress-counter">'+(fbStep?approvedN+' approved · '+completed+'/'+total+' reviewed · '+(total-completed)+' remaining':calStep?total+' profiles in this calibration round':completed+'/'+total+' completed · '+(total-completed)+' remaining')+'</div>';
+ if(detailOpen)return;
+ if(!outstanding.length){list.innerHTML='<p class="talent-rail-empty">'+(total&&term?'No profiles match this search.':total?'No open profiles in this step.':(state.liveMode?'Profiles are being compiled. They appear here as soon as the research run is complete.':'No profiles assigned to this step yet.'))+'</p>';return;}
  list.innerHTML=outstanding.map(c=>{
   const r=taskReview(c),summary=(c.summary||c.researchNote||c.areas||'').slice(0,220);
   return '<div class="task-rail-candidate" data-feedback-id="'+escapeHTML(c.id)+'"><button type="button" class="talent-rail-row" data-task-open="'+escapeHTML(c.id)+'"><span class="talent-rail-avatar">'+escapeHTML(name(c).split(/\\s+/).map(w=>w[0]||'').slice(0,2).join(''))+'</span><span class="talent-rail-person"><b>'+escapeHTML(name(c))+'</b><span>'+escapeHTML(c.title||'')+'</span><span class="task-candidate-status">Match '+escapeHTML(c.match??c.fit??'—')+'/100 · Evidence '+escapeHTML(c.evidence??'—')+'/100</span></span></button><p class="task-rail-summary">'+escapeHTML(summary)+'</p><details class="task-rail-assessment"><summary>Why / How / What</summary><p><b>Why</b> '+escapeHTML(c.raw?.Why||c.summary||'Fit to be assessed')+'</p><p><b>How</b> '+escapeHTML(c.areas||c.projects?.[0]||'Not documented')+'</p><p><b>What</b> '+escapeHTML(c.evidenceType||c.caveat||'Check original sources')+'</p></details>'+
-  (feedback?'<textarea class="task-feedback-note" data-task-note="'+escapeHTML(c.id)+'" rows="2" placeholder="Optional qualitative feedback"></textarea><div class="task-feedback-buttons">'+[['approved','Keep'],['excluded','Reject'],['hold','Review later']].map(([value,label])=>'<button type="button" data-task-decision="'+value+'">'+label+'</button>').join('')+'</div>':'')+
+  (feedback&&!pending(c)?'<span class="task-candidate-status" style="display:block;margin-top:4px">'+escapeHTML(({approved:'Approved',hold:'Review later',excluded:'Rejected'})[r.status]||r.status||'')+' · feedback recorded</span>':'')+
+  (feedback&&pending(c)?'<textarea class="task-feedback-note" data-task-note="'+escapeHTML(c.id)+'" rows="2" placeholder="Optional qualitative feedback"></textarea><div class="task-feedback-buttons">'+[['approved','Keep'],['excluded','Reject'],['hold','Review later']].map(([value,label])=>'<button type="button" data-task-decision="'+value+'">'+label+'</button>').join('')+'</div>':'')+
   (st==='production'?'<button type="button" class="task-shortlist-button" data-task-shortlist="'+escapeHTML(c.id)+'">Add to shortlist</button>':'')+
   '</div>';
  }).join('');
@@ -3395,7 +3402,7 @@ function update(force=false){
  document.body.classList.toggle('task-rail-context-feedback',tool==='talent'&&/feedback/.test(st));
  document.body.classList.toggle('task-rail-context-evidence',tool==='talent'&&st==='evidence');
  document.body.classList.toggle('task-rail-context-production',tool==='talent'&&st==='production');
- if(tool==='talent' && document.getElementById('talentRailCandidateDetail')?.classList.contains('hidden')!==false)paintCandidates();
+ if(tool==='talent')paintCandidates();
  if(typeof window.renderEvidenceWorkbench==='function')window.renderEvidenceWorkbench();
 }
 document.addEventListener('click',e=>{
@@ -3614,7 +3621,7 @@ render();
   const progress=window.getStudioJourneyProgress?.(active)||{};
   const pool=(typeof state!=='undefined'&&state.liveMode&&Array.isArray(state.live))?state.live:(typeof ALL_CANDIDATES!=='undefined'?ALL_CANDIDATES:[]);
   const name=(typeof PROCESS_STEPS!=='undefined'?PROCESS_STEPS.find(x=>x.id===active)?.title:null)||active;
-  const progressLabel=progress.total>0?progress.done+'/'+progress.total+' '+(progress.label||'complete'):'Review required';
+  const progressLabel=progress.total>0?(progress.prefix||'')+progress.done+'/'+progress.total+' '+(progress.label||'complete'):'Review required';
   const content=box('Search profile', (p.completion??0)+'/'+(p.total??4)+' defined')+
    box('Current sourcing step',name)+box('Step progress',progressLabel)+box('Candidate records',(window.studioBriefMode?.()==='new')?0:pool.length);
   if(main.isConnected)main.innerHTML=content;
@@ -3974,6 +3981,59 @@ body.brief-change-mode #candidateGrid::before{content:"Change mode: these profil
  function sync(){const m=mode();document.body.classList.toggle('brief-change-mode',m==='change');const b=document.getElementById('talentRailOpenFull');if(b){b.textContent=m==='change'?'Apply to current search':'Open full explorer';b.classList.toggle('primary',m==='change');}M.noteStep();}
  ['studio-step-changed','studio:changed'].forEach(n=>window.addEventListener(n,()=>requestAnimationFrame(sync)));
  sync();
+})();
+</script>
+<style id="step-layout-styles">
+body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:clamp(520px,48vw,780px)!important}
+@media(max-width:1100px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:min(78vw,640px)!important}}
+@media(max-width:700px){body.talent-profile-expanded:not(.task-rail-collapsed){--ui-rail:100vw!important}}
+.talent-rail-detail-nav [data-give-feedback]{margin-left:auto;font-size:11px;font-weight:650;padding:7px 13px;border-radius:9px;background:var(--accent)!important;color:#fff!important;border:0!important;min-width:0!important;width:auto!important;height:auto!important;cursor:pointer}
+</style>
+<script id="step-layout">
+(function(){
+ if(typeof PROCESS_STEPS==='undefined')return;
+ const GT=['cal1','feedback1','cal2','feedback2'];
+ const NEXT={cal1:'feedback1',cal2:'feedback2',feedback1:'feedback1',feedback2:'feedback2'};
+ const railTool=()=>{const c=document.body.classList;return c.contains('task-rail-show-brief')?'brief':c.contains('task-rail-show-george')?'george':'talent';};
+ function setTool(t,delay){setTimeout(()=>{if(railTool()===t)return;[...document.querySelectorAll('[data-task-tool="'+t+'"]')].find(x=>!x.hidden)?.click();},delay??120);}
+ /* Step layout: role brief -> George + Role Brief; calibration/feedback -> George + Talent; later steps -> their own page */
+ function layoutFor(step){
+  if(step==='brief'){if(state.view!=='george')window.switchView('george');setTool('brief');return;}
+  if(GT.includes(step)){if(state.view!=='george')window.switchView('george');setTool('talent');return;}
+  const s=PROCESS_STEPS.find(x=>x.id===step);if(s?.targetView&&state.view!==s.targetView)window.switchView(s.targetView);
+ }
+ window.studioLayoutForStep=layoutFor;
+ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-journey-step]');if(!b)return;const id=b.dataset.journeyStep;setTimeout(()=>{if(state.processStep===id)layoutFor(id);},80);});
+ let last=state.processStep;
+ window.addEventListener('studio-step-changed',()=>{const s=state.processStep;if(s!==last&&s==='brief')setTimeout(()=>layoutFor('brief'),80);last=s;});
+ /* Give feedback from an opened profile (or via George) -> feedback round of this calibration */
+ function giveFeedback(id){
+  const target=NEXT[state.processStep];if(!target)return false;
+  if(state.processStep!==target){const jb=document.querySelector('[data-journey-step="'+target+'"]');if(jb)jb.click();else setProcessStep(target,false);}
+  if(state.view!=='george')window.switchView('george');
+  setTool('talent',0);
+  setTimeout(()=>{
+   const title=(PROCESS_STEPS.find(s=>s.id===target)||{}).title||target;
+   if(id&&window.openTalentRailCandidate?.(id)){const c=getCandidate(id);window.talentStudioGeorge?.addMessage('assistant',`Feedback mode is active for ${displayName(c)} (${title}). Tell me what fits, what does not, and whether to keep, reject or review this profile later.`);}
+   else window.talentStudioGeorge?.addMessage('assistant',`${title} is open. Choose a profile on the right or tell me your feedback, for example “Keep Carissa Teng, strong Bain profile”.`);
+  },260);
+  return true;
+ }
+ window.addEventListener('studio:rail-profile',ev=>{
+  if(!ev.detail?.open||!NEXT[state.processStep])return;
+  setTimeout(()=>{const nav=document.querySelector('#talentRailCandidateDetail .talent-rail-detail-nav');if(!nav||nav.querySelector('[data-give-feedback]'))return;
+   const b=document.createElement('button');b.type='button';b.className='btn primary';b.dataset.giveFeedback=ev.detail.candidateId||'';b.textContent='Give feedback';nav.appendChild(b);},0);
+ });
+ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-give-feedback]');if(!b)return;ev.preventDefault();ev.stopImmediatePropagation();giveFeedback(b.dataset.giveFeedback);},true);
+ document.addEventListener('click',ev=>{
+  if(!ev.target.closest('#georgeExecute'))return;
+  if(!['cal1','cal2'].includes(state.processStep))return;
+  const input=document.getElementById('georgeInput'),text=String(input?.value||'').trim();
+  if(!/(feedback\s*(geben|starten|beginnen|runde|round|abgeben)|give feedback|start(?:e)? (?:the )?feedback|zum feedback|feedback round|in die feedback)/i.test(text))return;
+  ev.preventDefault();ev.stopImmediatePropagation();
+  window.talentStudioGeorge?.addMessage('user',text);input.value='';input.dispatchEvent(new Event('input'));
+  giveFeedback(window.talentStudioGeorge?.contextSnapshot?.()?.candidate?.id||null);
+ },true);
 })();
 </script>
 </body>
