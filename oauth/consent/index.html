@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Recruiting Master | Zugriffsfreigabe</title>
+<style>
+:root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f4f6f9; color: #1d2838; }
+main { box-sizing: border-box; width: min(100% - 32px, 540px); padding: 32px; background: white; border: 1px solid #dce2ea; border-radius: 18px; box-shadow: 0 20px 65px #0e224013; }
+small { color: #64748b; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
+h1 { margin: 12px 0; font-size: 25px; line-height: 1.25; }
+p { line-height: 1.55; }
+label { display: block; font-weight: 600; margin-top: 13px; font-size: 14px; }
+input { box-sizing: border-box; display: block; width: 100%; padding: 12px; margin-top: 7px; border: 1px solid #b9c5d4; border-radius: 9px; font: inherit; }
+button { border: 0; background: #173456; color: white; padding: 12px 18px; border-radius: 9px; font: inherit; cursor: pointer; margin: 13px 9px 0 0; }
+button.secondary { background: #eef1f5; color: #203752; }
+button:disabled { opacity: .55; cursor: wait; }
+#status { color: #a32929; white-space: pre-line; font-size: 14px; }
+#details { border: 1px solid #e0e7ef; background: #f8fafc; border-radius: 10px; padding: 14px; overflow-wrap: anywhere; }
+#details strong { display: block; margin-bottom: 3px; }
+#details span { display: block; margin-bottom: 12px; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+<small>Recruiting Global Evidence Master</small>
+<h1>ChatGPT-Verbindung genehmigen</h1>
+<p>Diese separate Zugriffsfreigabe verwendet dein bestehendes Supabase-Benutzerkonto. Die AI-Talent-Studio-Demo wird dadurch nicht verändert.</p>
+<p id="status" role="alert" aria-live="polite"></p>
+<section id="login" hidden>
+  <h2>Anmelden</h2>
+  <form id="loginForm" autocomplete="on">
+    <label for="email">E-Mail</label>
+    <input id="email" type="email" autocomplete="email" required>
+    <label for="password">Passwort</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button id="loginButton" type="submit">Anmelden</button>
+  </form>
+</section>
+<section id="consent" hidden>
+  <h2>Zugriff prüfen</h2>
+  <div id="details">
+    <strong>Benutzer</strong><span id="userInfo"></span>
+    <strong>Anwendung</strong><span id="clientInfo"></span>
+    <strong>Rückleitungsadresse</strong><span id="redirectInfo"></span>
+    <strong>Angefragte Berechtigungen</strong><span id="scopesInfo"></span>
+  </div>
+  <p>Nur genehmigen, wenn du die Anwendung und Rückleitungsadresse erkennst. Projekt- und Schreibrechte werden zusätzlich in Supabase geprüft.</p>
+  <button id="approve" type="button">Zugriff genehmigen</button>
+  <button id="deny" type="button" class="secondary">Ablehnen</button>
+</section>
+</main>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.118.0";
+const SUPABASE_URL = "https://dxtvsavrezicbucysrdy.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_JDhkLGz75sgOYaxdGh2SOw_CrlgOGUS";
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+const id = new URLSearchParams(location.search).get("authorization_id");
+const el = (name) => document.getElementById(name);
+const setError = (msg) => { el("status").textContent = msg || ""; };
+const working = (yes) => {
+  el("loginButton").disabled = yes;
+  el("approve").disabled = yes;
+  el("deny").disabled = yes;
+};
+const show = (which) => {
+  el("login").hidden = which !== "login";
+  el("consent").hidden = which !== "consent";
+};
+async function loadAuthorization() {
+  setError("");
+  if (!id || !/^[0-9a-zA-Z_-]{8,150}$/.test(id)) {
+    show("");
+    setError("Keine gültige authorization_id. Starte die Verbindung bitte in ChatGPT.");
+    return;
+  }
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) { show("login"); return; }
+  const { data, error } = await supabase.auth.oauth.getAuthorizationDetails(id);
+  if (error || !data) {
+    setError(error?.message || "Die Anfrage ist ungültig oder abgelaufen. Bitte in ChatGPT erneut verbinden.");
+    show("");
+    return;
+  }
+  if (!("authorization_id" in data)) {
+    if (typeof data.redirect_url === "string") location.assign(data.redirect_url);
+    else setError("Keine Rückleitungsadresse erhalten.");
+    return;
+  }
+  el("userInfo").textContent = user.email || user.id;
+  el("clientInfo").textContent = data.client?.name || "Nicht benannt";
+  el("redirectInfo").textContent = data.redirect_uri || "Nicht angegeben";
+  el("scopesInfo").textContent = data.scope || "Keine zusätzlichen Angaben";
+  show("consent");
+}
+el("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  setError("");
+  working(true);
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: el("email").value.trim(),
+      password: el("password").value
+    });
+    if (error) throw error;
+    el("password").value = "";
+    await loadAuthorization();
+  } catch (error) {
+    setError(error?.message || "Anmeldung fehlgeschlagen.");
+  } finally {
+    working(false);
+  }
+});
+for (const action of ["approve", "deny"]) {
+  el(action).addEventListener("click", async () => {
+    setError("");
+    working(true);
+    try {
+      const result = action === "approve"
+        ? await supabase.auth.oauth.approveAuthorization(id)
+        : await supabase.auth.oauth.denyAuthorization(id);
+      if (result.error) throw result.error;
+      const redirectUrl = result.data?.redirect_url;
+      if (!redirectUrl) throw new Error("Keine Rückleitungsadresse von Supabase erhalten.");
+      location.assign(redirectUrl);
+    } catch (error) {
+      setError(error?.message || "Die Zugriffsentscheidung konnte nicht gespeichert werden.");
+    } finally {
+      working(false);
+    }
+  });
+}
+await loadAuthorization();
+</script>
+</body>
+</html>
